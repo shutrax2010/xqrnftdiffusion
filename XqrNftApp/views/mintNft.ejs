@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>NFT作成</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+        <script>
+            function onClick(event){
+                event.preventDefault();
+                $.ajax({
+                    url: '/mintnft/mint',
+                    type: 'POST',
+                    data: $('#nftform').serialize()
+                }).done(function(data, textStatus, jqXHR) {
+                    $('#outputMsg').val(data);
+                    console.log('success');
+                }).fail(function() {
+                    console.log('fail');
+                })
+            }
+        </script>
+        
+    </head>
+
+    <body>
+        <h3>NFT作成</h3>
+        アドレス：<label><%= walletAddress %></label>
+        <form id="nftform">
+            <div>
+                <div>
+                    <label>コレクションNo.</label><br/>
+                    <input name="collno" placeholder="No." />
+                </div>
+                <div>
+                    <label>コレクション名</label><br/>
+                    <input name="collname" placeholder="Collection name" />
+                </div>
+                <div>
+                    <label>NFT名</label><br/>
+                    <input name="nftname" placeholder="NFT name" />
+                </div>
+                <div>
+                    <label>ロイヤリティ</label><br/>
+                    <input type="number" name="loyalty" placeholder="loyalty(%)" required/>
+                </div>
+                <div>
+                    <label>説明</label><br />
+                    <textarea name="description"></textarea>
+                </div>
+            </div>
+            <hr>
+            <div>
+                <label>URI</label><br/>
+                <input name="json_uri" placeholder="JSON URI" required/>
+            </div>
+            <button type="submit" onClick="onClick(event)">Mint</button><br/>
+        </form>
+        <label>出力メッセージ</label><br/>
+        <textarea disabled id="outputMsg" name="outputMsg"><%= outputMsg %></textarea>
+    </body>
+</html>
