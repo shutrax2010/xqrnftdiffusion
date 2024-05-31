@@ -5,7 +5,8 @@
         <title>NFT作成</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
         <script>
-            function onClick(){
+            function onClick(event){
+                event.preventDefault();
                 $.ajax({
                     url: '/mintnft/mint',
                     type: 'POST',
@@ -52,10 +53,9 @@
                 <label>URI</label><br/>
                 <input name="json_uri" placeholder="JSON URI" required/>
             </div>
-            <button type="submit" onClick="onClick()">Mint</button><br/>
+            <button type="submit" onClick="onClick(event)">Mint</button><br/>
         </form>
         <label>出力メッセージ</label><br/>
         <textarea disabled id="outputMsg" name="outputMsg"><%= outputMsg %></textarea>
     </body>
- 
 </html>

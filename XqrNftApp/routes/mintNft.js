@@ -70,10 +70,7 @@ console.log(tx.result.meta.TransactionResult);
   
   client.disconnect();
 
-  res.render('mintNft',{
-    walletAddress: walletAddress,
-    outputMsg: outputMsg
-  });
+  res.send(outputMsg);
 });
 
 
