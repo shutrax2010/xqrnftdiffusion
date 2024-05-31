@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>NFT作成</title>
+    </head>
+    <body>
+        <h3>NFT作成</h3>
+        アドレス：<label><%= walletAddress %></label>
+        <form>
+            <div>
+                <div>
+                    <label>コレクションNo.</label><br/>
+                    <input name="collno" placeholder="No." />
+                </div>
+                <div>
+                    <label>コレクション名</label><br/>
+                    <input name="collname" placeholder="Collection name" />
+                </div>
+                <div>
+                    <label>NFT名</label><br/>
+                    <input name="nftname" placeholder="NFT name" />
+                </div>
+                <div>
+                    <label>ロイヤリティ</label><br/>
+                    <input name="loyalty" placeholder="loyalty" />
+                </div>
+                <div>
+                    <label>説明</label><br />
+                    <textarea name="description"></textarea>
+                </div>
+            </div>
+            <hr>
+            <div>
+                <label>URI</label><br/>
+                <input name="json_uri" placeholder="JSON URI"/>
+            </div>
+            <button type="submit" formaction="mintnft/mint" formmethod="post">Mint</button><br/>
+        </form>
+        <label>出力メッセージ</label><br/>
+        <textarea disabled><%= outputMsg %></textarea>
+    </body>
+</html>
