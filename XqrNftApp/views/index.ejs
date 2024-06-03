@@ -7,5 +7,41 @@
   <body>
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+    <button id="sign-button">Xumm Sign-In</button>
+    <script>
+      const button = document.getElementById('sign-button');
+      const signedInUrl = 'http://127.0.0.1/mintNft'
+
+      button.addEventListener('click', async () => {
+        try {
+          // Send a GET request to the server with an indication for Xumm payload
+          const response = await fetch('/?xummRequest=true');
+          const payloadData = await response.json();
+
+          // Check for errors
+          if (!response.ok) {
+            throw new Error('Failed to create Xumm payload');
+          }
+
+          // Access and handle the payload data (e.g., redirect to SignInUrl)
+          const SignInUrl = payloadData.created.next?.always;
+          if (SignInUrl) {
+            
+            console.log('Redirecting to Xumm sign-in:', SignInUrl);
+            //window.location.href = SignInUrl; // Redirect to Xumm sign-in URL
+            window.open(SignInUrl,'_blank','width=600,height=400');
+
+          } else {
+            console.error('Xumm payload missing "next.always" property');
+            // Handle case where the property is absent
+          }
+          console.log(payloadData);
+          
+        } catch (error) {
+          console.error('Error:', error);
+          // Display an error message to the user
+        }
+      });
+    </script>
   </body>
 </html>
