@@ -3,11 +3,9 @@ var router = express.Router();
 const { XummSdk } = require('xumm-sdk');
 require('dotenv').config();
 
-// **(Remove these lines to avoid exposing API keys)**
  const xummApiKey = process.env.XUMM_APIKEY;
  const xummSecret = process.env.XUMM_APISECRET;
  const xumm = new XummSdk(xummApiKey,xummSecret);
-// const xumm = new XummSdk(xummApiKey, process.env.XUMM_APISECRET);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -15,9 +13,7 @@ router.get('/', function(req, res, next) {
 
   if (!xummRequest) {
     res.render('index', { title: 'Express' });
-  } else {
-    // Replace these placeholders with your actual Xumm API credentials
-    
+  } else {  
 
     xumm.ping().then(pong => {
       const payload = {
@@ -44,7 +40,8 @@ router.get('/payload/:payload_uuid', async function(req, res, next) {
   try {
     const payloadData = await xumm.payload.get(payloadUuid);
     const status = payloadData.meta.signed ? 'completed' : 'in_progress';
-    res.json({ status }); // Send only the relevant status information
+    const account = payloadData.response.account;
+    res.json({ status , account}); 
   } catch (error) {
     console.error('Error fetching payload data:', error);
     res.status(500).json({ message: 'Internal server error' });
