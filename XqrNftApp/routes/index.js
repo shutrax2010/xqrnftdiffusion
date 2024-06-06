@@ -35,8 +35,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/payload/:payload_uuid', async function(req, res, next) {
   const payloadUuid = req.params.payload_uuid;
-  console.log("js : payloaduuid" , payloadUuid);
-
+  
   try {
     const payloadData = await xumm.payload.get(payloadUuid);
     const status = payloadData.meta.signed ? 'completed' : 'in_progress';

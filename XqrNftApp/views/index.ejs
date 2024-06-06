@@ -29,7 +29,6 @@
           if (SignInUrl) {
             
             console.log('Redirecting to Xumm sign-in:', SignInUrl);
-            //window.location.href = SignInUrl; // Redirect to Xumm sign-in URL
             window.open(SignInUrl,'_blank','width=600,height=400');
 
             const intervalId = setInterval(async () => {
@@ -53,7 +52,6 @@
             // Handle case where the property is absent
           }
           const payloadUUID = payloadData.created.uuid;
-          console.log(payloadUUID);
         } catch (error) {
           console.error('Error:', error);
         }
