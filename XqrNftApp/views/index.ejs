@@ -8,9 +8,10 @@
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
     <button id="sign-button">Sign-In</button>
+
     <script>
       const button = document.getElementById('sign-button');
-      const signedInUrl = 'http://127.0.0.1/mintNft'
+      const signedInUrl = 'http://127.0.0.1:3000/mintNft'
 
       button.addEventListener('click', async () => {
         try {
@@ -31,15 +32,30 @@
             //window.location.href = SignInUrl; // Redirect to Xumm sign-in URL
             window.open(SignInUrl,'_blank','width=600,height=400');
 
+            const intervalId = setInterval(async () => {
+                try {
+                  const response = await fetch(`/payload/${payloadUUID}`);
+                  const payloadData = await response.json();
+
+                  if (payloadData.status === 'completed') {
+                    clearInterval(intervalId);
+                    console.log('Sign-in completed!');
+                    // Handle successful sign-in (e.g., redirect to mint NFT page)
+                    window.location.href = signedInUrl;
+                  }
+                } catch (error) {
+                  console.error('Error fetching payload status:', error);
+                }
+              }, 5000); // Check status every 5 seconds
+
           } else {
             console.error('Xumm payload missing "next.always" property');
             // Handle case where the property is absent
           }
-          console.log(payloadData);
-          
+          const payloadUUID = payloadData.created.uuid;
+          console.log(payloadUUID);
         } catch (error) {
           console.error('Error:', error);
-          // Display an error message to the user
         }
       });
     </script>
