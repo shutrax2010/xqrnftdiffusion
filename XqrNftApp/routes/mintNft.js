@@ -1,19 +1,25 @@
 var express = require('express');
 var router = express.Router();
 const bodyParser = require('body-parser');
+const xrpl = require('xrpl');
+const pinataSDK = require('@pinata/sdk');
+const moment = require('moment');
+
 
 router.use(bodyParser.urlencoded({extended: true}));
 router.use(bodyParser.json());
 
-const xrpl = require('xrpl');
+const pinata = new pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_SECRET_KEY);
+const sampleImageFile = 'ipfs://QmWiru8V3r42RSK9A2b85uq63nqUBnsCnczLhbxbcK9DCM';
 
 const walletAddress = 'this is a address';
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
+  console.log(req.body);
   
   res.render('mintNft',{
-    walletAddress: walletAddress,
+    walletAddress: req.body.Account,
     outputMsg: ''
   });
 });
@@ -23,10 +29,34 @@ router.post('/mint', async function(req,res,next) {
 
   const bodyData = req.body;
 
-  const jsonUri = bodyData.json_uri;
   let outputMsg = '';
 
+  //createJson and pin to Pinata
+  const uploadJson = {
+    CollectionName: bodyData.collname,
+    NFTName: bodyData.nftname,
+    QRImage: sampleImageFile,
+    MintDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+    NFTFlags: "Transferable"
+  };
+  const options = {
+    pinataMetadata: {
+      name:bodyData.nftname
+    }
+  };
+
+  const pinResponse = await pinata.pinJSONToIPFS(uploadJson,options);
+  // console.log(pinResponse);
+  const ipfsGateway = 'https://amethyst-raw-termite-956.mypinata.cloud/ipfs/';
+  const ipfsHash = pinResponse.IpfsHash;
+  console.log(ipfsGateway + ipfsHash);
+
+
+
+  //create NFT
+
   const net = 'wss://s.altnet.rippletest.net:51233';
+  const jsonUri = ipfsGateway + ipfsHash;
 
   outputMsg += 'connecting to' + net + '....';
   
@@ -56,7 +86,7 @@ router.post('/mint', async function(req,res,next) {
 
   const tx = await client.submitAndWait(transationJson, {wallet: system_wallet});
   
-console.log(tx.result.meta.TransactionResult);
+console.log(tx);
 
   const nfts = await client.request({
     method: "account_nfts",
