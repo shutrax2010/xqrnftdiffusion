@@ -87,6 +87,10 @@ router.post('/mint', async function(req,res,next) {
   const tx = await client.submitAndWait(transationJson, {wallet: system_wallet});
   
 console.log(tx);
+const bitcompPrefix = 'https://test.bithomp.com/en/nft/';
+const nftoken_id = tx.result.meta.nftoken_id;
+outputMsg += 'NFTを作成しました。'
+outputMsg += '\n' + bitcompPrefix + nftoken_id;
 
   const nfts = await client.request({
     method: "account_nfts",
@@ -94,9 +98,8 @@ console.log(tx);
   });
 
   outputMsg += '\n\nTransaction result: ' + tx.result.meta.TransactionResult;
-  outputMsg += '\n' + nfts;
+  
   console.log(nfts);
-
   
   client.disconnect();
 
