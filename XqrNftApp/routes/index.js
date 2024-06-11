@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
   const xummRequest = req.query.xummRequest;
 
   if (!xummRequest) {
-    res.render('index', { title: 'Express' });
+    res.render('index', { title: 'PhygitalifyQR' });
   } else {  
 
     xumm.ping().then(pong => {

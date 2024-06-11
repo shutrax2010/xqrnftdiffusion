@@ -3,11 +3,13 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="icon" type="image/x-icon" href="../assets/PhygitalifyQR icon.png">
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-    <button id="sign-button">Sign-In</button>
+    <!--<h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>-->
+    <div id = "logo"></div>
+    <button id="sign-button">Connect Wallet</button>
 
     <script>
       const button = document.getElementById('sign-button');
@@ -30,6 +32,7 @@
             
             console.log('Redirecting to Xumm sign-in:', SignInUrl);
             window.open(SignInUrl,'_blank','width=600,height=400');
+            const payloadUUID = payloadData.created.uuid;
 
             const intervalId = setInterval(async () => {
                 try {
@@ -39,7 +42,7 @@
                   if (payloadData.status === 'completed') {
                     clearInterval(intervalId);
                     console.log('Sign-in completed!');
-                    // Handle successful sign-in (e.g., redirect to mint NFT page)
+                    sessionStorage.setItem("data", JSON.stringify(payloadData));
                     window.location.href = signedInUrl;
                   }
                 } catch (error) {
@@ -51,7 +54,6 @@
             console.error('Xumm payload missing "next.always" property');
             // Handle case where the property is absent
           }
-          const payloadUUID = payloadData.created.uuid;
         } catch (error) {
           console.error('Error:', error);
         }
