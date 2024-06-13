@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const { XummSdk } = require('xumm-sdk');
+const { isAuthenticated } = require('./authMiddleware');
 require('dotenv').config();
 
  const xummApiKey = process.env.XUMM_APIKEY;
@@ -47,4 +48,8 @@ router.get('/payload/:payload_uuid', async function(req, res, next) {
   }
 });
 
+router.get('/mintNft', async function(req, res, next) {
+  const { account } = req.query; // Assuming you pass account as a query parameter
+  res.render('mintNft', { walletAddress: account, outputMsg: '' });
+});
 module.exports = router;

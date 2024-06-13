@@ -42,8 +42,7 @@
                   if (payloadData.status === 'completed') {
                     clearInterval(intervalId);
                     console.log('Sign-in completed!');
-                    sessionStorage.setItem("data", JSON.stringify(payloadData));
-                    window.location.href = signedInUrl;
+                    window.location.href = signedInUrl + `?account=${encodeURIComponent(payloadData.account)}`;;
                   }
                 } catch (error) {
                   console.error('Error fetching payload status:', error);

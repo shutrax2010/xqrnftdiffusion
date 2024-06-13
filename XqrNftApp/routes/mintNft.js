@@ -15,14 +15,14 @@ const sampleImageFile = 'ipfs://QmWiru8V3r42RSK9A2b85uq63nqUBnsCnczLhbxbcK9DCM';
 const walletAddress = 'this is a address';
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+/*router.get('/', function(req, res, next) {
   console.log(req.body);
   
   res.render('mintNft',{
-    walletAddress: req.body.Account,
+    walletAddress: req.query.walletAddress,
     outputMsg: ''
   });
-});
+});*/
 
 router.post('/mint', async function(req,res,next) {
   console.log('start');

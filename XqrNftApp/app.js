@@ -4,6 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+const session = require('express-session');
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/mintNft');
 
@@ -26,6 +28,13 @@ app.use('/mintnft', usersRouter);
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
+//for authenticate
+app.use(session({
+  secret: 'kshdhd99203', 
+  resave: false,
+  saveUninitialized: true,
+}));
 
 // error handler
 app.use(function(err, req, res, next) {
