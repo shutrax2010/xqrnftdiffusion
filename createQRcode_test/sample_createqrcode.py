@@ -35,8 +35,9 @@ def result():
 	        
 	        q.close()
         os.remove('test_createQRcode.png')
-            
-        return render_template('index.html', title='POST成功')
+        
+        getUrl = 'https://gateway.pinata.cloud/ipfs/' + response.json()["IpfsHash"]
+        return render_template('index.html', title='POST成功', qrurl=getUrl)
         
    if request.method == 'GET':
       return render_template('resultGet.html', title='GET失敗')
