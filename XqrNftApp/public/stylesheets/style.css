@@ -3,7 +3,7 @@ html{
   height: 100%;
 }
 
-body {
+#sign-body {
   background: url('../assets/login-background.png');
   background-repeat: no-repeat;
   background-position: center;
@@ -43,4 +43,84 @@ a {
 
 #sign-button:hover {
   background-color: #333; /* Adjust hover state as needed */
+}
+
+/* Mint NFT Ticket */
+#mintnft-body {
+  font:18px "Lucida Grande", Helvetica, Arial, sans-serif;
+  color: white;
+  background-color: #030340;
+  width: 400px;
+  display: block;
+  margin: auto;
+}
+
+#event{
+  display: flex;
+}
+
+#event-title{
+  flex-grow: 2;
+  padding-right: 5px;
+}
+
+#event-title input{
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 10px;
+  border: none;
+}
+
+#event-no{
+  flex: 50px;
+}
+
+#event-no input{
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 10px;
+  border: none;
+}
+
+.input-area{
+  width: 100%;
+  border-radius: 10px;
+  border: none;
+}
+
+.property{
+  display: flex;
+}
+
+.property-name{
+  box-sizing: border-box;
+  flex: 60px;
+}
+
+.property-value{
+  box-sizing: border-box;
+  flex: 60px;
+}
+
+.property-button{
+  box-sizing: border-box;
+  flex: 30px;
+  border-radius: 10px;
+  background-color: #87CEFA;
+  margin-bottom: 5px;
+}
+
+.nonvisible{
+  visibility: hidden;
+}
+
+.outputMsg{
+  background-color: lightsteelblue;
+}
+
+.mint-button{
+  margin-right: auto;
+  border-radius: 10px;
+  background-color: white;
+  width: 120px;
 }

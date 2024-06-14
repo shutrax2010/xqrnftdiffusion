@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>NFT作成</title>
+        <title>Mint NFT Ticket</title>
         <link rel='stylesheet' href='/stylesheets/style.css' />
         <link rel="icon" type="image/x-icon" href="../assets/PhygitalifyQR icon.png">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
@@ -24,36 +24,70 @@
         
     </head>
 
-    <body>
-        <h3>NFT作成</h3>
-        アドレス：<label><%= walletAddress %></label>
-        <form id="nftform">
-            <div>
-                <div>
-                    <label>コレクションNo.</label><br/>
-                    <input name="collno" placeholder="No." />
+    <body id="mintnft-body">
+        <h3>TICKET SETTINGS</h3>
+        Address: <label><%= walletAddress %></label>
+        <form class="nftform">
+            
+            <div id="event">
+                <div id="event-title">
+                    <label>Event title *</label><br/>
+                    <input name="eventTitle" placeholder="Enter event title" />
                 </div>
-                <div>
-                    <label>コレクション名</label><br/>
-                    <input name="collname" placeholder="Collection name" />
-                </div>
-                <div>
-                    <label>NFT名</label><br/>
-                    <input name="nftname" placeholder="NFT name" />
-                </div>
-                <div>
-                    <label>ロイヤリティ</label><br/>
-                    <input type="number" name="loyalty" placeholder="loyalty(%)" required/>
-                </div>
-                <div>
-                    <label>説明</label><br />
-                    <textarea name="description"></textarea>
+                <div id="event-no">
+                    <label>Event No. *</label><br/>
+                    <input name="eventNo" placeholder="Enter event no" />
                 </div>
             </div>
+            
+
+            <div>
+                <label>QR code text *</label><br/>
+                <input name="qrText" placeholder="Enter QR code text" class="input-area"/>
+            </div>
+            <div>
+                <label>Image prompt *</label><br/>
+                <input name="imgPrompt" placeholder="Enter prompt" class="input-area"/>
+            </div>
+
+            <div>
+                <label>Description *</label><br />
+                <textarea name="description" placeholder="Enter description" class="input-area"></textarea>
+            </div>
+            
             <hr>
-            <button type="submit" onClick="onClick(event)">Mint</button><br/>
+            <h4>NFT SETTINGS</h4>
+            <div>
+                <label>Royalties(%)</label><br/>
+                <input type="number" name="royalty" placeholder="0%" class="input-area"/>
+            </div>
+            <div class="property">
+                <div class="property-name">
+                    <label>Property name</label><br/>
+                    
+                </div>
+                <div class="property-value">
+                    <label>Property value</label><br/>
+                </div>
+                <div class="property-button nonvisible"></div>
+            </div>
+            <div class="property">
+                <input type="text" name="propertyName1" class="property-name input-area"/>
+                <input type="text" name="propertyValue1" class="property-value input-area"/>
+                <button type="button" id="property-button" class="property-button">Remove</button>
+            </div>
+            <div class="property">
+                <input type="text" name="propertyName2" class="property-name input-area"/>
+                <input type="text" name="propertyValue2" class="property-value input-area"/>
+                <button type="button" id="property-button" class="property-button">Add</button>
+            </div>
+            <br/>
+            <label>Message</label><br/>
+            <textarea disabled id="outputMsg" name="outputMsg" class="input-area outputMsg"><%= outputMsg %></textarea><br/>
+            
+            <button type="submit" onClick="onClick(event)" id="mint-button" class="mint-button">Mint Ticket</button>
+            
         </form>
-        <label>出力メッセージ</label><br/>
-        <textarea disabled id="outputMsg" name="outputMsg"><%= outputMsg %></textarea>
+        
     </body>
 </html>

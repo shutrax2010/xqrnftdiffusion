@@ -12,44 +12,55 @@ router.use(bodyParser.json());
 const pinata = new pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_SECRET_KEY);
 const sampleImageFile = 'ipfs://QmWiru8V3r42RSK9A2b85uq63nqUBnsCnczLhbxbcK9DCM';
 
-const walletAddress = 'this is a address';
+// const walletAddress = res.walletAddress;
 
 /* GET users listing. */
-/*router.get('/', function(req, res, next) {
-  console.log(req.body);
+// router.get('/', function(req, res, next) {
+//   console.log(req.body);
   
-  res.render('mintNft',{
-    walletAddress: req.query.walletAddress,
-    outputMsg: ''
-  });
-});*/
+//   res.render('mintNft',{
+//     walletAddress: req.query.walletAddress,
+//     outputMsg: ''
+//   });
+// });
 
 router.post('/mint', async function(req,res,next) {
   console.log('start');
 
   const bodyData = req.body;
+  const walletAddress = req.walletAddress;
+  console.log(walletAddress);//undefined
+  console.log(bodyData);//empty get/がindex.jsに移動したから？
 
   let outputMsg = '';
 
   //createJson and pin to Pinata
   const uploadJson = {
-    CollectionName: bodyData.collname,
-    NFTName: bodyData.nftname,
+    EventTitle: bodyData.eventTitle,
+    NFTName: bodyData.eventTitle + bodyData.eventNo,
     QRImage: sampleImageFile,
     MintDate: moment().format('YYYY-MM-DD HH:mm:ss'),
     NFTFlags: "Transferable"
   };
   const options = {
     pinataMetadata: {
-      name:bodyData.nftname
+      name:bodyData.eventTitle,
     }
   };
 
-  const pinResponse = await pinata.pinJSONToIPFS(uploadJson,options);
-  // console.log(pinResponse);
-  const ipfsGateway = 'https://amethyst-raw-termite-956.mypinata.cloud/ipfs/';
-  const ipfsHash = pinResponse.IpfsHash;
-  console.log(ipfsGateway + ipfsHash);
+  try {
+    const pinResponse = await pinata.pinJSONToIPFS(uploadJson,options);
+    // console.log(pinResponse);
+    const ipfsGateway = 'https://amethyst-raw-termite-956.mypinata.cloud/ipfs/';
+    const ipfsHash = pinResponse.IpfsHash;
+    console.log(ipfsGateway + ipfsHash);
+  } catch (error) {
+    console.log(error);
+    outputMsg += "エラーが発生しました。";
+    res.send(outputMsg);
+  }
+
+
 
 
 
@@ -61,7 +72,7 @@ router.post('/mint', async function(req,res,next) {
   outputMsg += 'connecting to' + net + '....';
   
 
-  const system_wallet = xrpl.Wallet.fromSeed('sEd7wQbKfXydEcNLtLViMH8TSCUv2fm');
+  const system_wallet = xrpl.Wallet.fromSeed('sEd7wQbKfXydEcNLtLViMH8TSCUv2fm');//ここはこのままでよい？
   const client = new xrpl.Client(net);
   await client.connect();
   outputMsg += '\nConnected. Minting NFT.';
@@ -71,15 +82,14 @@ router.post('/mint', async function(req,res,next) {
 
   const transationJson = {
     "TransactionType": "NFTokenMint",
-    "Account": "rPxR3CeKzJzcqtnbsyTdYpLrAHmd7fFwiq",
+    "Account": "rPxR3CeKzJzcqtnbsyTdYpLrAHmd7fFwiq",//ここをwalletAddressに変える
     "URI": xrpl.convertStringToHex(jsonUri),
     "Flags": 8,
-    "TransferFee": bodyData.loyalty * 1000, // x * 1000
+    "TransferFee": bodyData.royalty * 1000, // x * 1000
     "NFTokenTaxon": 0 ,
     "OtherData": {
-      "CollectionNo": bodyData.collno,
-      "CollectionName": bodyData.collname,
-      "NFTName": bodyData.nftname,
+      "EventTitle": bodyData.eventTitle,
+      "NFTName": bodyData.eventTitle + bodyData.eventNo,
       "Description": bodyData.description
     }
   }
