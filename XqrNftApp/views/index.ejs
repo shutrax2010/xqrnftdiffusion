@@ -42,7 +42,7 @@
                   if (payloadData.status === 'completed') {
                     clearInterval(intervalId);
                     console.log('Sign-in completed!');
-                    window.location.href = signedInUrl + `?account=${encodeURIComponent(payloadData.account)}`;;
+                    window.location.href = signedInUrl;
                   }
                 } catch (error) {
                   console.error('Error fetching payload status:', error);

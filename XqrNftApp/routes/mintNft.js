@@ -5,6 +5,7 @@ const xrpl = require('xrpl');
 const pinataSDK = require('@pinata/sdk');
 const moment = require('moment');
 
+const { isAuthenticated } = require('../authMiddleware');
 
 router.use(bodyParser.urlencoded({extended: true}));
 router.use(bodyParser.json());
@@ -12,18 +13,17 @@ router.use(bodyParser.json());
 const pinata = new pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_SECRET_KEY);
 const sampleImageFile = 'ipfs://QmWiru8V3r42RSK9A2b85uq63nqUBnsCnczLhbxbcK9DCM';
 
-const walletAddress = 'this is a address';
+router.get('/', isAuthenticated, async function(req, res, next) {
+  if (req.session.authenticated) {
+    const account = req.session.account;
+    // Render the mintNft.ejs template with data
+    res.render('mintNft', { walletAddress: account, outputMsg: ''});
+  } else {
+    res.redirect('/'); // Redirect to index page if not authenticated
+  }
+});
 
-/* GET users listing. */
-/*router.get('/', function(req, res, next) {
-  console.log(req.body);
-  
-  res.render('mintNft',{
-    walletAddress: req.query.walletAddress,
-    outputMsg: ''
-  });
-});*/
-
+const walletAddress = 'this is a address'
 router.post('/mint', async function(req,res,next) {
   console.log('start');
 
@@ -55,7 +55,9 @@ router.post('/mint', async function(req,res,next) {
 
   //create NFT
 
-  const net = 'wss://s.altnet.rippletest.net:51233';
+  //const net = 'wss://s.altnet.rippletest.net:51233';
+  const net = req.session.uri;
+  console.log ("NET URL: ",net);
   const jsonUri = ipfsGateway + ipfsHash;
 
   outputMsg += 'connecting to' + net + '....';
@@ -71,7 +73,8 @@ router.post('/mint', async function(req,res,next) {
 
   const transationJson = {
     "TransactionType": "NFTokenMint",
-    "Account": "rPxR3CeKzJzcqtnbsyTdYpLrAHmd7fFwiq",
+    //"Account": "rPxR3CeKzJzcqtnbsyTdYpLrAHmd7fFwiq",
+    "Account": req.session.account,
     "URI": xrpl.convertStringToHex(jsonUri),
     "Flags": 8,
     "TransferFee": bodyData.loyalty * 1000, // x * 1000
