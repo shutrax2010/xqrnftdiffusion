@@ -6,12 +6,7 @@ from PIL import Image
 from flask import Flask, send_file, render_template, request
 app = Flask(__name__)
 
-@app.route('/')
-def index():
-   return render_template('index.html', title='TOP')
-  
-
-@app.route('/result', methods=['GET', 'POST'])
+@app.index('/', methods=['GET', 'POST'])
 def result():
    if request.method == 'POST':
         name = request.form['testText']
@@ -37,10 +32,7 @@ def result():
         os.remove('test_createQRcode.png')
         
         getUrl = 'https://gateway.pinata.cloud/ipfs/' + response.json()["IpfsHash"]
-        return render_template('index.html', title='POST成功', qrurl=getUrl)
-        
-   if request.method == 'GET':
-      return render_template('resultGet.html', title='GET失敗')
+        return getUrl
         
 if __name__ == '__main__':
     app.run(debug=True)
