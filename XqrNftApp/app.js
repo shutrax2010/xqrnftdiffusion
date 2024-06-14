@@ -20,6 +20,9 @@ app.use(session({
   secret: secretKey, 
   resave: false,
   saveUninitialized: true,
+  cookie: {
+    maxAge: 1000 * 60 * 60 //Session expire after 1 hour
+  }
 }));
 
 // view engine setup
