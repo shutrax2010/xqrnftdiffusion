@@ -6,8 +6,8 @@ from PIL import Image
 from flask import Flask, send_file, render_template, request
 app = Flask(__name__)
 
-@app.index('/', methods=['GET', 'POST'])
-def result():
+@app.route('/', methods=['GET', 'POST'])
+def index():
    if request.method == 'POST':
         name = request.form['testText']
         img = qrcode.make(name)
