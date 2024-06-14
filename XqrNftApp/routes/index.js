@@ -39,17 +39,19 @@ router.get('/payload/:payload_uuid', async function(req, res, next) {
   try {
     const payloadData = await xumm.payload.get(payloadUuid);
     const status = payloadData.meta.signed ? 'completed' : 'in_progress';
+    const resolved = payloadData.meta.resolved ? true : false;
     const account = payloadData.response.account;
     const uri = payloadData.response.environment_nodeuri;
     console.log("payloadData : ",payloadData);
-    if (status === 'completed') {
+    if (status === 'completed' && resolved ) {
       // Store authenticated state and account in session
       req.session.authenticated = true;
       req.session.account = account;
       req.session.uri = uri;
+      req.session.resolved = resolved;
       console.log("req",req.session);
     }
-    res.json({ status , account}); 
+    res.json({ status , account , resolved}); 
 
   } catch (error) {
     console.error('Error fetching payload data:', error);

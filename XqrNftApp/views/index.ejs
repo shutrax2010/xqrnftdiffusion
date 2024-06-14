@@ -40,7 +40,7 @@
                   const response = await fetch(`/payload/${payloadUUID}`);
                   const payloadData = await response.json();
 
-                  if (payloadData.status === 'completed') {
+                  if (payloadData.status === 'completed' && payloadData.resolved) {
                     clearInterval(intervalId);
                     console.log('Sign-in completed!');
                     window.location.href = signedInUrl;

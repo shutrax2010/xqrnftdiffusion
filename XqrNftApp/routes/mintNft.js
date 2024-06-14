@@ -18,13 +18,14 @@ const ipfsGateway = 'https://amethyst-raw-termite-956.mypinata.cloud/ipfs/';
 let ipfsHash = "";
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', isAuthenticated, function(req, res, next) {
   // console.log(req.session);
-  
-  res.render('mintNft',{
-    walletAddress: req.session.account,
-    outputMsg: ''
-  });
+  if (req.session.authenticated) {
+    res.render('mintNft',{
+      walletAddress: req.session.account,
+      outputMsg: ''
+    });
+  }
 });
 
 router.post('/mint', async function(req,res,next) {
