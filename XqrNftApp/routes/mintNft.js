@@ -12,12 +12,14 @@ router.use(bodyParser.json());
 
 const pinata = new pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_SECRET_KEY);
 const sampleImageFile = 'ipfs://QmWiru8V3r42RSK9A2b85uq63nqUBnsCnczLhbxbcK9DCM';
-
-// const walletAddress = res.walletAddress;
+const ipfsGateway = 'https://amethyst-raw-termite-956.mypinata.cloud/ipfs/';
+    
+// const walletAddress = req.session.account;
+let ipfsHash = "";
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  console.log(req.body);
+  // console.log(req.session);
   
   res.render('mintNft',{
     walletAddress: req.session.account,
@@ -25,14 +27,13 @@ router.get('/', function(req, res, next) {
   });
 });
 
-const walletAddress = 'this is a address'
 router.post('/mint', async function(req,res,next) {
   console.log('start');
 
   const bodyData = req.body;
-  const walletAddress = req.walletAddress;
-  console.log(walletAddress);//undefined
+  const walletAddress = req.session.account;
   console.log(bodyData);//empty get/がindex.jsに移動したから？
+  console.log(req.session);//not empty
 
   let outputMsg = '';
 
@@ -53,8 +54,7 @@ router.post('/mint', async function(req,res,next) {
   try {
     const pinResponse = await pinata.pinJSONToIPFS(uploadJson,options);
     // console.log(pinResponse);
-    const ipfsGateway = 'https://amethyst-raw-termite-956.mypinata.cloud/ipfs/';
-    const ipfsHash = pinResponse.IpfsHash;
+    ipfsHash = pinResponse.IpfsHash;
     console.log(ipfsGateway + ipfsHash);
   } catch (error) {
     console.log(error);
