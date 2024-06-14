@@ -3,6 +3,10 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const crypto = require('crypto');
+
+// Generate a secure secret key
+const secretKey = crypto.randomBytes(64).toString('hex');
 
 const session = require('express-session');
 
@@ -10,6 +14,16 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/mintNft');
 
 var app = express();
+
+//for authenticate
+app.use(session({
+  secret: secretKey, 
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 1000 * 60 // Session expires after 1 minute (value is in milliseconds)
+  }
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -28,13 +42,6 @@ app.use('/mintnft', usersRouter);
 app.use(function(req, res, next) {
   next(createError(404));
 });
-
-//for authenticate
-app.use(session({
-  secret: 'kshdhd99203', 
-  resave: false,
-  saveUninitialized: true,
-}));
 
 // error handler
 app.use(function(err, req, res, next) {

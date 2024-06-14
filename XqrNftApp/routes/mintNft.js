@@ -5,6 +5,7 @@ const xrpl = require('xrpl');
 const pinataSDK = require('@pinata/sdk');
 const moment = require('moment');
 
+const { isAuthenticated } = require('../authMiddleware');
 
 router.use(bodyParser.urlencoded({extended: true}));
 router.use(bodyParser.json());
@@ -15,15 +16,16 @@ const sampleImageFile = 'ipfs://QmWiru8V3r42RSK9A2b85uq63nqUBnsCnczLhbxbcK9DCM';
 // const walletAddress = res.walletAddress;
 
 /* GET users listing. */
-// router.get('/', function(req, res, next) {
-//   console.log(req.body);
+router.get('/', function(req, res, next) {
+  console.log(req.body);
   
-//   res.render('mintNft',{
-//     walletAddress: req.query.walletAddress,
-//     outputMsg: ''
-//   });
-// });
+  res.render('mintNft',{
+    walletAddress: req.session.account,
+    outputMsg: ''
+  });
+});
 
+const walletAddress = 'this is a address'
 router.post('/mint', async function(req,res,next) {
   console.log('start');
 
@@ -66,13 +68,15 @@ router.post('/mint', async function(req,res,next) {
 
   //create NFT
 
-  const net = 'wss://s.altnet.rippletest.net:51233';
+  //const net = 'wss://s.altnet.rippletest.net:51233';
+  const net = req.session.uri;
+  console.log ("NET URL: ",net);
   const jsonUri = ipfsGateway + ipfsHash;
 
   outputMsg += 'connecting to' + net + '....';
   
 
-  const system_wallet = xrpl.Wallet.fromSeed('sEd7wQbKfXydEcNLtLViMH8TSCUv2fm');//ここはこのままでよい？
+  const system_wallet = xrpl.Wallet.fromSeed('sEd7wQbKfXydEcNLtLViMH8TSCUv2fm');
   const client = new xrpl.Client(net);
   await client.connect();
   outputMsg += '\nConnected. Minting NFT.';
@@ -82,7 +86,8 @@ router.post('/mint', async function(req,res,next) {
 
   const transationJson = {
     "TransactionType": "NFTokenMint",
-    "Account": "rPxR3CeKzJzcqtnbsyTdYpLrAHmd7fFwiq",//ここをwalletAddressに変える
+    //"Account": "rPxR3CeKzJzcqtnbsyTdYpLrAHmd7fFwiq",
+    "Account": req.session.account,
     "URI": xrpl.convertStringToHex(jsonUri),
     "Flags": 8,
     "TransferFee": bodyData.royalty * 1000, // x * 1000

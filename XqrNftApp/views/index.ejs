@@ -4,11 +4,12 @@
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel="icon" type="image/x-icon" href="../assets/PhygitalifyQR icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap" rel="stylesheet">
   </head>
   <body id="sign-body">
     <!--<h1><%= title %></h1>
     <p>Welcome to <%= title %></p>-->
-    <div id = "logo"></div>
+    <div id = "slogan">From Screen To Scene</div>
     <button id="sign-button">Connect Wallet</button>
 
     <script>
@@ -42,7 +43,7 @@
                   if (payloadData.status === 'completed') {
                     clearInterval(intervalId);
                     console.log('Sign-in completed!');
-                    window.location.href = signedInUrl + `?account=${encodeURIComponent(payloadData.account)}`;;
+                    window.location.href = signedInUrl;
                   }
                 } catch (error) {
                   console.error('Error fetching payload status:', error);
