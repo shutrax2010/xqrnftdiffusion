@@ -28,7 +28,7 @@ router.get('/', isAuthenticated, function(req, res, next) {
   }
 });
 
-router.post('/mint', isAuthenticated, async function(req,res,next) {
+router.post('/mint', async function(req,res,next) {
   console.log('start');
 
   const bodyData = req.body;
