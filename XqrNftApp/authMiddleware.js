@@ -1,5 +1,5 @@
 const isAuthenticated = (req, res, next) => {
-    // Example: Check if user is authenticated (you can replace this with your actual authentication logic)
+    // Example: Check if user is authenticated 
     if (req.session && req.session.authenticated) {
       return next(); // User is authenticated, proceed to next middleware or route handler
     } else {
