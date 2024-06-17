@@ -77,11 +77,13 @@ router.post('/mint', async function(req,res,next) {
   outputMsg += 'connecting to' + net + '....';
   
 
-  const system_wallet = xrpl.Wallet.fromSeed('sEd7wQbKfXydEcNLtLViMH8TSCUv2fm');
+  //const system_wallet = xrpl.Wallet.fromSeed('sEd7wQbKfXydEcNLtLViMH8TSCUv2fm');
+  const system_wallet = xrpl.Wallet.fromSeed(req.session.seed);
   const client = new xrpl.Client(net);
   await client.connect();
   outputMsg += '\nConnected. Minting NFT.';
   console.log('connected');
+  console.log(system_wallet);
 
 
 
