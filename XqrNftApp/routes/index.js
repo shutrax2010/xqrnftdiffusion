@@ -52,6 +52,7 @@ router.get('/payload/:payload_uuid', async function(req, res, next) {
     const resolved = payloadData.meta.resolved ? true : false;
     const account = payloadData.response.account;
     const uri = payloadData.response.environment_nodeuri;
+    const txid = payloadData.response.txid;
     console.log("payloadData : ",payloadData);
     if (status === 'completed' && resolved ) {
       // Store authenticated state and account in session
@@ -59,9 +60,10 @@ router.get('/payload/:payload_uuid', async function(req, res, next) {
       req.session.account = account;
       req.session.uri = uri;
       req.session.resolved = resolved;
+      req.session.txid = txid;
       console.log("req",req.session);
     }
-    res.json({ status , account , resolved}); 
+    res.json({ status , account , resolved , txid}); 
 
   } catch (error) {
     console.error('Error fetching payload data:', error);
