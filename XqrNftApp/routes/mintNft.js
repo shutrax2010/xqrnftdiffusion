@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const xrpl = require('xrpl');
 const pinataSDK = require('@pinata/sdk');
 const moment = require('moment');
+const https = require('https');
 
 const { isAuthenticated } = require('../authMiddleware');
 
@@ -29,16 +30,58 @@ router.get('/', isAuthenticated, function(req, res, next) {
 });
 
 router.post('/mint', async function(req,res,next) {
-  console.log('start');
+  
 
   const bodyData = req.body;
   const walletAddress = req.session.account;
-  console.log(bodyData);//empty get/がindex.jsに移動したから？
-  console.log(req.session);//not empty
+  // console.log(bodyData);
+
+  //get QR image from api
+  //does not work
+  console.log('\n#####start getting qrImg');
+  const postData = JSON.stringify({
+    testText: bodyData.imgPrompt,
+  });
+  const postOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    }
+  };
+  const postUrl = "https://xqrnftdiffusion.onrender.com";
+
+  const qrImgReq = https.request(postOptions, (response) => {
+    console.log("\n############qr img request");
+    let data = '';
+
+    response.on('data', (chunk) => {
+      data += chunk;
+    });
+
+    response.on('end', () => {
+      console.log('Response from API: ', data);
+      res.json({
+        message: 'QR Image request successful',
+        apiResponse: JSON.parse(data),
+      });
+    });
+    console.log(response);
+  });
+
+  qrImgReq.on('error', (e) => {
+    console.error(`Problem with request: ${e.message}`);
+    // res.status(500).json({ message: 'Error requesting QR image' });
+  });
+
+  qrImgReq.write(postData);
+  qrImgReq.end();
+  console.log(qrImgReq);
+
 
   let outputMsg = '';
 
   //createJson and pin to Pinata
+  console.log("\n######start uploading to pinata");
   const uploadJson = {
     EventTitle: bodyData.eventTitle,
     NFTName: bodyData.eventTitle + bodyData.eventNo,
@@ -68,7 +111,7 @@ router.post('/mint', async function(req,res,next) {
 
 
   //create NFT
-
+  console.log("\n######start minting nft");
   //const net = 'wss://s.altnet.rippletest.net:51233';
   const net = req.session.uri;
   console.log ("NET URL: ",net);
@@ -77,20 +120,20 @@ router.post('/mint', async function(req,res,next) {
   outputMsg += 'connecting to' + net + '....';
   
 
-  //const system_wallet = xrpl.Wallet.fromSeed('sEd7wQbKfXydEcNLtLViMH8TSCUv2fm');
-  const system_wallet = xrpl.Wallet.fromSeed(req.session.seed);
+  const system_wallet = xrpl.Wallet.fromSeed('sEd7wQbKfXydEcNLtLViMH8TSCUv2fm');
+  // const system_wallet = xrpl.Wallet.fromSeed(req.session.seed);
   const client = new xrpl.Client(net);
   await client.connect();
   outputMsg += '\nConnected. Minting NFT.';
   console.log('connected');
-  console.log(system_wallet);
+  // console.log(system_wallet);
 
 
 
   const transationJson = {
     "TransactionType": "NFTokenMint",
-    //"Account": "rPxR3CeKzJzcqtnbsyTdYpLrAHmd7fFwiq",
-    "Account": req.session.account,
+    "Account": "rPxR3CeKzJzcqtnbsyTdYpLrAHmd7fFwiq",
+    // "Account": req.session.account,
     "URI": xrpl.convertStringToHex(jsonUri),
     "Flags": 8,
     "TransferFee": bodyData.royalty * 1000, // x * 1000
