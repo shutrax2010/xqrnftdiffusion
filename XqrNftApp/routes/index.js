@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 const { XummSdk } = require('xumm-sdk');
-const keypairs = require('ripple-keypairs');
 require('dotenv').config();
 
  const xummApiKey = process.env.XUMM_APIKEY;
@@ -16,15 +15,6 @@ router.get('/', function(req, res, next) {
     res.render('index', { title: 'PhygitalifyQR' });
   } else {  
 
-    const seed = keypairs.generateSeed();
-    const keypair = keypairs.deriveKeypair(seed);
-    const address = keypairs.deriveAddress(keypair.publicKey);
-
-    console.log('Generated seed:', seed);
-    console.log('Generated address:', address);
-
-    req.session.seed = seed;
-
     xumm.ping().then(pong => {
       const payload = {
         TransactionType: "SignIn",
@@ -33,7 +23,7 @@ router.get('/', function(req, res, next) {
       return xumm.payload.createAndSubscribe(payload); // Create Xumm payload
     })
     .then(payloadData => {      
-      res.json({seed,payloadData});
+      res.json(payloadData);
     })
     .catch(error => {
       console.error('Error creating Xumm payload:', error);
