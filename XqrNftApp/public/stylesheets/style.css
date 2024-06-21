@@ -68,6 +68,7 @@ a {
 
 #event{
   display: flex;
+  margin-top: 10px;
 }
 
 #event-title{
@@ -77,6 +78,7 @@ a {
 
 #event-title input{
   width: 100%;
+  height: 25px;
   box-sizing: border-box;
   border-radius: 10px;
   border: none;
@@ -88,13 +90,19 @@ a {
 
 #event-no input{
   width: 100%;
+  height: 25px;
   box-sizing: border-box;
   border-radius: 10px;
   border: none;
 }
 
+.form-item{
+  margin-top: 10px;
+}
+
 .input-area{
   width: 100%;
+  height: 25px;
   border-radius: 10px;
   border: none;
 }
@@ -103,22 +111,44 @@ a {
   display: flex;
 }
 
+.property-title{
+  box-sizing: border-box;
+  flex: 60px;
+  margin-top: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
 .property-name{
   box-sizing: border-box;
   flex: 60px;
+  margin-bottom: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
 }
 
 .property-value{
   box-sizing: border-box;
   flex: 60px;
+  margin-bottom: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
 }
 
 .property-button{
   box-sizing: border-box;
   flex: 30px;
-  border-radius: 10px;
+  border-radius: 15px;
   background-color: #87CEFA;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
+  height: 25px;
+}
+
+.property-button:hover{
+  color: #030340;
+  background-color: white;
 }
 
 .nonvisible{
@@ -127,11 +157,23 @@ a {
 
 .outputMsg{
   background-color: lightsteelblue;
+  height: 40px;
+}
+
+.mintBtnDiv{
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
 }
 
 .mint-button{
-  margin-right: auto;
-  border-radius: 10px;
+  border-radius: 20px;
   background-color: white;
-  width: 120px;
+  width: 150px;
+  height: 30px;
+}
+
+.mint-button:hover{
+  color: #030340;
+  background-color: #87CEFA;
 }
