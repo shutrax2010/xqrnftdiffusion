@@ -20,8 +20,8 @@
         try {
           // Send a GET request to the server with an indication for Xumm payload
           const response = await fetch('/?xummRequest=true');
-          const data = await response.json();
-          console.log(data);
+          const payloadData = await response.json();
+          console.log(payloadData);
 
           // Check for errors
           if (!response.ok) {
@@ -29,12 +29,12 @@
           }
 
           // Access and handle the payload data (e.g., redirect to SignInUrl)
-          const SignInUrl = data.payloadData.created.next?.always;
+          const SignInUrl = payloadData.created.next?.always;
           if (SignInUrl) {
             
             console.log('Redirecting to Xumm sign-in:', SignInUrl);
             window.open(SignInUrl,'_blank','width=600,height=400');
-            const payloadUUID = data.payloadData.created.uuid;
+            const payloadUUID = payloadData.created.uuid;
 
             const intervalId = setInterval(async () => {
                 try {
