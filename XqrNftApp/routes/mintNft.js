@@ -7,6 +7,7 @@ const moment = require('moment');
 const https = require('https');
 
 const { isAuthenticated } = require('../authMiddleware');
+const { url } = require('inspector');
 
 router.use(bodyParser.urlencoded({extended: true}));
 router.use(bodyParser.json());
@@ -30,10 +31,11 @@ router.get('/', isAuthenticated, function(req, res, next) {
 });
 
 router.post('/mint', async function(req,res,next) {
-  
 
+  
+  let outputMsg = '';
   const bodyData = req.body;
-  const walletAddress = req.session.account;
+  const sys_walletAddress = process.env.SYS_WALLET_ADDRESS;
   // console.log(bodyData);
 
   //get QR image from api
@@ -50,35 +52,22 @@ router.post('/mint', async function(req,res,next) {
   };
   const postUrl = "https://xqrnftdiffusion.onrender.com";
 
-  const qrImgReq = https.request(postOptions, (response) => {
-    console.log("\n############qr img request");
-    let data = '';
-
-    response.on('data', (chunk) => {
-      data += chunk;
+  const qrImgReq = https.request(postUrl, postOptions, response => {
+    console.log(`statuscode: ${response.statusCode}`);
+    response.on('data', (dd) => {
+      process.stdout.write(dd);
     });
 
     response.on('end', () => {
-      console.log('Response from API: ', data);
-      res.json({
-        message: 'QR Image request successful',
-        apiResponse: JSON.parse(data),
-      });
-    });
-    console.log(response);
-  });
-
-  qrImgReq.on('error', (e) => {
-    console.error(`Problem with request: ${e.message}`);
-    // res.status(500).json({ message: 'Error requesting QR image' });
+      
+    })
   });
 
   qrImgReq.write(postData);
   qrImgReq.end();
-  console.log(qrImgReq);
+  console.log(qrImgReq.response);
+  
 
-
-  let outputMsg = '';
 
   //createJson and pin to Pinata
   console.log("\n######start uploading to pinata");
@@ -120,20 +109,18 @@ router.post('/mint', async function(req,res,next) {
   outputMsg += 'connecting to' + net + '....';
   
 
-  const system_wallet = xrpl.Wallet.fromSeed('sEd7wQbKfXydEcNLtLViMH8TSCUv2fm');
-  // const system_wallet = xrpl.Wallet.fromSeed(req.session.seed);
+  const system_wallet = xrpl.Wallet.fromSeed(process.env.SYS_WALLET_SEED);
   const client = new xrpl.Client(net);
   await client.connect();
   outputMsg += '\nConnected. Minting NFT.';
   console.log('connected');
-  // console.log(system_wallet);
+
 
 
 
   const transationJson = {
     "TransactionType": "NFTokenMint",
-    "Account": "rPxR3CeKzJzcqtnbsyTdYpLrAHmd7fFwiq",
-    // "Account": req.session.account,
+    "Account": sys_walletAddress,
     "URI": xrpl.convertStringToHex(jsonUri),
     "Flags": 8,
     "TransferFee": bodyData.royalty * 1000, // x * 1000
@@ -147,11 +134,11 @@ router.post('/mint', async function(req,res,next) {
 
   const tx = await client.submitAndWait(transationJson, {wallet: system_wallet});
   
-console.log(tx);
-const bitcompPrefix = 'https://test.bithomp.com/en/nft/';
-const nftoken_id = tx.result.meta.nftoken_id;
-outputMsg += 'NFTを作成しました。'
-outputMsg += '\n' + bitcompPrefix + nftoken_id;
+  console.log(tx);
+  const bitcompPrefix = 'https://test.bithomp.com/en/nft/';
+  const nftoken_id = tx.result.meta.nftoken_id;
+  outputMsg += 'NFTを作成しました。'
+  outputMsg += '\n' + bitcompPrefix + nftoken_id;
 
   const nfts = await client.request({
     method: "account_nfts",
@@ -160,7 +147,7 @@ outputMsg += '\n' + bitcompPrefix + nftoken_id;
 
   outputMsg += '\n\nTransaction result: ' + tx.result.meta.TransactionResult;
   
-  console.log(nfts);
+  // console.log(nfts);
   
   client.disconnect();
 
