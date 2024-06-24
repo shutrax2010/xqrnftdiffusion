@@ -3,12 +3,15 @@ import requests
 import io
 import qrcode
 from PIL import Image
-from flask import Flask, send_file, render_template, request
+import json
+from flask import Flask, send_file, render_template, request, jsonify
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)  # CORSを全てのエンドポイントに対して有効にする
 
 @app.route('/', methods=['POST'])
 def index():
-    name = request.form['testText']
+    name = request.get_json()
     img = qrcode.make(name)
     img_byte_array = io.BytesIO()
     img.save(img_byte_array, format='PNG')
