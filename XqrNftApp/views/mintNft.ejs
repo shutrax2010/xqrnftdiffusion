@@ -6,21 +6,7 @@
         <link rel='stylesheet' href='stylesheets/style.css' />
         <link rel="icon" type="image/x-icon" href="../assets/PhygitalifyQR icon.png">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-        <script>
-            function onClick(event){
-                event.preventDefault();
-                $.ajax({
-                    url: '/mintnft/mint',
-                    type: 'POST',
-                    data: $('#nftform').serialize()
-                }).done(function(data, textStatus, jqXHR) {
-                    $('#outputMsg').val(data);
-                    console.log('success');
-                }).fail(function() {
-                    console.log('fail');
-                })
-            }
-        </script>
+        <script src="/javascripts/scripts_mintNft.js"></script>
         
     </head>
 
@@ -61,26 +47,32 @@
                 <label>Royalties(%)</label><br/>
                 <input type="number" name="royalty" placeholder="0%" class="input-area"/>
             </div>
-            <div class="property">
-                <div class="property-title">
-                    <label>Property name</label><br/>
-                    
+            <div id="properties-container">
+                <div class="property">
+                    <div class="property-title">
+                        <label>Property name</label><br/>
+                        
+                    </div>
+                    <div class="property-title">
+                        <label>Property value</label><br/>
+                    </div>
+                    <div class="property-button nonvisible"></div>
                 </div>
-                <div class="property-title">
-                    <label>Property value</label><br/>
+                <div class="property">
+                    <input type="text" name="propertyName1" class="property-name input-area"/>
+                    <input type="text" name="propertyValue1" class="property-value input-area"/>
+                    <button type="button" id="property-button" class="property-button remove-button" onclick="removePropertyField(1)">Remove</button>
                 </div>
-                <div class="property-button nonvisible"></div>
+                <div class="property">
+                    <input type="text" name="propertyName2" class="property-name input-area"/>
+                    <input type="text" name="propertyValue2" class="property-value input-area"/>
+                    <button type="button" id="property-button" class="property-button remove-button" onclick="removePropertyField(2)">Remove</button>
+                </div>
             </div>
-            <div class="property">
-                <input type="text" name="propertyName1" class="property-name input-area"/>
-                <input type="text" name="propertyValue1" class="property-value input-area"/>
-                <button type="button" id="property-button" class="property-button">Remove</button>
-            </div>
-            <div class="property">
-                <input type="text" name="propertyName2" class="property-name input-area"/>
-                <input type="text" name="propertyValue2" class="property-value input-area"/>
-                <button type="button" id="property-button" class="property-button">Add</button>
-            </div>
+            <button type="button" id="add-property-button" class="property-button">Add Property</button>
+
+            <input type="hidden" name="propertyCount" id="propertyCount" value="2">
+            
             <br/>
             <label>Message</label><br/>
             <textarea disabled id="outputMsg" name="outputMsg" class="input-area outputMsg"><%= outputMsg %></textarea><br/>

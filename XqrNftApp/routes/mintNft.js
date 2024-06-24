@@ -42,33 +42,43 @@ router.post('/mint', async function(req,res,next) {
   //does not work
   console.log('\n#####start getting qrImg');
   const postData = JSON.stringify({
-    testText: bodyData.imgPrompt,
+    imagePrompt: bodyData.imgPrompt,
   });
-  const postOptions = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    }
-  };
-  const postUrl = "https://xqrnftdiffusion.onrender.com";
 
-  const qrImgReq = https.request(postUrl, postOptions, response => {
-    console.log(`statuscode: ${response.statusCode}`);
-    response.on('data', (dd) => {
-      process.stdout.write(dd);
+  const postOptions = {
+    hostname: 'xqrnftdiffusion.onrender.com',
+    port: 443,
+    path: '/',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(postData),
+    },
+  };
+
+  const qrImgReq = https.request(postOptions, (response) => {
+    let data = '';
+
+    response.on('data', (chunk) => {
+      data += chunk;
     });
 
     response.on('end', () => {
-      
+      console.log('Respons from API: ', data);
+      outputMsg += data;
     })
   });
 
+  qrImgReq.on('error', (e) => {
+    console.error(`Problem with request: ${e.message}`);
+    outputMsg += 'Something wrong';
+  });
+  
   qrImgReq.write(postData);
   qrImgReq.end();
-  console.log(qrImgReq.response);
-  
+  console.log(qrImgReq);
 
-
+/*
   //createJson and pin to Pinata
   console.log("\n######start uploading to pinata");
   const uploadJson = {
@@ -150,6 +160,7 @@ router.post('/mint', async function(req,res,next) {
   // console.log(nfts);
   
   client.disconnect();
+  */
 
   res.send(outputMsg);
 });
