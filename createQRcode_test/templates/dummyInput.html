@@ -4,15 +4,30 @@
 		<title>ダミーinput画面</title>
 	</head>
 	<body>
-		<h2>文字列を入力してPOSTで送信したらQRコードがアップされる</h2>
-		<form method="POST" action="/">
-			<div>
-				<label>Enter any text （POST）：</label>
-				<input type="text" name="testText" required />
-			</div>
-			<div>
-				<input type="submit" value="create QRcode!" formaction="https://xqrnftdiffusion.onrender.com" />
-			</div>
-		</form>
-	</body>
+	    <h2>JSONがPOST送信されてQRコードがアップされる</h2>
+	    <form id="jsonForm" method="POST" action="http://127.0.0.1:5000/">
+	        <!-- ここにフォームの他の入力フィールドを追加できます -->
+	        <input type="hidden" name="jsonData" id="jsonDataInput">
+	        <input type="submit" value="create QRcode!">
+	    </form>
+
+	    <script>
+	        // JSONデータを定義
+	        var jsonData = {
+	            "name": "miyuu",
+	            "age": "28"
+	        };
+
+	        // フォームが送信されたときにJSONデータを設定
+	        document.getElementById('jsonForm').addEventListener('submit', function(event) {
+	            event.preventDefault(); // フォームのデフォルトの送信を防止
+
+	            // jsonDataInputにJSONデータを設定
+	            document.getElementById('jsonDataInput').value = JSON.stringify(jsonData);
+	            
+	            // フォームをサブミット（送信）する
+	            this.submit();
+	        });
+	    </script>
+</body>
 </html>
