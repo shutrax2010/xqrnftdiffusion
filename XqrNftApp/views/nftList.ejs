@@ -4,23 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NFT List</title>
+  <style>
+    ul {
+      list-style-type: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    li {
+      margin: 20px;
+    }
+    img {
+      max-width: 200px;
+    }
+  </style>
 </head>
 <body>
-  <h1>NFT List for <%= walletAddress %></h1>
+  <h1>NFT Tickets</h1>
   
   <ul>
     <% nfts.forEach(nft => { %>
-      <li>
-        <strong>ID:</strong> <%= nft.id %><br>
-        <strong>URI:</strong> <%= nft.uri %><br>
         <% if (nft.imageUrl) { %>
-          <img src="<%= nft.imageUrl %>" alt="NFT Image" style="max-width: 200px;">
-        <% } else { %>
-          <em>No image available</em>
-        <% } %><br>
-        <strong>Flags:</strong> <%= nft.flags %><br>
-        <hr>
+      <li>
+          <img src="<%= nft.imageUrl %>" alt="NFT Image" >
+          <br>
+          <strong>Name:</strong> <%= nft.name %><br>
       </li>
+        <% } %>
     <% }); %>
   </ul>
 
