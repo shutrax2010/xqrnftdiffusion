@@ -33,7 +33,7 @@ def index():
 	img_byte_array.close()
 	
 	getUrl = 'https://gateway.pinata.cloud/ipfs/' + response.json()["IpfsHash"]
-    return getUrl
+	return getUrl
         
 if __name__ == '__main__':
     app.run(debug=True)
