@@ -1,33 +1,40 @@
 <!DOCTYPE html>
 <html lang="ja">
 	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>ダミーinput画面</title>
 	</head>
 	<body>
-	    <h2>JSONがPOST送信されてQRコードがアップされる</h2>
-	    <form id="jsonForm" method="POST" action="https://xqrnftdiffusion.onrender.com">
-	        <!-- ここにフォームの他の入力フィールドを追加できます -->
-	        <input type="hidden" name="jsonData" id="jsonDataInput">
-	        <input type="submit" value="create QRcode!">
-	    </form>
-
-	    <script>
-	        // JSONデータを定義
-	        var jsonData = {
-	            "name": "miyuu",
-	            "age": "28"
-	        };
-
-	        // フォームが送信されたときにJSONデータを設定
-	        document.getElementById('jsonForm').addEventListener('submit', function(event) {
-	            event.preventDefault(); // フォームのデフォルトの送信を防止
-
-	            // jsonDataInputにJSONデータを設定
-	            document.getElementById('jsonDataInput').value = JSON.stringify(jsonData);
-	            
-	            // フォームをサブミット（送信）する
-	            this.submit();
-	        });
-	    </script>
-</body>
+		<h2>JSONがPOST送信されてQRコードがアップされる</h2>
+		<form id="qrForm" method="POST">
+			<textarea id="jsonData" name="jsonData" rows="4" cols="50">{ "key": "value" }</textarea>
+			<input type="submit" value="create QRcode!">
+		</form>
+		
+		<div id="qrResult" style="margin-top: 20px;"></div>
+		
+		<script>
+			document.getElementById('qrForm').addEventListener('submit', function(event) {
+				event.preventDefault();
+				var jsonData = document.getElementById('jsonData').value.trim();
+				
+				fetch('https://xqrnftdiffusion.onrender.com', {
+					method: 'POST',
+					body: JSON.stringify(JSON.parse(jsonData)),
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				})
+				.then(response => response.text())
+				.then(url => {
+					var qrResult = document.getElementById('qrResult');
+					qrResult.innerHTML = '<h2>QR Code</h2>';
+					qrResult.innerHTML += '<img src="' + url + '" alt="QR Code">';
+					qrResult.innerHTML += '<p>IPFS URL: <a href="' + url + '" target="_blank">' + url + '</a></p>';
+				})
+				.catch(error => console.error('Error:', error));
+			});
+		</script>
+	</body>
 </html>
