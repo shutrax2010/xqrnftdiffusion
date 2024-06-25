@@ -10,14 +10,13 @@ CORS(app)  # CORSを全てのエンドポイントに対して有効にする
 
 @app.route('/', methods=['POST'])
 def index():
-	json_data = request.form['jsonData']
-	json_data = json.loads(json_data)  # JSON文字列をPythonオブジェクトに変換
+	json_data = request.json
 	
 	qr_data = json.dumps(json_data)  # JSONデータを文字列に変換してQRコードのデータとする
 	qr = qrcode.make(qr_data)
 	
 	img_byte_array = io.BytesIO()
-	img.save(img_byte_array, format='PNG')
+	qr.save(img_byte_array, format='PNG')
 	img_byte_array.seek(0)
 	
 	# IPFSへのファイルのピン留め（アップロード）
