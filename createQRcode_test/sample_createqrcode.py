@@ -10,7 +10,7 @@ CORS(app)  # CORSを全てのエンドポイントに対して有効にする
 
 @app.route('/', methods=['POST'])
 def index():
-	json_data = request.form['jsonData']
+	json_data = request.json
 	json_data = json.loads(json_data)  # JSON文字列をPythonオブジェクトに変換
 	
 	qr_data = json.dumps(json_data)  # JSONデータを文字列に変換してQRコードのデータとする
