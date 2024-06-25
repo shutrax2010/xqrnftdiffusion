@@ -16,7 +16,7 @@ def index():
 	qr = qrcode.make(qr_data)
 	
 	img_byte_array = io.BytesIO()
-	img.save(img_byte_array, format='PNG')
+	qr.save(img_byte_array, format='PNG')
 	img_byte_array.seek(0)
 	
 	# IPFSへのファイルのピン留め（アップロード）
