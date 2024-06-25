@@ -5,6 +5,7 @@ const xrpl = require('xrpl');
 const pinataSDK = require('@pinata/sdk');
 const moment = require('moment');
 const https = require('https');
+const axios = require('axios');
 
 const { isAuthenticated } = require('../authMiddleware');
 const { url } = require('inspector');
@@ -13,11 +14,12 @@ router.use(bodyParser.urlencoded({extended: true}));
 router.use(bodyParser.json());
 
 const pinata = new pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_SECRET_KEY);
-const sampleImageFile = 'ipfs://QmWiru8V3r42RSK9A2b85uq63nqUBnsCnczLhbxbcK9DCM';
+// const sampleImageFile = 'ipfs://QmWiru8V3r42RSK9A2b85uq63nqUBnsCnczLhbxbcK9DCM';
 const ipfsGateway = 'https://amethyst-raw-termite-956.mypinata.cloud/ipfs/';
     
 // const walletAddress = req.session.account;
 let ipfsHash = "";
+let qrImgUrl = "";
 
 /* GET users listing. */
 router.get('/', isAuthenticated, function(req, res, next) {
@@ -38,51 +40,28 @@ router.post('/mint', async function(req,res,next) {
   const sys_walletAddress = process.env.SYS_WALLET_ADDRESS;
   // console.log(bodyData);
 
-  /*
+  
   //get QR image from api
-  //does not work
   console.log('\n#####start getting qrImg');
+  const postUrl = "https://xqrnftdiffusion.onrender.com"
   const postData = JSON.stringify({
     name: bodyData.imgPrompt,
   });
 
   const postOptions = {
-    hostname: 'xqrnftdiffusion.onrender.com',
-    port: 443,
-    path: '/',
-    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(postData),
-    },
+    }
   };
 
-  const qrImgReq = https.request(postOptions, (response) => {
-    let data = '';
-
-    response.on('data', (chunk) => {
-      data += chunk;
-    });
-
-    response.on('end', () => {
-      console.log('Respons from API: ', data);
-      outputMsg += data;
-    })
-  });
-
-  qrImgReq.on('error', (e) => {
-    console.error(`Problem with request: ${e.message}`);
-    outputMsg += 'Something wrong';
-  });
-  
-  qrImgReq.write(postData);
-  qrImgReq.end();
-  console.log(qrImgReq);
-*/
-
-
-  //createJson and pin to Pinata
-  console.log("\n######start uploading to pinata");
+  try {
+    const response = await axios.post(postUrl, postData, postOptions);
+    qrImgUrl = response.data;
+    console.log('Response from API: ', qrImgUrl);
+  } catch (error) {
+    console.error(`Problem with request: ${error.message}`);
+    outputMsg += 'Something went wrong';
+  }
   
   //可変プロパティの取得
   let properties = {};
@@ -94,7 +73,7 @@ router.post('/mint', async function(req,res,next) {
   const uploadJson = {
     EventTitle: bodyData.eventTitle,
     NFTName: bodyData.eventTitle + bodyData.eventNo,
-    QRImage: sampleImageFile,
+    QRImage: qrImgUrl,
     MintDate: moment().format('YYYY-MM-DD HH:mm:ss'),
     NFTFlags: "Transferable",
     Properties: properties
@@ -128,13 +107,13 @@ router.post('/mint', async function(req,res,next) {
   console.log ("NET URL: ",net);
   const jsonUri = ipfsGateway + ipfsHash;
 
-  outputMsg += 'connecting to' + net + '....';
+  outputMsg += 'connect to' + net + '....';
   
 
   const system_wallet = xrpl.Wallet.fromSeed(process.env.SYS_WALLET_SEED);
   const client = new xrpl.Client(net);
   await client.connect();
-  outputMsg += '\nConnected. Minting NFT.';
+  outputMsg += '\n Minting NFT.';
   console.log('connected');
 
 
