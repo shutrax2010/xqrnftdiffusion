@@ -38,11 +38,12 @@ router.post('/mint', async function(req,res,next) {
   const sys_walletAddress = process.env.SYS_WALLET_ADDRESS;
   // console.log(bodyData);
 
+  /*
   //get QR image from api
   //does not work
   console.log('\n#####start getting qrImg');
   const postData = JSON.stringify({
-    imagePrompt: bodyData.imgPrompt,
+    name: bodyData.imgPrompt,
   });
 
   const postOptions = {
@@ -77,22 +78,33 @@ router.post('/mint', async function(req,res,next) {
   qrImgReq.write(postData);
   qrImgReq.end();
   console.log(qrImgReq);
+*/
 
-/*
+
   //createJson and pin to Pinata
   console.log("\n######start uploading to pinata");
+  
+  //可変プロパティの取得
+  let properties = {};
+  for (let i = 0; i < bodyData.propertyName.length; i++) {
+    properties[bodyData.propertyName[i]] = bodyData.propertyValue[i];
+  }
+  
+
   const uploadJson = {
     EventTitle: bodyData.eventTitle,
     NFTName: bodyData.eventTitle + bodyData.eventNo,
     QRImage: sampleImageFile,
     MintDate: moment().format('YYYY-MM-DD HH:mm:ss'),
-    NFTFlags: "Transferable"
+    NFTFlags: "Transferable",
+    Properties: properties
   };
   const options = {
     pinataMetadata: {
       name:bodyData.eventTitle,
     }
   };
+
 
   try {
     const pinResponse = await pinata.pinJSONToIPFS(uploadJson,options);
@@ -160,7 +172,7 @@ router.post('/mint', async function(req,res,next) {
   // console.log(nfts);
   
   client.disconnect();
-  */
+  
 
   res.send(outputMsg);
 });
