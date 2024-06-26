@@ -17,7 +17,7 @@ const pinata = new pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_SECR
 // const sampleImageFile = 'ipfs://QmWiru8V3r42RSK9A2b85uq63nqUBnsCnczLhbxbcK9DCM';
 const ipfsGateway = 'https://amethyst-raw-termite-956.mypinata.cloud/ipfs/';
     
-// const walletAddress = req.session.account;
+let user_walletAddress = "";
 let ipfsHash = "";
 let qrImgUrl = "";
 
@@ -25,8 +25,9 @@ let qrImgUrl = "";
 router.get('/', isAuthenticated, function(req, res, next) {
   // console.log(req.session);
   if (req.session.authenticated) {
+    user_walletAddress = req.session.account;
     res.render('mintNft',{
-      walletAddress: req.session.account,
+      walletAddress: user_walletAddress,
       outputMsg: ''
     });
   }
@@ -138,7 +139,7 @@ router.post('/mint', async function(req,res,next) {
   console.log(tx);
   const bitcompPrefix = 'https://test.bithomp.com/en/nft/';
   const nftoken_id = tx.result.meta.nftoken_id;
-  outputMsg += 'NFTを作成しました。'
+  outputMsg += '\nNFTを作成しました。'
   outputMsg += '\n' + bitcompPrefix + nftoken_id;
 
   const nfts = await client.request({
@@ -149,6 +150,19 @@ router.post('/mint', async function(req,res,next) {
   outputMsg += '\n\nTransaction result: ' + tx.result.meta.TransactionResult;
   
   // console.log(nfts);
+
+  //NFTokenCreateOfferの作成(売却オファー)
+  const NFTokenCreateOfferJson ={
+    "TransactionType": "NFTokenCreateOffer",
+    "Account": sys_walletAddress,
+    "NFTokenID": nftoken_id,
+    "Amount": "0",
+    "Flags": 1,
+    "Destination": user_walletAddress
+  };
+
+  const sellOfferTx = await client.submitAndWait(NFTokenCreateOfferJson, {wallet: system_wallet});
+  console.log(sellOfferTx);
   
   client.disconnect();
   
