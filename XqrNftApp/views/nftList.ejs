@@ -141,26 +141,52 @@
 
     async function acceptOffer(offerId) {
       try {
-        const response = await fetch('/accept-offer', {
+        const response = await fetch('/nftList/accept-offer', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ offerId })
+          body: JSON.stringify({ offerId }),
+          redirect: 'follow'
         });
 
-        const result = await response.json();
         if (response.ok) {
+          const result = await response.json();
           alert('Offer accepted successfully');
-          closePopup(); // Close the popup after accepting an offer
+          closePopup();
+        } else if (response.redirected) {
+          // Handle redirect
+          const redirectedResponse = await fetch(response.url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ offerId }),
+            redirect: 'follow'
+          });
+
+          if (redirectedResponse.ok) {
+            const result = await redirectedResponse.json();
+            alert('Offer accepted successfully after redirect');
+            closePopup();
+          } else {
+            const errorText = await redirectedResponse.text();
+            console.error('Error accepting offer after redirect:', errorText);
+            alert('Error accepting offer: ' + errorText);
+          }
         } else {
-          alert('Error accepting offer: ' + result.message);
+          // Handle non-redirect error
+          const errorText = await response.text();
+          console.error('Error accepting offer:', errorText);
+          alert('Error accepting offer: ' + errorText);
         }
       } catch (error) {
         console.error('Error accepting offer:', error);
         alert('Error accepting offer: ' + error.message);
       }
     }
+
+
   </script>
 </body>
 </html>

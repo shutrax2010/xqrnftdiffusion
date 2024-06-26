@@ -84,7 +84,8 @@ router.get('/', async function(req, res, next) {
 });
 
 // Route to accept an offer
-router.post('/accept-offer', isAuthenticated, async function(req, res) {
+//router.post('/accept-offer', isAuthenticated, async function(req, res) {
+router.post('/accept-offer',async function(req, res) {
   console.log('Accept Offer endpoint accessed');
   const { offerId } = req.body;
 
