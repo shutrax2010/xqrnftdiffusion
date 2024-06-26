@@ -3,8 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="../assets/PhygitalifyQR icon.png">
   <title>NFT List</title>
   <style>
+    body {
+      font:18px "Lucida Grande", Helvetica, Arial, sans-serif;
+      color: white;
+      background-color: #030340;
+      margin: 10px;
+    }
+
     ul {
       list-style-type: none;
       padding: 0;
@@ -16,6 +24,55 @@
     }
     img {
       max-width: 200px;
+      max-height: 200px;
+    }
+    /* Popup styles */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #030340;
+      padding: 20px;
+      border: 1px solid #ccc;
+      z-index: 1000;
+    }
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+    .popup-content {
+      position: relative;
+    }
+
+    .popup-open {
+      overflow: hidden;
+    }
+
+    button {
+      background-color: #34a343;
+      padding: 3px 12px;
+      border: none;
+      border-radius: 6%;
+      color: white;
+    }
+    
+    .closeButton {
+      background-color:#db0d29;
+      position: absolute;
+      bottom: 20px;
+      right: 10px;
+    }
+
+    .acceptButton{
+      background-color:#345d9e;
     }
   </style>
 </head>
@@ -24,15 +81,122 @@
   
   <ul>
     <% nfts.forEach(nft => { %>
-        <% if (nft.imageUrl) { %>
       <li>
+        <% if (nft.imageUrl !== "") { %>
           <img src="<%= nft.imageUrl %>" alt="NFT Image" >
-          <br>
-          <strong>Name:</strong> <%= nft.name %><br>
-      </li>
+        <% } else { %>
+          <img src="../assets/no-image.svg" style="width: 200px;height: 200px;" alt="NFT Image" >
         <% } %>
+        <br>
+        <strong>Name:</strong>
+        <% if (nft.name.length > 17) { %>
+          <% let maxLength = 17; %>
+          <% for (let i = 0; i < Math.ceil(nft.name.length / maxLength); i++) { %>
+            <%= nft.name.slice(i * maxLength, (i + 1) * maxLength) %><br>
+          <% } %>
+        <% } else { %>
+          <%= nft.name %><br>
+        <% } %>
+        <% if (nft.offers.length > 0) { %>
+          <button class = "view-offer" onclick="showOffers(<%= JSON.stringify(nft.offers) %>)">View Offers</button>
+        <% } %>
+      </li>
     <% }); %>
   </ul>
 
+  <!-- Popup for displaying offers -->
+  <div class="popup-overlay" id="popup-overlay"></div>
+  <div class="popup" id="popup">
+    <h2>Offers</h2>
+    <div id="offers-list"></div>
+    <button class = "closeButton" onclick="closePopup()">Close</button>
+  </div>
+
+  <script>
+    function showOffers(offers) {
+      const offersList = document.getElementById('offers-list');
+      offersList.innerHTML = ''; // Clear previous offers
+
+      offers.forEach(offer => {
+        const offerDiv = document.createElement('div');
+        const amountInXRP = offer.amount / 1000000;
+        offerDiv.innerHTML = `
+          <p>Offer Amount: ${amountInXRP} XRP</p>
+          <p>Offer Owner: ${offer.owner}</p>
+          <p>Expiry: ${offer.expiry ? new Date(offer.expiry * 1000).toLocaleString() : 'No expiry'}</p>
+          <button class = "acceptButton" onclick="acceptOffer('${offer.nft_offer_index}')">Accept Offer</button>
+        `;
+        offersList.appendChild(offerDiv);
+      });
+
+      document.getElementById('popup-overlay').style.display = 'block';
+      document.getElementById('popup').style.display = 'block';
+      document.body.classList.add('popup-open');
+    }
+
+    function closePopup() {
+      document.getElementById('popup-overlay').style.display = 'none';
+      document.getElementById('popup').style.display = 'none';
+      document.body.classList.remove('popup-open');
+    }
+
+    async function acceptOffer(offerId) {
+      try {
+        const response = await fetch('/nftList/accept-offer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ offerId }),
+          redirect: 'follow'
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          alert('Offer accepted successfully');
+          closePopup();
+        } else if (response.redirected) {
+          // Handle redirect to login page or authentication prompt
+          const redirectedUrl = response.url;
+          console.log('Redirected to:', redirectedUrl);
+
+          // Optionally handle redirect by showing a login modal or redirecting the user
+          // to the login page. Example:
+          // window.location.href = redirectedUrl; // Redirect to login page
+          
+          // Alternatively, fetch the redirected URL and handle further actions
+          const redirectedResponse = await fetch(redirectedUrl, {
+            method: 'GET', // or POST as needed
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            redirect: 'follow'
+          });
+
+          if (redirectedResponse.ok) {
+            // Optionally handle successful login or further actions
+            console.log('Successfully redirected and authenticated.');
+            // Example: Reload the page or perform another action
+            // window.location.reload();
+          } else {
+            const errorText = await redirectedResponse.text();
+            console.error('Error after redirect:', errorText);
+            alert('Error after redirect: ' + errorText);
+          }
+        } else {
+          // Handle non-redirect error
+          const errorText = await response.text();
+          console.error('Error accepting offer:', errorText);
+          alert('Error accepting offer: ' + errorText);
+        }
+      } catch (error) {
+        console.error('Error accepting offer:', error);
+        alert('Error accepting offer: ' + error.message);
+      }
+    }
+
+
+
+  </script>
 </body>
 </html>
