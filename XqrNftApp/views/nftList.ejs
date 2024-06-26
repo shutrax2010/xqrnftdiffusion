@@ -10,7 +10,7 @@
       font:18px "Lucida Grande", Helvetica, Arial, sans-serif;
       color: white;
       background-color: #030340;
-      margin: auto;
+      margin: 10px;
     }
 
     ul {
@@ -119,8 +119,9 @@
 
       offers.forEach(offer => {
         const offerDiv = document.createElement('div');
+        const amountInXRP = offer.amount / 1000000;
         offerDiv.innerHTML = `
-          <p>Offer Amount: ${offer.amount} XRP</p>
+          <p>Offer Amount: ${amountInXRP} XRP</p>
           <p>Offer Owner: ${offer.owner}</p>
           <p>Expiry: ${offer.expiry ? new Date(offer.expiry * 1000).toLocaleString() : 'No expiry'}</p>
           <button class = "acceptButton" onclick="acceptOffer('${offer.nft_offer_index}')">Accept Offer</button>
@@ -155,24 +156,32 @@
           alert('Offer accepted successfully');
           closePopup();
         } else if (response.redirected) {
-          // Handle redirect
-          const redirectedResponse = await fetch(response.url, {
-            method: 'POST',
+          // Handle redirect to login page or authentication prompt
+          const redirectedUrl = response.url;
+          console.log('Redirected to:', redirectedUrl);
+
+          // Optionally handle redirect by showing a login modal or redirecting the user
+          // to the login page. Example:
+          // window.location.href = redirectedUrl; // Redirect to login page
+          
+          // Alternatively, fetch the redirected URL and handle further actions
+          const redirectedResponse = await fetch(redirectedUrl, {
+            method: 'GET', // or POST as needed
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ offerId }),
             redirect: 'follow'
           });
 
           if (redirectedResponse.ok) {
-            const result = await redirectedResponse.json();
-            alert('Offer accepted successfully after redirect');
-            closePopup();
+            // Optionally handle successful login or further actions
+            console.log('Successfully redirected and authenticated.');
+            // Example: Reload the page or perform another action
+            // window.location.reload();
           } else {
             const errorText = await redirectedResponse.text();
-            console.error('Error accepting offer after redirect:', errorText);
-            alert('Error accepting offer: ' + errorText);
+            console.error('Error after redirect:', errorText);
+            alert('Error after redirect: ' + errorText);
           }
         } else {
           // Handle non-redirect error
@@ -185,6 +194,7 @@
         alert('Error accepting offer: ' + error.message);
       }
     }
+
 
 
   </script>

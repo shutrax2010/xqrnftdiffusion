@@ -7,7 +7,8 @@ const { log, error } = require('./logger');
 const { isAuthenticated } = require('../authMiddleware');
 
 // Fetch NFTs owned by an account
-router.get('/', async function(req, res, next) {
+//router.get('/', async function(req, res, next) {
+router.get('/',isAuthenticated, async function(req, res, next) {
   const walletAddress = process.env.SYS_WALLET_ADDRESS;
 
   if (!walletAddress) {
@@ -73,6 +74,9 @@ router.get('/', async function(req, res, next) {
         offers
       };
     }));
+
+    // Sort nfts array by name
+    nfts.sort((a, b) => a.name.localeCompare(b.name));
 
     client.disconnect();
     res.render('nftList', { nfts, walletAddress });
