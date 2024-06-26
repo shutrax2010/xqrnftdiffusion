@@ -162,7 +162,7 @@ router.post('/mint', async function(req,res,next) {
   };
 
   const sellOfferTx = await client.submitAndWait(NFTokenCreateOfferJson, {wallet: system_wallet});
-  console.log(sellOfferTx);
+  console.log("\n売却オファー\n" + sellOfferTx);
   
   client.disconnect();
   

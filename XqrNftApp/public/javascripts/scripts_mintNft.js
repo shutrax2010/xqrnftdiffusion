@@ -15,6 +15,9 @@ $(document).ready(function() {
 
     $('#nftform').submit(function(event) {
         event.preventDefault();
+        document.getElementById('spinner').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+
         $.ajax({
             url: '/mintnft/mint',
             type: 'POST',
@@ -24,6 +27,9 @@ $(document).ready(function() {
             console.log('success');
         }).fail(function() {
             console.log('fail');
+        }).always(function() {
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
         });
     });
 });
