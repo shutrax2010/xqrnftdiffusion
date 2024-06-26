@@ -3,8 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="../assets/PhygitalifyQR icon.png">
   <title>NFT List</title>
   <style>
+    body {
+      font:18px "Lucida Grande", Helvetica, Arial, sans-serif;
+      color: white;
+      background-color: #030340;
+      margin: auto;
+    }
+
     ul {
       list-style-type: none;
       padding: 0;
@@ -25,7 +33,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: white;
+      background: #030340;
       padding: 20px;
       border: 1px solid #ccc;
       z-index: 1000;
@@ -39,6 +47,32 @@
       height: 100%;
       background: rgba(0, 0, 0, 0.5);
       z-index: 999;
+    }
+    .popup-content {
+      position: relative;
+    }
+
+    .popup-open {
+      overflow: hidden;
+    }
+
+    button {
+      background-color: #34a343;
+      padding: 3px 12px;
+      border: none;
+      border-radius: 6%;
+      color: white;
+    }
+    
+    .closeButton {
+      background-color:#db0d29;
+      position: absolute;
+      bottom: 20px;
+      right: 10px;
+    }
+
+    .acceptButton{
+      background-color:#345d9e;
     }
   </style>
 </head>
@@ -64,7 +98,7 @@
           <%= nft.name %><br>
         <% } %>
         <% if (nft.offers.length > 0) { %>
-          <button onclick="showOffers(<%= JSON.stringify(nft.offers) %>)">View Offers</button>
+          <button class = "view-offer" onclick="showOffers(<%= JSON.stringify(nft.offers) %>)">View Offers</button>
         <% } %>
       </li>
     <% }); %>
@@ -75,7 +109,7 @@
   <div class="popup" id="popup">
     <h2>Offers</h2>
     <div id="offers-list"></div>
-    <button onclick="closePopup()">Close</button>
+    <button class = "closeButton" onclick="closePopup()">Close</button>
   </div>
 
   <script>
@@ -89,18 +123,20 @@
           <p>Offer Amount: ${offer.amount} XRP</p>
           <p>Offer Owner: ${offer.owner}</p>
           <p>Expiry: ${offer.expiry ? new Date(offer.expiry * 1000).toLocaleString() : 'No expiry'}</p>
-          <button onclick="acceptOffer('${offer.nft_offer_index}')">Accept Offer</button>
+          <button class = "acceptButton" onclick="acceptOffer('${offer.nft_offer_index}')">Accept Offer</button>
         `;
         offersList.appendChild(offerDiv);
       });
 
       document.getElementById('popup-overlay').style.display = 'block';
       document.getElementById('popup').style.display = 'block';
+      document.body.classList.add('popup-open');
     }
 
     function closePopup() {
       document.getElementById('popup-overlay').style.display = 'none';
       document.getElementById('popup').style.display = 'none';
+      document.body.classList.remove('popup-open');
     }
 
     async function acceptOffer(offerId) {
