@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../assets/PhygitalifyQR icon.png">
+    <title>Menu</title>
+    <style>
+        body {
+            font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
+            color: white;
+            background-color: #030340;
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Center align items horizontally */
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            /* Add margin below the heading */
+        }
+
+        .phygitalify{
+            color :#87cefa;
+            font-size: 24px;
+        }
+
+        .content-container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            width: 89%;
+        }
+
+        .image-container {
+            margin-right: 20px;
+            /* Add space between image and list */
+        }
+
+        .image-container img {
+            max-width: 150px;
+            /* Adjust max-width as needed */
+            max-height: 150px;
+            /* Adjust max-height as needed */
+            display: block;
+            /* Ensure image is block-level */
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: transparent;
+            padding: 10px 50px;
+            margin: 0;
+            border: 1px solid;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Menu</h1>
+    <div class="content-container">
+        <div class="image-container">
+            <img src="../assets/PhygitalifyQR icon.png" style="max-width: 150px;max-height: 150px;" alt="PhygitalifyQR">
+            <p class ="phygitalify">PhygitalifyQR</p>
+        </div>
+
+        <ul>
+            <% menuItems.forEach(item=> { %>
+                <li>
+                    <button onclick="<%= item.action %>">
+                        <%= item.label %>
+                    </button>
+                </li>
+                <% }); %>
+        </ul>
+    </div>
+    <script>
+        function navigate(url) {
+            window.location.href = url;
+        }
+    </script>
+</body>
+
+</html>
