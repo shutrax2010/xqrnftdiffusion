@@ -5,10 +5,13 @@ const axios = require('axios'); // Ensure axios is required
 require('dotenv').config();
 const { log, error } = require('./logger');
 const { isAuthenticated } = require('../authMiddleware');
+const { XummSdk } = require('xumm-sdk');
+
+const Sdk = new XummSdk(process.env.XUMM_APIKEY, process.env.XUMM_APISECRET);
 
 // Fetch NFTs owned by an account
-//router.get('/', async function(req, res, next) {
-router.get('/',isAuthenticated, async function(req, res, next) {
+router.get('/', async function(req, res, next) {
+//router.get('/',isAuthenticated, async function(req, res, next) {
   const walletAddress = process.env.SYS_WALLET_ADDRESS;
 
   if (!walletAddress) {
@@ -38,18 +41,25 @@ router.get('/',isAuthenticated, async function(req, res, next) {
               log("response.data : ", response.data);
               name = response.data.NFTName || 'Unnamed NFT';
               const url = response.data.QRImage;
-              imageUrl = "https://ipfs.io/ipfs/" + url.slice(7);
+              if(url.startsWith('ipfs://'))
+                {
+                  imageUrl = "https://ipfs.io/ipfs/" + url.slice(7);
+                }
+              else if(url.startsWith('https://') || url.startsWith('https://') )
+                {
+                  imageUrl = url;
+                }
               console.log("Generated Image URL:", imageUrl); // Log imageUrl for verification
             }
           } catch (error) {
             console.error(`Error fetching metadata for NFT ${nft.NFTokenID}:`, error);
-            name = uri; // Use URI as the name if fetching metadata fails
+            name = uri; 
           }
         } else {
-          name = uri; // Use URI as the name if it does not start with http or https
+          name = uri;
         }
       } else {
-        name = 'Unnamed NFT'; // Fallback to 'Unnamed NFT' if URI is null
+        name = 'Unnamed NFT'; 
       }
 
       // Fetch buy offers for the NFT
@@ -89,47 +99,50 @@ router.get('/',isAuthenticated, async function(req, res, next) {
 
 // Route to accept an offer
 //router.post('/accept-offer', isAuthenticated, async function(req, res) {
-router.post('/accept-offer',async function(req, res) {
-  console.log('Accept Offer endpoint accessed');
-  const { offerId } = req.body;
-
-  // Validate offerId
-  if (!offerId) {
-    return res.status(400).json({ message: 'Offer ID is required' });
-  }
-
-  const walletAddress = process.env.SYS_WALLET_ADDRESS;
-  const walletSecret = process.env.SYS_WALLET_SEED;
-
-  // Ensure user is authenticated
-  if (!walletAddress || !walletSecret) {
-    return res.status(401).json({ message: 'User not authenticated' });
-  }
-
-  const client = new xrpl.Client('wss://s.altnet.rippletest.net:51233');
-  try {
-    await client.connect();
-
-    const wallet = xrpl.Wallet.fromSeed(walletSecret);
-    const transaction = {
-      TransactionType: 'NFTokenAcceptOffer',
-      Account: walletAddress,
-      NFTokenBuyOffer: offerId // Assuming NFTokenBuyOffer is correct for your use case
-    };
-
-    const prepared = await client.autofill(transaction);
-    const signed = wallet.sign(prepared);
-    const result = await client.submitAndWait(signed.tx_blob);
-
-    client.disconnect();
-
-    res.json({ message: 'Offer accepted successfully', result });
-
-  } catch (error) {
-    console.error('Error accepting offer:', error);
-    res.status(500).json({ message: 'Error accepting offer', error });
-  }
-});
+  router.post('/accept-offer', async function(req, res) {
+    console.log('Accept Offer endpoint accessed');
+    const { offerId } = req.body;
+  
+    // Validate offerId
+    if (!offerId) {
+      return res.status(400).json({ message: 'Offer ID is required' });
+    }
+  
+    const walletAddress = process.env.SYS_WALLET_ADDRESS;
+  
+    // Ensure user is authenticated
+    if (!walletAddress) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+  
+    try {
+      // Create a payload for the Xumm app
+      const payload = {
+        TransactionType: 'NFTokenAcceptOffer',
+        Account: walletAddress,
+        NFTokenBuyOffer: offerId // Assuming NFTokenBuyOffer is correct for your use case
+      };
+  
+      const payloadResponse = await Sdk.payload.createAndSubscribe(payload, async (event) => {
+        // This callback is called when the payload resolves (signed or rejected)
+        if (event.data.signed === true) {
+          console.log('Payload signed:', event.data);
+          res.json({ message: 'Offer accepted successfully', result: event.data });
+        } else {
+          console.log('Payload not signed:', event.data);
+          res.status(400).json({ message: 'Offer acceptance declined' });
+        }
+      });
+      log("Payload Response : ",payloadResponse);
+  
+      // Send the QR code URL back to the client to be scanned by the Xumm app
+      res.json({ payloadUrl: payloadResponse.created.refs.qr_png });
+  
+    } catch (error) {
+      console.error('Error accepting offer:', error);
+      res.status(500).json({ message: 'Error accepting offer', error });
+    }
+  });
 
 
 module.exports = router;
