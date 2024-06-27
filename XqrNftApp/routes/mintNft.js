@@ -15,7 +15,7 @@ router.use(bodyParser.json());
 
 const pinata = new pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_SECRET_KEY);
 // const sampleImageFile = 'ipfs://QmWiru8V3r42RSK9A2b85uq63nqUBnsCnczLhbxbcK9DCM';
-const ipfsGateway = 'https://amethyst-raw-termite-956.mypinata.cloud/ipfs/';
+const ipfsPrefix = 'ipfs://';
     
 let user_walletAddress = "";
 let ipfsHash = "";
@@ -90,7 +90,7 @@ router.post('/mint', async function(req,res,next) {
     const pinResponse = await pinata.pinJSONToIPFS(uploadJson,options);
     // console.log(pinResponse);
     ipfsHash = pinResponse.IpfsHash;
-    console.log(ipfsGateway + ipfsHash);
+    console.log(ipfsPrefix + ipfsHash);
   } catch (error) {
     console.log(error);
     outputMsg += "エラーが発生しました。";
@@ -106,7 +106,7 @@ router.post('/mint', async function(req,res,next) {
   //const net = 'wss://s.altnet.rippletest.net:51233';
   const net = req.session.uri;
   console.log ("NET URL: ",net);
-  const jsonUri = ipfsGateway + ipfsHash;
+  const jsonUri = ipfsPrefix + ipfsHash;
 
   outputMsg += 'connect to' + net + '....';
   
