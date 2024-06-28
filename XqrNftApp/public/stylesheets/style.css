@@ -59,11 +59,42 @@ a {
 /* Mint NFT Ticket */
 #mintnft-body {
   font:18px "Lucida Grande", Helvetica, Arial, sans-serif;
-  color: white;
-  background-color: #030340;
-  width: 400px;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  /* height: 100%; */
+  min-height: max-content;
+}
+
+.left-panel{
+  width: 30%;
+  background-color: white;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.title-box{
+  color: #030340;
+  margin: auto;
+  text-align: center;
+}
+
+.main-panel{
   display: block;
   margin: auto;
+  color: white;
+  background-color: #030340;
+  width: 70%;
+  height: 100%;
+  min-height: max-content;
+}
+
+.sub-panel{
+  padding-top: 20px;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-bottom: 40px;
 }
 
 #event{
@@ -78,10 +109,11 @@ a {
 
 #event-title input{
   width: 100%;
-  height: 25px;
+  /* height: 25px; */
   box-sizing: border-box;
-  border-radius: 10px;
+  border-radius: 20px;
   border: none;
+  padding: 10px;
 }
 
 #event-no{
@@ -90,10 +122,11 @@ a {
 
 #event-no input{
   width: 100%;
-  height: 25px;
+  /* height: 25px; */
   box-sizing: border-box;
-  border-radius: 10px;
+  border-radius: 20px;
   border: none;
+  padding: 10px;
 }
 
 .form-item{
@@ -102,9 +135,14 @@ a {
 
 .input-area{
   width: 100%;
-  height: 25px;
-  border-radius: 10px;
+  /* height: 25px; */
+  border-radius: 20px;
   border: none;
+  padding: 10px;
+}
+
+.form-item textarea{
+  height: 50px;
 }
 
 .property{
@@ -138,17 +176,22 @@ a {
 .property-button{
   box-sizing: border-box;
   flex: 30px;
-  border-radius: 15px;
+  border-radius: 20px;
   background-color: #87CEFA;
   margin-bottom: 10px;
   margin-right: 5px;
   margin-left: 5px;
-  height: 25px;
+  /* height: 25px; */
+  padding: 10px;
 }
 
 .property-button:hover{
   color: #030340;
   background-color: white;
+}
+
+.addBtn{
+  width: 33%;
 }
 
 .nonvisible{
@@ -158,6 +201,7 @@ a {
 .outputMsg{
   background-color: lightsteelblue;
   height: 40px;
+  padding: 10px;
 }
 
 .mintBtnDiv{
@@ -169,8 +213,9 @@ a {
 .mint-button{
   border-radius: 20px;
   background-color: white;
-  width: 150px;
-  height: 30px;
+  width: 33%;
+  /* height: 30px; */
+  padding: 10px;
 }
 
 .mint-button:hover{

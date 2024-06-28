@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="view-port" content="width=device-width,initial-scale=1.0">
         <title>Mint NFT Ticket</title>
         <link rel='stylesheet' href='stylesheets/style.css' />
         <link rel="icon" type="image/x-icon" href="../assets/PhygitalifyQR icon.png">
@@ -11,74 +12,82 @@
     </head>
 
     <body id="mintnft-body">
-        <h3>TICKET SETTINGS</h3>
-        Address: <label><%= walletAddress %></label>
-        <form class="nftform" id="nftform">
-            
-            <div id="event">
-                <div id="event-title">
-                    <label>Event title *</label><br/>
-                    <input name="eventTitle" placeholder="Enter event title" required/>
-                </div>
-                <div id="event-no">
-                    <label>Event No. *</label><br/>
-                    <input name="eventNo" placeholder="Enter event no" required/>
-                </div>
-            </div>
-            
-
-            <div class="form-item">
-                <label>QR code text *</label><br/>
-                <input name="qrText" placeholder="Enter QR code text" class="input-area" required/>
-            </div>
-            <div class="form-item">
-                <label>Image prompt *</label><br/>
-                <input name="imgPrompt" placeholder="Enter prompt" class="input-area" required/>
-            </div>
-
-            <div class="form-item">
-                <label>Description *</label><br />
-                <textarea name="description" placeholder="Enter description" class="input-area" required></textarea>
-            </div>
-            
-            <hr>
-            <h4>NFT SETTINGS</h4>
-            <div>
-                <label>Royalties(%)</label><br/>
-                <input type="number" name="royalty" placeholder="0%" class="input-area"/>
-            </div>
-            <div id="properties-container">
-                <div class="property">
-                    <div class="property-title">
-                        <label>Property name</label><br/>
-                        
+        <div class="left-panel">
+            <hr/>
+            <div class="title-box"><label>Mint NFT Ticket</label></div>
+        </div>
+        <div class="main-panel">
+            <div class="sub-panel">
+                <h3>TICKET SETTINGS</h3>
+                Address: <label><%= walletAddress %></label>
+                <form class="nftform" id="nftform">
+                    
+                    <div id="event">
+                        <div id="event-title">
+                            <label>Event title *</label><br/>
+                            <input name="eventTitle" placeholder="Enter event title" required/>
+                        </div>
+                        <div id="event-no">
+                            <label>Event No. *</label><br/>
+                            <input name="eventNo" placeholder="Enter event no" required/>
+                        </div>
                     </div>
-                    <div class="property-title">
-                        <label>Property value</label><br/>
+                    
+
+                    <div class="form-item">
+                        <label>QR code text *</label><br/>
+                        <input name="qrText" placeholder="Enter QR code text" class="input-area" required/>
                     </div>
-                    <div class="property-button nonvisible"></div>
-                </div>
-                <div class="property">
-                    <input type="text" name="propertyName" class="property-name input-area"/>
-                    <input type="text" name="propertyValue" class="property-value input-area"/>
-                    <button type="button" id="property-button" class="property-button nonvisible">Remove</button>
-                </div>
-            </div>
-            <button type="button" id="add-property-button" class="property-button">Add Property</button>
-            
-            <br/>
-            <label>Message</label><br/>
-            <textarea disabled id="outputMsg" name="outputMsg" class="input-area outputMsg"><%= outputMsg %></textarea><br/>
-            <div class="mintBtnDiv">
-                <button type="submit" onClick="onClick(event)" id="mint-button" class="mint-button">Mint Ticket</button>
-            </div>
+                    <div class="form-item">
+                        <label>Image prompt *</label><br/>
+                        <input name="imgPrompt" placeholder="Enter prompt" class="input-area" required/>
+                    </div>
 
-            
-            
-        </form>
+                    <div class="form-item">
+                        <label>Description *</label><br />
+                        <textarea name="description" placeholder="Enter description" class="input-area" required></textarea>
+                    </div>
+                    
+                    <hr>
+                    <h4>NFT SETTINGS</h4>
+                    <div>
+                        <label>Royalties(%)</label><br/>
+                        <input type="number" name="royalty" placeholder="0%" class="input-area"/>
+                    </div>
+                    <div id="properties-container">
+                        <div class="property">
+                            <div class="property-title">
+                                <label>Property name</label><br/>
+                                
+                            </div>
+                            <div class="property-title">
+                                <label>Property value</label><br/>
+                            </div>
+                            <div class="property-button nonvisible"></div>
+                        </div>
+                        <div class="property">
+                            <input type="text" name="propertyName" class="property-name input-area"/>
+                            <input type="text" name="propertyValue" class="property-value input-area"/>
+                            <button type="button" id="property-button" class="property-button nonvisible">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" id="add-property-button" class="property-button addBtn">Add Property</button>
+                    
+                    
+                    <br/>
+                    <label>Message</label><br/>
+                    <textarea disabled id="outputMsg" name="outputMsg" class="input-area outputMsg"><%= outputMsg %></textarea><br/>
+                    <div class="mintBtnDiv">
+                        <button type="submit" onClick="onClick(event)" id="mint-button" class="mint-button">Mint Ticket</button>
+                    </div>
 
-        <div id="overlay" class="overlay"></div>
-        <div id="spinner" class="spinner"></div>
-        
+                    
+                    
+                </form>
+
+                <div id="overlay" class="overlay"></div>
+                <div id="spinner" class="spinner"></div>
+            </div>
+        </div>
     </body>
 </html>
