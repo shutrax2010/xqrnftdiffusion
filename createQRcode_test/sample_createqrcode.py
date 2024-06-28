@@ -23,15 +23,15 @@ def index():
 	url = "https://api.pinata.cloud/pinning/pinFileToIPFS"
 	files = {'file': ('qrcode.png', img_byte_array, 'image/png')}
 	headers = {
-		'pinata_api_key': "7889b920748ef631b2b0",
-		'pinata_secret_api_key': "d8f3b545743f4760ec2937d3faf4df60b481a28b9b7d1c83c16ba72685455db4"
+		'pinata_api_key': "ef4b2776bda587ee59df",
+		'pinata_secret_api_key': "668688893b3ee64dcfdcc2b8ba801ecda95d916fdc307bd21f8d8351be86940c"
 	}
 	response = requests.post(url, files=files, headers=headers)
 	
 	# 一時ファイルを削除
 	img_byte_array.close()
 	
-	getUrl = 'https://gateway.pinata.cloud/ipfs/' + response.json()["IpfsHash"]
+	getUrl = 'ipfs://' + response.json()["IpfsHash"]
 	return getUrl
         
 if __name__ == '__main__':
