@@ -77,7 +77,11 @@ a {
 .title-box{
   color: #030340;
   margin: auto;
+  width: 20%;
   text-align: center;
+  position: fixed;
+  top: 20px;
+  left: 5%;
 }
 
 .main-panel{
@@ -99,7 +103,7 @@ a {
 
 #event{
   display: flex;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 #event-title{
@@ -130,7 +134,7 @@ a {
 }
 
 .form-item{
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 .input-area{
@@ -152,7 +156,7 @@ a {
 .property-title{
   box-sizing: border-box;
   flex: 60px;
-  margin-top: 10px;
+  margin-top: 15px;
   margin-right: 5px;
   margin-left: 5px;
 }
@@ -160,7 +164,7 @@ a {
 .property-name{
   box-sizing: border-box;
   flex: 60px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   margin-right: 5px;
   margin-left: 5px;
 }
@@ -168,7 +172,7 @@ a {
 .property-value{
   box-sizing: border-box;
   flex: 60px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   margin-right: 5px;
   margin-left: 5px;
 }
@@ -207,7 +211,7 @@ a {
 .mintBtnDiv{
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 .mint-button{
