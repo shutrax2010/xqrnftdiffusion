@@ -4,10 +4,11 @@ const router = express.Router();
 // Example route handler for nftList
 router.get('/', async function(req, res, next) {
   const menuItems = [
-    { label: 'Home', action: 'navigate("/")' },
-    { label: 'NFT List', action: 'navigate("/nftList")' },
-    { label: 'Mint Nft', action: 'navigate("/mintNft")' },
-    // Add more menu items as needed
+    { label: 'Create NFT Tickets', action: 'navigate("/mintNft")' },
+    { label: 'View Tickets', action: 'navigate("/nftList")' },
+    { label: 'Find Events', action: 'navigate("")' },
+    { label: 'About PhygitalifyQR', action: 'navigate("")' },
+    { label: 'Policy', action: 'navigate("")' },
   ];
 
   // Render nftList.ejs with menuItems
