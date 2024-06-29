@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const xrpl = require('xrpl');
 const pinataSDK = require('@pinata/sdk');
 const moment = require('moment');
-const https = require('https');
 const axios = require('axios');
 
 const { isAuthenticated } = require('../authMiddleware');
@@ -72,12 +71,16 @@ router.post('/mint', async function(req,res,next) {
   
 
   const uploadJson = {
-    EventTitle: bodyData.eventTitle,
-    NFTName: bodyData.eventTitle + bodyData.eventNo,
-    QRImage: qrImgUrl,
-    MintDate: moment().format('YYYY-MM-DD HH:mm:ss'),
-    NFTFlags: "Transferable",
-    Properties: properties
+    "EventTitle": bodyData.eventTitle,
+    "name": bodyData.eventTitle + bodyData.eventNo,
+    "image": qrImgUrl,
+    "description": bodyData.description,
+    "date": moment().format('x'),
+    "edition": "1",
+    "NFTFlags": "Transferable",
+    "creator": "Axrossroad.co.jp",
+    "artists": "Axrossroad.co.jp",
+    "attributes": properties
   };
   const options = {
     pinataMetadata: {
@@ -98,9 +101,6 @@ router.post('/mint', async function(req,res,next) {
   }
 
 
-
-
-
   //create NFT
   console.log("\n######start minting nft");
   //const net = 'wss://s.altnet.rippletest.net:51233';
@@ -108,16 +108,13 @@ router.post('/mint', async function(req,res,next) {
   console.log ("NET URL: ",net);
   const jsonUri = ipfsPrefix + ipfsHash;
 
-  outputMsg += 'connect to' + net + '....';
+
   
 
   const system_wallet = xrpl.Wallet.fromSeed(process.env.SYS_WALLET_SEED);
   const client = new xrpl.Client(net);
+  outputMsg += '\nconnected to' + net;
   await client.connect();
-  outputMsg += '\n Minting NFT.';
-  console.log('connected');
-
-
 
 
   const transationJson = {
@@ -128,9 +125,10 @@ router.post('/mint', async function(req,res,next) {
     "TransferFee": bodyData.royalty * 1000, // x * 1000
     "NFTokenTaxon": 0 ,
     "OtherData": {
-      "EventTitle": bodyData.eventTitle,
-      "NFTName": bodyData.eventTitle + bodyData.eventNo,
-      "Description": bodyData.description
+      // "EventTitle": bodyData.eventTitle,//ここに書くとbithompのメタデータに反映されるし、画像も表示される。
+      "name": bodyData.eventTitle + bodyData.eventNo,
+      "description": bodyData.description,
+      "image": qrImgUrl
     }
   }
 
@@ -139,17 +137,8 @@ router.post('/mint', async function(req,res,next) {
   console.log(tx);
   const bitcompPrefix = 'https://test.bithomp.com/en/nft/';
   const nftoken_id = tx.result.meta.nftoken_id;
-  outputMsg += '\nNFTを作成しました。'
+  outputMsg += '\nNFTを作成しました。以下のURLでもNFTを確認できます。';
   outputMsg += '\n' + bitcompPrefix + nftoken_id;
-
-  const nfts = await client.request({
-    method: "account_nfts",
-    account: system_wallet.classicAddress
-  });
-
-  outputMsg += '\n\nTransaction result: ' + tx.result.meta.TransactionResult;
-  
-  // console.log(nfts);
 
   //NFTokenCreateOfferの作成(売却オファー)
   const NFTokenCreateOfferJson ={
@@ -169,12 +158,6 @@ router.post('/mint', async function(req,res,next) {
 
   res.send(outputMsg);
 });
-
-
-
-
-
-
 
 
 module.exports = router;
