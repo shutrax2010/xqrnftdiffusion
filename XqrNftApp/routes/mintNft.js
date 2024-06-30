@@ -43,9 +43,12 @@ router.post('/mint', async function(req,res,next) {
   
   //get QR image from api
   console.log('\n#####start getting qrImg');
-  const postUrl = "https://xqrnftdiffusion.onrender.com"
+//  const postUrl = "https://xqrnftdiffusion.onrender.com"
+  const postUrl = "https://wallaby-more-pony.ngrok-free.app/"
+
   const postData = JSON.stringify({
-    name: bodyData.imgPrompt,
+    qrText: bodyData.qrText,
+    imgPrompt: bodyData.imgPrompt,
   });
 
   const postOptions = {
@@ -60,7 +63,11 @@ router.post('/mint', async function(req,res,next) {
     console.log('Response from API: ', qrImgUrl);
   } catch (error) {
     console.error(`Problem with request: ${error.message}`);
-    outputMsg += 'Something went wrong';
+    outputMsg += 'Something went wrong...\r\nQRコード画像の生成に失敗しました. ';
+
+    res.send(outputMsg);
+
+    return;
   }
   
   //可変プロパティの取得
