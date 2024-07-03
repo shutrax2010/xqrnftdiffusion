@@ -94,8 +94,8 @@
         <% } %>
         <br>
         <strong>Name:</strong>
-        <% if (nft.name.length > 17) { %>
-          <% let maxLength = 17; %>
+        <% if (nft.name.length > 15) { %>
+          <% let maxLength = 15; %>
           <% for (let i = 0; i < Math.ceil(nft.name.length / maxLength); i++) { %>
             <%= nft.name.slice(i * maxLength, (i + 1) * maxLength) %><br>
           <% } %>
