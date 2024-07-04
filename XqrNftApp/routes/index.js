@@ -43,7 +43,6 @@ router.get('/payload/:payload_uuid', async function(req, res, next) {
     const account = payloadData.response.account;
     const uri = payloadData.response.environment_nodeuri;
     const txid = payloadData.response.txid;
-    console.log("payloadData : ",payloadData);
     if (status === 'completed' && resolved ) {
       // Store authenticated state and account in session
       req.session.authenticated = true;
@@ -51,7 +50,6 @@ router.get('/payload/:payload_uuid', async function(req, res, next) {
       req.session.uri = uri;
       req.session.resolved = resolved;
       req.session.txid = txid;
-      console.log("req",req.session);
     }
     res.json({ status , account , resolved , txid}); 
 

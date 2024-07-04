@@ -10,9 +10,10 @@ const { XummSdk } = require('xumm-sdk');
 const Sdk = new XummSdk(process.env.XUMM_APIKEY, process.env.XUMM_APISECRET);
 
 // Fetch NFTs owned by an account
-router.get('/', async function (req, res, next) {
-  //router.get('/',isAuthenticated, async function(req, res, next) {
-  const walletAddress = process.env.SYS_WALLET_ADDRESS;
+//router.get('/', async function (req, res, next) {
+router.get('/',isAuthenticated, async function(req, res, next) {
+  //const walletAddress = process.env.SYS_WALLET_ADDRESS;
+  const walletAddress = req.session.account;
 
   if (!walletAddress) {
     return res.status(401).json({ message: 'User not authenticated' });
@@ -73,6 +74,25 @@ router.get('/', async function (req, res, next) {
               name = uri;
             }
           }
+      }else if(uri.startsWith('https://')){
+        const ipfsjson = uri;
+        try {
+          const response = await axios.get(ipfsjson);
+          if (response.data) {
+            name = response.data.name || 'Unnamed NFT';
+            const url = response.data.image || response.data.QRImage;
+            if (url.startsWith('ipfs://')) {
+              imageUrl = "https://ipfs.io/ipfs/" + url.slice(7);
+            } else if (url.startsWith('https://') || url.startsWith('http://')) {
+              imageUrl = url;
+            }
+            else{
+              imageUrl = "https://" + url;
+            }
+          }
+        } catch (error) {
+          name = uri;
+        }
       } else {
         name = "Unnamed NFT";
       }
@@ -122,7 +142,7 @@ router.post('/accept-offer', async function (req, res) {
     return res.status(400).json({ message: 'Offer ID is required' });
   }
 
-  const walletAddress = process.env.SYS_WALLET_ADDRESS;
+  const walletAddress = req.session.account;
 
   // Ensure user is authenticated
   if (!walletAddress) {

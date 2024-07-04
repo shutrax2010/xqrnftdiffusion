@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const { isAuthenticated } = require('../authMiddleware');
 
 // Example route handler for nftList
-router.get('/', async function(req, res, next) {
+router.get('/',isAuthenticated, async function(req, res, next) {
   const menuItems = [
     { label: 'Create NFT Tickets', action: 'navigate("/mintNft")' },
     { label: 'View Tickets', action: 'navigate("/nftList")' },

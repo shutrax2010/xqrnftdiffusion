@@ -85,6 +85,9 @@
   <h1>NFT Tickets</h1>
 
   <ul>
+  <% if (nfts.length === 0) { %>
+    <li>No NFTs to display</li>
+  <% } else { %>
     <% nfts.forEach(nft => { %>
       <li>
         <% if (nft.imageUrl !== "") { %>
@@ -107,6 +110,7 @@
         <% } %>
       </li>
     <% }); %>
+    <% } %>
   </ul>
 
   <!-- Popup for displaying offers -->
@@ -172,7 +176,6 @@
 
         if (response.ok) {
           const result = await response.json();
-          console.log("result:", result);
           if (result.payloadUrl) {
             // Show the QR code in the QR popup
             const qrCodeContainer = document.getElementById('qr-code-container');

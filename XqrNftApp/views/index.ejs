@@ -21,7 +21,6 @@
           // Send a GET request to the server with an indication for Xumm payload
           const response = await fetch('/?xummRequest=true');
           const payloadData = await response.json();
-          console.log(payloadData);
 
           // Check for errors
           if (!response.ok) {
