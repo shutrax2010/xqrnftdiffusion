@@ -8,9 +8,15 @@
   <style>
     body {
       font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
+      color: #030340;
+      background-color: #f1f1f1;
+      margin: 10px;
+    }
+    .nft-header{
+      font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
       color: white;
       background-color: #030340;
-      margin: 10px;
+      padding: 0px 10px;
     }
 
     ul {
@@ -40,6 +46,7 @@
       padding: 20px;
       border: 1px solid #ccc;
       z-index: 1000;
+      color:#f1f1f1;
     }
 
     .popup-overlay {
@@ -79,39 +86,117 @@
     .acceptButton {
       background-color: #345d9e;
     }
+
+    .tabcontent {
+      display: none;
+    }
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 10px;
+      position: relative;
+      border-bottom: 2px solid #ccc;
+    }
+
+    .tablinks {
+      padding: 10px;
+      cursor: pointer;
+      position: relative;
+      text-align: center;
+    }
+
+    .tablinks.active::after {
+      content: '';
+      display: block;
+      height: 2px;
+      background-color: #030340;
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+    }
+
   </style>
 </head>
 <body>
-  <h1>NFT Tickets</h1>
+  <div class = "nft-header">
+    <h1>NFT Tickets</h1>
+    <div class="tabs-container">
+      <!-- Tabs -->
+      <div class="tabs">
+          <div class="tablinks" data-tab="NFTs">NFTs</div>
+          <div class="tablinks" data-tab="Offers">Offers</div>
+      </div>
+    </div>
+  </div>
 
-  <ul>
-  <% if (nfts.length === 0) { %>
-    <li>No NFTs to display</li>
-  <% } else { %>
-    <% nfts.forEach(nft => { %>
-      <li>
-        <% if (nft.imageUrl !== "") { %>
-          <img src="<%= nft.imageUrl %>" alt="NFT Image">
-        <% } else { %>
-          <img src="../assets/no-image.svg" style="width: 200px; height: 200px;" alt="NFT Image">
+  <!-- NFTs Tab Content -->
+  <div id="NFTs" class="tabcontent">
+    <ul>
+      <% if (nfts.length === 0 ) { %>
+        <li>No NFTs to display</li>
+      <% } else { %>
+        <% nfts.forEach(nft => { %>
+          <!--To change bithomp URL in production-->
+          
+          <a href="https://test.bithomp.com/en/nft/<%= nft.id %>" target="_blank">
+          <li>
+            <% if (nft.imageUrl !== "") { %>
+              <img src="<%= nft.imageUrl %>" alt="NFT Image">
+            <% } else { %>
+              <img src="../assets/no-image.svg" style="width: 200px; height: 200px;" alt="NFT Image">
+            <% } %>
+          </a>
+            <br>
+            <strong>Name:</strong>
+            <% if (nft.name.length > 15) { %>
+              <% let maxLength = 15; %>
+              <% for (let i = 0; i < Math.ceil(nft.name.length / maxLength); i++) { %>
+                <%= nft.name.slice(i * maxLength, (i + 1) * maxLength) %><br>
+              <% } %>
+            <% } else { %>
+              <%= nft.name %><br>
+            <% } %>
+          </li>
+        <% }); %>
         <% } %>
-        <br>
-        <strong>Name:</strong>
-        <% if (nft.name.length > 15) { %>
-          <% let maxLength = 15; %>
-          <% for (let i = 0; i < Math.ceil(nft.name.length / maxLength); i++) { %>
-            <%= nft.name.slice(i * maxLength, (i + 1) * maxLength) %><br>
+      </ul>
+  </div>
+
+  <!-- Offers Tab Content -->
+  <div id="Offers" class="tabcontent">
+    <ul>
+    <% if (nfts.length === 0 ) { %>
+      <li>No NFTs to display</li>
+    <% } else { %>
+      <% nfts.forEach(nft => { %>
+        <!--To change bithomp URL in production-->
+        <%if (nft.offers.length > 0) {%>
+        <a href="https://test.bithomp.com/en/nft/<%= nft.id %>" target="_blank">
+        <li>
+          <% if (nft.imageUrl !== "") { %>
+            <img src="<%= nft.imageUrl %>" alt="NFT Image">
+          <% } else { %>
+            <img src="../assets/no-image.svg" style="width: 200px; height: 200px;" alt="NFT Image">
           <% } %>
-        <% } else { %>
-          <%= nft.name %><br>
+        </a>
+          <br>
+          <strong>Name:</strong>
+          <% if (nft.name.length > 15) { %>
+            <% let maxLength = 15; %>
+            <% for (let i = 0; i < Math.ceil(nft.name.length / maxLength); i++) { %>
+              <%= nft.name.slice(i * maxLength, (i + 1) * maxLength) %><br>
+            <% } %>
+          <% } else { %>
+            <%= nft.name %><br>
+          <% } %>
+            <button class="view-offer" onclick="showOffers(<%= JSON.stringify(nft.offers) %>)">View Offers</button>
+        </li>
         <% } %>
-        <% if (nft.offers.length > 0) { %>
-          <button class="view-offer" onclick="showOffers(<%= JSON.stringify(nft.offers) %>)">View Offers</button>
-        <% } %>
-      </li>
-    <% }); %>
-    <% } %>
-  </ul>
+      <% }); %>
+      <% } %>
+    </ul>
+  </div>
 
   <!-- Popup for displaying offers -->
   <div class="popup-overlay" id="popup-overlay"></div>
@@ -130,6 +215,25 @@
   </div>
 
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const tabLinks = document.querySelectorAll('.tablinks');
+      const tabContents = document.querySelectorAll('.tabcontent');
+
+      tabLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          tabLinks.forEach(item => item.classList.remove('active'));
+          tabContents.forEach(content => content.style.display = 'none');
+
+          const tab = this.getAttribute('data-tab');
+          document.getElementById(tab).style.display = 'block';
+          this.classList.add('active');
+        });
+      });
+
+      // Default to displaying the first tab
+      tabLinks[0].click();
+    });
+
     function showOffers(offers) {
       const offersList = document.getElementById('offers-list');
       offersList.innerHTML = ''; // Clear previous offers
@@ -200,6 +304,7 @@
         alert('Error accepting offer: ' + error.message);
       }
     }
+
   </script>
 </body>
 </html>
