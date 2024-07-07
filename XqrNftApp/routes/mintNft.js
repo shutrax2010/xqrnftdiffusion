@@ -13,7 +13,7 @@ router.use(bodyParser.urlencoded({extended: true}));
 router.use(bodyParser.json());
 
 const pinata = new pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_SECRET_KEY);
-// const sampleImageFile = 'ipfs://QmWiru8V3r42RSK9A2b85uq63nqUBnsCnczLhbxbcK9DCM';
+const sampleImageFile = 'ipfs://QmWiru8V3r42RSK9A2b85uq63nqUBnsCnczLhbxbcK9DCM';
 const ipfsPrefix = 'ipfs://';
     
 let user_walletAddress = "";
@@ -32,6 +32,47 @@ router.get('/', isAuthenticated, function(req, res, next) {
   }
 });
 
+router.post('/preview', async function(req, res, next){
+  let outputMsg = '';
+  const bodyData = req.body;
+
+  console.log(bodyData.genType);
+
+  //get QR image from api
+  console.log('\n#####start getting qrImg');
+  //  const postUrl = "https://xqrnftdiffusion.onrender.com"
+    const postUrl = "https://wallaby-more-pony.ngrok-free.app/"
+  
+    const postData = JSON.stringify({
+      qrText: bodyData.qrText,
+      imgPrompt: bodyData.imgPrompt,
+      genType: bodyData.genType == 1 ? 1 : 0 //1がreadable
+    });
+  
+    const postOptions = {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    };
+  
+    try {
+      const response = await axios.post(postUrl, postData, postOptions);
+      qrImgUrl = 'https://ipfs.io/ipfs/' + response.data.slice(7);
+      console.log('Response from API: ', qrImgUrl);
+      res.send(qrImgUrl);
+    } catch (error) {
+      if(error.message.includes('ETIMEDOUT')){
+        outputMsg += 'Failed to connect to the AI API server.'
+      }
+      console.error(`Problem with request: ${error.message}`);
+
+      //開発用にエラー時もサンプル画像を返す
+      qrImgUrl ='https://ipfs.io/ipfs/' + sampleImageFile.slice(7);
+      res.send(qrImgUrl);
+      // res.send(outputMsg);
+    }
+});
+
 router.post('/mint', async function(req,res,next) {
 
   
@@ -41,34 +82,7 @@ router.post('/mint', async function(req,res,next) {
   // console.log(bodyData);
 
   
-  //get QR image from api
-  console.log('\n#####start getting qrImg');
-//  const postUrl = "https://xqrnftdiffusion.onrender.com"
-  const postUrl = "https://wallaby-more-pony.ngrok-free.app/"
 
-  const postData = JSON.stringify({
-    qrText: bodyData.qrText,
-    imgPrompt: bodyData.imgPrompt,
-  });
-
-  const postOptions = {
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  };
-
-  try {
-    const response = await axios.post(postUrl, postData, postOptions);
-    qrImgUrl = response.data;
-    console.log('Response from API: ', qrImgUrl);
-  } catch (error) {
-    console.error(`Problem with request: ${error.message}`);
-    outputMsg += 'Something went wrong...\r\nQRコード画像の生成に失敗しました. ';
-
-    res.send(outputMsg);
-
-    return;
-  }
   
   //可変プロパティの取得
   let properties = {};

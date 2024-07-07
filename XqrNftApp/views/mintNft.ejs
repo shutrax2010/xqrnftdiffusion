@@ -27,27 +27,29 @@
                     <div id="event">
                         <div id="event-title">
                             <label>Event title *</label><br/>
-                            <input name="eventTitle" placeholder="Enter event title" required/>
+                            <input name="eventTitle" placeholder="Amazing Music Festival" required/>
                         </div>
                         <div id="event-no">
                             <label>Event No. *</label><br/>
-                            <input name="eventNo" placeholder="Enter event no" required/>
+                            <input name="eventNo" placeholder="1" required/>
                         </div>
                     </div>
                     
 
                     <div class="form-item">
                         <label>QR code text *</label><br/>
-                        <input name="qrText" placeholder="Enter QR code text" class="input-area" required/>
+                        <input name="qrText" placeholder="Enter QR code: #1111" class="input-area" required/>
                     </div>
                     <div class="form-item">
                         <label>Image prompt *</label><br/>
-                        <input name="imgPrompt" placeholder="Enter prompt" class="input-area" required/>
+                        <input name="imgPrompt" placeholder="A colorful bird on the branch og a cherry blossom tree" class="input-area" required/>
                     </div>
-
+                    <div class="form-item">
+                        <input type="checkbox" name="genType" value="1"><label>Generate readable QR code</label>
+                    </div>
                     <div class="form-item">
                         <label>Description *</label><br />
-                        <textarea name="description" placeholder="Enter description" class="input-area" rows="4" required></textarea>
+                        <textarea name="description" placeholder="Spring Awake! Amazing Music Festival brings the heat this season." class="input-area" rows="4" required></textarea>
                     </div>
                     
                     <hr>
@@ -84,13 +86,24 @@
                         <button type="submit" onClick="onClick(event)" id="mint-button" class="mint-button">Mint Ticket</button>
                     </div>
 
-                    
+                    <div class="popup-wrapper" id="popup-wrapper">
+                        <div class="popup" id="popup">
+                            <h4>Preview QR code</h4>
+                            <p>The AI QR image has been generated.</p>
+                            <img id="qrImage" class="qrImage"/>
+                            <div class="popup-btnarea">
+                                <button type="button" onclick="onClickPopupOK(event)" id="popup-okBtn" class="popup-okBtn">OK</button>
+                                <button type="button" onclick="onClickPopupCancel(event)" id="popup-cancelBtn" class="popup-cancelBtn">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
                     
                 </form>
 
                 <div id="overlay" class="overlay"></div>
                 <div id="spinner" class="spinner"></div>
             </div>
+            
         </div>
     </body>
 </html>
