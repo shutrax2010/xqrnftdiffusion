@@ -35,18 +35,28 @@ router.get('/', isAuthenticated, function(req, res, next) {
 router.post('/preview', async function(req, res, next){
   let outputMsg = '';
   const bodyData = req.body;
+  req.session.formData = bodyData;
 
   console.log(bodyData.genType);
 
   //get QR image from api
   console.log('\n#####start getting qrImg');
   //  const postUrl = "https://xqrnftdiffusion.onrender.com"
-    const postUrl = "https://wallaby-more-pony.ngrok-free.app/"
+    const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
+
+    // //接続チェック Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    // try{
+    //   const check = await axios.get(postUrl + 'check');
+    // }catch(error){
+    //   res.send({
+    //     outputMsg: 'Failed to connect to the AI API server.',
+    //   });
+    // }
   
     const postData = JSON.stringify({
       qrText: bodyData.qrText,
       imgPrompt: bodyData.imgPrompt,
-      genType: bodyData.genType == 1 ? 1 : 0 //1がreadable
+      genMode: bodyData.genType == 1 ? 1 : 0 //1がreadable
     });
   
     const postOptions = {
@@ -62,14 +72,16 @@ router.post('/preview', async function(req, res, next){
       res.send(qrImgUrl);
     } catch (error) {
       if(error.message.includes('ETIMEDOUT')){
-        outputMsg += 'Failed to connect to the AI API server.'
+        outputMsg += 'timeout'
       }
       console.error(`Problem with request: ${error.message}`);
 
       //開発用にエラー時もサンプル画像を返す
-      qrImgUrl ='https://ipfs.io/ipfs/' + sampleImageFile.slice(7);
-      res.send(qrImgUrl);
-      // res.send(outputMsg);
+      // qrImgUrl ='https://ipfs.io/ipfs/' + sampleImageFile.slice(7);
+      // res.send(qrImgUrl);
+      res.send({
+        outputMsg: outputMsg
+      });
     }
 });
 
@@ -114,7 +126,7 @@ router.post('/mint', async function(req,res,next) {
     const pinResponse = await pinata.pinJSONToIPFS(uploadJson,options);
     // console.log(pinResponse);
     ipfsHash = pinResponse.IpfsHash;
-    console.log(ipfsPrefix + ipfsHash);
+    console.log("uploadJson" + ipfsPrefix + ipfsHash);
   } catch (error) {
     console.log(error);
     outputMsg += "エラーが発生しました。";

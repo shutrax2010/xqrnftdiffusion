@@ -39,21 +39,27 @@ $(document).ready(function() {
         document.getElementById('popup-wrapper').style.display = 'block';
     }
 
-    $(document).on('click', '.popup-okBtn', function(){
+    $(document).on('click', '.popup-okBtn', function(event){
+        event.preventDefault();
         document.getElementById('spinner').style.display = 'block';
         document.getElementById('overlay').style.display = 'block';
 
         $.ajax({
-            url: '/minnft/mint',
+            url: '/mintnft/mint',
             type: 'POST',
+            data: $('#nftform').serialize()
         }).done(function(data, textStatus, jqXHR) {
             $('#outputMsg').val(data);
             console.log('success');
+
+            // $.get('/nftList'); //リクエストはできてるけどページが変わらない？
+            window.location.href = '/nftList';//これでいけてる
         }).fail(function() {
             console.log('fail');
         }).always(function() {
             document.getElementById('spinner').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
+            document.getElementById('popup-wrapper').style.display = 'none';
         });
     });
 
