@@ -88,13 +88,16 @@
 
                     <div class="popup-wrapper" id="popup-wrapper">
                         <div class="popup" id="popup">
-                            <h4>Preview QR code</h4>
-                            <p>The AI QR image has been generated.</p>
+                            <div class="popup-bar-upper">
+                                <h4>Preview QR code</h4>
+                            </div>
+                            <p class="popup-text">The AI QR image has been generated.</p>
                             <img id="qrImage" class="qrImage"/>
                             <div class="popup-btnarea">
-                                <button type="button" onclick="onClickPopupOK(event)" id="popup-okBtn" class="popup-okBtn">OK</button>
-                                <button type="button" onclick="onClickPopupCancel(event)" id="popup-cancelBtn" class="popup-cancelBtn">Cancel</button>
+                                <button type="button" onclick="onClickPopupOK(event)" id="popup-okBtn" class="popup-okBtn popup-btn">OK</button>
+                                <button type="button" onclick="onClickPopupCancel(event)" id="popup-cancelBtn" class="popup-cancelBtn popup-btn">Cancel</button>
                             </div>
+                            <div class="popup-bar-lower"></div>
                         </div>
                     </div>
                     
