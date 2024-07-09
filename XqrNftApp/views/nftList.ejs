@@ -16,12 +16,12 @@
       font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
       color: white;
       background-color: #030340;
-      padding: 0px 10px;
+      padding: 0px 30px;
     }
 
     ul {
       list-style-type: none;
-      padding: 0;
+      padding: 0px 40px;
       display: flex;
       flex-wrap: wrap;
     }
@@ -92,10 +92,9 @@
     }
     .tabs {
       display: flex;
-      justify-content: space-around;
+      justify-content: flex-start;
       margin-bottom: 10px;
       position: relative;
-      border-bottom: 2px solid #ccc;
     }
 
     .tablinks {
@@ -105,15 +104,23 @@
       text-align: center;
     }
 
-    .tablinks.active::after {
-      content: '';
-      display: block;
-      height: 2px;
-      background-color: #030340;
-      position: absolute;
-      bottom: -2px;
-      left: 0;
-      right: 0;
+    .tablinks.active {
+      background-color: #f1f1f1; 
+      color: #030340; 
+    }
+
+    .clickable {
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .clickable:hover {
+      transform: scale(1.05);
+      cursor: pointer;
+    }
+
+    .filter{
+      display: flex;
+      flex-direction: column;
     }
 
   </style>
@@ -124,36 +131,49 @@
     <div class="tabs-container">
       <!-- Tabs -->
       <div class="tabs">
-          <div class="tablinks" data-tab="NFTs">NFTs</div>
-          <div class="tablinks" data-tab="Offers">Offers</div>
+          <div class="tablinks clickable" data-tab="NFTs">NFTs</div>
+          <div class="tablinks clickable" data-tab="Offers">Offers</div>
       </div>
     </div>
   </div>
 
   <!-- NFTs Tab Content -->
   <div id="NFTs" class="tabcontent">
+    <!-- Input field for filtering -->
+    <div class="filter">
+      <label for="filterByTaxon">Event Group</label>
+      <input type="text" id="filterByTaxon" placeholder="Enter Event ...">
+      <button onclick="clearTaxonomyFilter()">Clear Filter</button>
+    </div>
+    <br><br>
+
     <ul>
       <% if (nfts.length === 0 ) { %>
         <li>No NFTs to display</li>
       <% } else { %>
         <% nfts.forEach(nft => { %>
-          <!--To change bithomp URL in production-->
-          
-          <a href="https://test.bithomp.com/en/nft/<%= nft.id %>" target="_blank">
+          <a class="clickable" href="<%= bithompUrl + nft.id %>" target="_blank">
           <li>
             <% if (nft.imageUrl !== "") { %>
-              <img src="<%= nft.imageUrl %>" alt="NFT Image">
+              <img class="clickable" src="<%= nft.imageUrl %>" alt="NFT Image">
             <% } else { %>
-              <img src="../assets/no-image.svg" style="width: 200px; height: 200px;" alt="NFT Image">
+              <img class="clickable" src="../assets/no-image.svg" style="width: 200px; height: 200px;" alt="NFT Image">
             <% } %>
           </a>
             <br>
             <strong>Name:</strong>
             <% if (nft.name.length > 15) { %>
               <% let maxLength = 15; %>
-              <% for (let i = 0; i < Math.ceil(nft.name.length / maxLength); i++) { %>
-                <%= nft.name.slice(i * maxLength, (i + 1) * maxLength) %><br>
+              <% let slicedName = ''; %>
+              <% let remainingText = nft.name; %>
+            
+              <% while (remainingText.length > maxLength) { %>
+                <% let sliceEnd = remainingText.lastIndexOf(' ', maxLength); %>
+                <% if (sliceEnd === -1) sliceEnd = maxLength; %>
+                <% slicedName += remainingText.slice(0, sliceEnd) + ' '; %>
+                <% remainingText = remainingText.slice(sliceEnd).trim(); %><br>
               <% } %>
+              <%= slicedName + remainingText %>
             <% } else { %>
               <%= nft.name %><br>
             <% } %>
@@ -166,27 +186,47 @@
   <!-- Offers Tab Content -->
   <div id="Offers" class="tabcontent">
     <ul>
-    <% if (nfts.length === 0 ) { %>
-      <li>No NFTs to display</li>
+      <% 
+      let hasOffers = false;
+      nfts.forEach(nft => { 
+        if (nft.offers.length > 0) { 
+          hasOffers = true; 
+        }
+      }); 
+    %>
+
+    <% if (!hasOffers) { %>
+        <li>No offers to display</li>
     <% } else { %>
       <% nfts.forEach(nft => { %>
-        <!--To change bithomp URL in production-->
         <%if (nft.offers.length > 0) {%>
-        <a href="https://test.bithomp.com/en/nft/<%= nft.id %>" target="_blank">
+        <a class="clickable" href="<%= bithompUrl + nft.id %>" target="_blank">
         <li>
           <% if (nft.imageUrl !== "") { %>
-            <img src="<%= nft.imageUrl %>" alt="NFT Image">
+            <img class="clickable" src="<%= nft.imageUrl %>" alt="NFT Image">
           <% } else { %>
-            <img src="../assets/no-image.svg" style="width: 200px; height: 200px;" alt="NFT Image">
+            <img class="clickable" src="../assets/no-image.svg" style="width: 200px; height: 200px;" alt="NFT Image">
           <% } %>
         </a>
           <br>
           <strong>Name:</strong>
           <% if (nft.name.length > 15) { %>
             <% let maxLength = 15; %>
+            <% let slicedName = ''; %>
             <% for (let i = 0; i < Math.ceil(nft.name.length / maxLength); i++) { %>
-              <%= nft.name.slice(i * maxLength, (i + 1) * maxLength) %><br>
+              <% let sliceStart = i * maxLength; %>
+              <% let sliceEnd = (i + 1) * maxLength; %>
+              <% let slicedSubstring = nft.name.slice(sliceStart, sliceEnd); %>
+              <% let lastSpaceIndex = slicedSubstring.lastIndexOf(' '); %>
+
+              <% if (lastSpaceIndex !== -1 && lastSpaceIndex !== maxLength - 1) { %>
+                <% slicedName += slicedSubstring.slice(0, lastSpaceIndex + 1); %><br>
+                <% slicedName += slicedSubstring.slice(lastSpaceIndex + 1); %><br>
+              <% } else { %>
+                <% slicedName += slicedSubstring %><br>
+              <% } %>
             <% } %>
+            <%= slicedName %>
           <% } else { %>
             <%= nft.name %><br>
           <% } %>

@@ -14,6 +14,7 @@ const Sdk = new XummSdk(process.env.XUMM_APIKEY, process.env.XUMM_APISECRET);
 router.get('/',isAuthenticated, async function(req, res, next) {
   //const walletAddress = process.env.SYS_WALLET_ADDRESS;
   const walletAddress = req.session.account;
+  const bithompUrl = process.env.BITHOMP_URL;
 
   if (!walletAddress) {
     return res.status(401).json({ message: 'User not authenticated' });
@@ -123,7 +124,7 @@ router.get('/',isAuthenticated, async function(req, res, next) {
     nfts.sort((a, b) => a.name.localeCompare(b.name));
 
     client.disconnect();
-    res.render('nftList', { nfts, walletAddress });
+    res.render('nftList', { nfts, walletAddress,bithompUrl });
 
   } catch (error) {
     console.error('Error fetching NFTs:', error);
@@ -154,7 +155,7 @@ router.post('/accept-offer', async function (req, res) {
     const payload = {
       TransactionType: 'NFTokenAcceptOffer',
       Account: walletAddress,
-      NFTokenBuyOffer: offerId // Assuming NFTokenBuyOffer is correct for your use case
+      NFTokenSellOffer: offerId // Assuming NFTokenSellOffer is correct for your use case
     };
 
     const payloadResponse = await Sdk.payload.createAndSubscribe(payload, async (event) => {
