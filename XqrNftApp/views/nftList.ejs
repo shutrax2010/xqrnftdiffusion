@@ -143,7 +143,8 @@
     <div class="filter">
       <label for="filterByTaxon">Event Group</label>
       <input type="text" id="filterByTaxon" placeholder="Enter Event ...">
-      <button onclick="clearTaxonomyFilter()">Clear Filter</button>
+      <button class="clickable" onclick="clearTaxonomyFilter()">Clear Filter</button>
+      <br><hr>
     </div>
     <br><br>
 
@@ -163,19 +164,30 @@
             <br>
             <strong>Name:</strong>
             <% if (nft.name.length > 15) { %>
-              <% let maxLength = 15; %>
-              <% let slicedName = ''; %>
-              <% let remainingText = nft.name; %>
-            
-              <% while (remainingText.length > maxLength) { %>
-                <% let sliceEnd = remainingText.lastIndexOf(' ', maxLength); %>
-                <% if (sliceEnd === -1) sliceEnd = maxLength; %>
-                <% slicedName += remainingText.slice(0, sliceEnd) + ' '; %>
-                <% remainingText = remainingText.slice(sliceEnd).trim(); %><br>
-              <% } %>
-              <%= slicedName + remainingText %>
+              <% 
+                let maxLength = 15; 
+                let words = nft.name.split(' ');
+                let currentLine = '';
+                let formattedName = '';
+
+                words.forEach(word => {
+                  if ((currentLine + word).length > maxLength) {
+                    formattedName += currentLine.trim() + '<br>';
+                    currentLine = word + ' ';
+                  } else {
+                    currentLine += word + ' ';
+                  }
+                });
+                formattedName += currentLine.trim();
+              %>
+              <%- formattedName %><br>
             <% } else { %>
               <%= nft.name %><br>
+            <% } %>
+            <% if (nft.offers.length > 0) { %>
+              <p><%= nft.offers[0].amount %> XRP</p>
+            <% } else { %>
+              <button class="sell-offer clickable" onclick="createOffer('<%= nft.id %>')">Create Offer</button>
             <% } %>
           </li>
         <% }); %>
@@ -188,7 +200,7 @@
     <ul>
       <% 
       let hasOffers = false;
-      nfts.forEach(nft => { 
+      Sysnfts.forEach(nft => { 
         if (nft.offers.length > 0) { 
           hasOffers = true; 
         }
@@ -198,7 +210,7 @@
     <% if (!hasOffers) { %>
         <li>No offers to display</li>
     <% } else { %>
-      <% nfts.forEach(nft => { %>
+      <% Sysnfts.forEach(nft => { %>
         <%if (nft.offers.length > 0) {%>
         <a class="clickable" href="<%= bithompUrl + nft.id %>" target="_blank">
         <li>
@@ -211,26 +223,27 @@
           <br>
           <strong>Name:</strong>
           <% if (nft.name.length > 15) { %>
-            <% let maxLength = 15; %>
-            <% let slicedName = ''; %>
-            <% for (let i = 0; i < Math.ceil(nft.name.length / maxLength); i++) { %>
-              <% let sliceStart = i * maxLength; %>
-              <% let sliceEnd = (i + 1) * maxLength; %>
-              <% let slicedSubstring = nft.name.slice(sliceStart, sliceEnd); %>
-              <% let lastSpaceIndex = slicedSubstring.lastIndexOf(' '); %>
+            <% 
+              let maxLength = 15; 
+              let words = nft.name.split(' ');
+              let currentLine = '';
+              let formattedName = '';
 
-              <% if (lastSpaceIndex !== -1 && lastSpaceIndex !== maxLength - 1) { %>
-                <% slicedName += slicedSubstring.slice(0, lastSpaceIndex + 1); %><br>
-                <% slicedName += slicedSubstring.slice(lastSpaceIndex + 1); %><br>
-              <% } else { %>
-                <% slicedName += slicedSubstring %><br>
-              <% } %>
-            <% } %>
-            <%= slicedName %>
+              words.forEach(word => {
+                if ((currentLine + word).length > maxLength) {
+                  formattedName += currentLine.trim() + '<br>';
+                  currentLine = word + ' ';
+                } else {
+                  currentLine += word + ' ';
+                }
+              });
+              formattedName += currentLine.trim();
+            %>
+            <%- formattedName %><br>
           <% } else { %>
             <%= nft.name %><br>
           <% } %>
-            <button class="view-offer" onclick="showOffers(<%= JSON.stringify(nft.offers) %>)">View Offers</button>
+            <button class="view-offer clickable" onclick="showOffers(<%= JSON.stringify(nft.offers) %>)">View Offers</button>
         </li>
         <% } %>
       <% }); %>
@@ -243,7 +256,7 @@
   <div class="popup" id="popup">
     <h2>Offers</h2>
     <div id="offers-list"></div>
-    <button class="closeButton" onclick="closePopup()">Close</button>
+    <button class="closeButton clickable" onclick="closePopup()">Close</button>
   </div>
 
   <!-- Popup for displaying QR code -->
@@ -251,7 +264,7 @@
   <div class="qr-popup" id="qr-popup">
     <h2>Scan the QR code</h2>
     <div id="qr-code-container"></div>
-    <button class="closeButton" onclick="closeQrPopup()">Close</button>
+    <button class="closeButton clickable" onclick="closeQrPopup()">Close</button>
   </div>
 
   <script>
@@ -285,7 +298,7 @@
           <p>Offer Amount: ${amountInXRP} XRP</p>
           <p>Offer Owner: ${offer.owner}</p>
           <p>Expiry: ${offer.expiry ? new Date(offer.expiry * 1000).toLocaleString() : 'No expiry'}</p>
-          <button class="acceptButton" onclick="acceptOffer('${offer.nft_offer_index}')">Accept Offer</button>
+          <button class="acceptButton clickable" onclick="acceptOffer('${offer.nft_offer_index}')">Accept Offer</button>
         `;
         offersList.appendChild(offerDiv);
       });
@@ -344,6 +357,38 @@
         alert('Error accepting offer: ' + error.message);
       }
     }
+
+    async function createOffer(nftId) {
+  const price = prompt("Enter the price in XRP:");
+  if (price) {
+    try {
+      let retryCount = 0;
+      const maxRetries = 3;
+      while (retryCount < maxRetries) {
+        const response = await fetch('/nftList/create-offer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nftId, price })
+        });
+        const result = await response.json();
+        if (result.success) {
+          // Update UI or handle success
+          alert("Sell offer created successfully!");
+          return; // Exit function on success
+        } else {
+          // Retry or handle specific errors
+          retryCount++;
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retrying
+        }
+      }
+      alert("Maximum retries exceeded. Failed to create sell offer.");
+    } catch (error) {
+      alert("Error creating sell offer: " + error.message);
+    }
+  }
+}
 
   </script>
 </body>
