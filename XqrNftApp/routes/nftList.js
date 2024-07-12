@@ -6,6 +6,7 @@ require('dotenv').config();
 const { log, error } = require('./logger');
 const { isAuthenticated } = require('../authMiddleware');
 const { XummSdk } = require('xumm-sdk');
+const session = require('express-session');
 
 const Sdk = new XummSdk(process.env.XUMM_APIKEY, process.env.XUMM_APISECRET);
 
@@ -15,6 +16,7 @@ router.get('/',isAuthenticated, async function(req, res, next) {
   //const walletAddress = process.env.SYS_WALLET_ADDRESS;
   const walletAddress = req.session.account;
   const bithompUrl = process.env.BITHOMP_URL;
+  const defaultTab = req.session.tab || 0;
 
   if (!walletAddress) {
     return res.status(401).json({ message: 'User not authenticated' });
@@ -124,7 +126,6 @@ router.get('/',isAuthenticated, async function(req, res, next) {
         offers
       };
     }));
-    log("nftsResponse :",nftsResponse);
 
     const Sysnfts = await Promise.all(sysNftsResponse.result.account_nfts.map(async nft => {
       let imageUrl = ''; // Initialize imageUrl
@@ -219,7 +220,7 @@ router.get('/',isAuthenticated, async function(req, res, next) {
     nfts.sort((a, b) => a.name.localeCompare(b.name));
 
     client.disconnect();
-    res.render('nftList', { nfts, walletAddress,bithompUrl,Sysnfts });
+    res.render('nftList', { nfts, walletAddress,bithompUrl,Sysnfts,defaultTab });
 
   } catch (error) {
     console.error('Error fetching NFTs:', error);
@@ -269,7 +270,7 @@ router.post('/accept-offer', async function (req, res) {
   }
 });
 
-router.post('/create-offer', isAuthenticated, async function (req, res) {
+router.post('/create-offer', async function (req, res) {
   const { nftId, price } = req.body;
   const walletAddress = req.session.account;
 
@@ -277,12 +278,14 @@ router.post('/create-offer', isAuthenticated, async function (req, res) {
     return res.status(401).json({ message: 'User not authenticated' });
   }
 
-  const client = new xrpl.Client('wss://s.altnet.rippletest.net:51233');
   try {
-    await client.connect();
-
-    // Create the sell offer
-    const sellOffer = {
+    // Create a payload for the Xumm app
+    // const payload = {
+    //   TransactionType: 'NFTokenAcceptOffer',
+    //   Account: walletAddress,
+    //   NFTokenSellOffer: offerId // Assuming NFTokenSellOffer is correct for your use case
+    // };
+    const payload = {
       TransactionType: 'NFTokenCreateOffer',
       Account: walletAddress,
       NFTokenID: nftId,
@@ -290,21 +293,20 @@ router.post('/create-offer', isAuthenticated, async function (req, res) {
       Flags: xrpl.NFTokenCreateOfferFlags.tfSellNFToken
     };
 
-    const wallet = xrpl.Wallet.fromSeed(process.env.SYS_WALLET_SEED);
-    const prepared = await client.autofill(sellOffer);
-    const signed = wallet.sign(prepared);
-    const result = await client.submitAndWait(signed.tx_blob);
+    const payloadResponse = await Sdk.payload.createAndSubscribe(payload, async (event) => {
+      // This callback is called when the payload resolves (signed or rejected)
+      if (event.data.signed === true) {
+        res.json({ message: 'Offer accepted successfully', result: event.data });
+      } else {
+        res.status(400).json({ message: 'Offer acceptance declined' });
+      }
+    });
 
-    if (result.result.meta.TransactionResult === 'tesSUCCESS') {
-      res.json({ success: true });
-    } else {
-      res.json({ success: false, message: result.result.meta.TransactionResult });
-    }
+    // Send the QR code URL back to the client to be scanned by the Xumm app
+    res.json({ payloadUrl: payloadResponse.created.refs.qr_png });
 
-    client.disconnect();
   } catch (error) {
-    console.error('Error creating sell offer:', error);
-    res.status(500).json({ message: 'Error creating sell offer', error });
+    res.status(500).json({ message: 'Error accepting offer', error });
   }
 });
 

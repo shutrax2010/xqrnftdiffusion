@@ -187,6 +187,7 @@ router.post('/mint', async function(req,res,next) {
   console.log("\n売却オファー\n" + sellOfferTx);
   
   client.disconnect();
+  req.session.tab = 1;
   
 
   res.send(outputMsg);
