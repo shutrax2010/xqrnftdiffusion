@@ -75,15 +75,12 @@ router.post('/preview', async function(req, res, next){
   
     try {
       const response = await axios.post(postUrl, postData, postOptions);
-      if(response.data == ''){
-        throw new Error('Failed to create QRImage.');
+      if(response.data == '' || response.status !== 200){
+        throw new Error('Failed to generate the image due to excession of the limit.');
       }
       qrImgUrl = 'https://ipfs.io/ipfs/' + response.data.slice(7);
       console.log('Response from API: ', qrImgUrl);
       res.send(qrImgUrl);
-      if(response.status !== 200) {
-        throw new Error('Failed to generate the image due to excession of the limit.');
-      }
     } catch (error) {
       if(error.message.includes('ETIMEDOUT')){
         outputMsg += 'timeout'
@@ -91,8 +88,8 @@ router.post('/preview', async function(req, res, next){
       console.error(`Problem with request: ${error.message}`);
 
       //開発用にエラー時もサンプル画像を返す
-      // qrImgUrl ='https://ipfs.io/ipfs/' + sampleImageFile.slice(7);
-      // res.send(qrImgUrl);
+      qrImgUrl ='https://ipfs.io/ipfs/' + sampleImageFile.slice(7);
+      res.send(qrImgUrl);
       outputMsg += error.message;
       res.send({
         outputMsg: outputMsg
