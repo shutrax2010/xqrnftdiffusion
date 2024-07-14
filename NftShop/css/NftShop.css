@@ -1,0 +1,330 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.top-icon {
+    width: 48px;
+    object-fit: cover;
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    margin: 0 10px;
+}
+
+.search-bar {
+    width: 100%;
+    padding: 5px 40px 5px 10px; /* アイコンのスペースを確保 */
+    border: 1px solid #ddd;
+    border-radius: 20px; /* 角を丸くする */
+    box-sizing: border-box; /* パディングとボーダーの影響を含める */
+}
+
+.search-button {
+    position: absolute;
+    right: 10px; /* アイコンの位置を右側に配置 */
+    background: transparent;
+    border: none;
+    font-size: 18px; /* アイコンのサイズ調整 */
+    color: #333; /* アイコンの色 */
+    cursor: pointer; /* ポインタに変えることでクリック可能に見せる */
+    border-radius: 50%; /* ボタンを丸くする */
+}
+
+.search-button:focus {
+    outline: none; /* フォーカス時のアウトラインを削除 */
+}
+
+.account-name {
+    margin-right: 10px;
+    font-size: 16px;
+    color: #030340; /* 文字色 */
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1em;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #b3d9ff; /* ホバー時に背景色を少し濃くする */
+}
+
+/* header-imageのスタイル */
+.header-image {
+    position: relative;
+    width: 100%; /* 横幅を画面いっぱいに広げる */
+    height: 360px; /* 縦幅を360pxに設定 */
+    overflow: hidden; /* はみ出る部分を隠す */
+    display: flex;
+    align-items: center; /* 画像を中央に配置（縦方向） */
+    justify-content: center; /* 画像を中央に配置（横方向） */
+}
+
+.header-image img {
+    width: 100%; /* 横幅を100%にすることで画面いっぱいに広げる */
+    height: auto; /* 縦方向は自動調整 */
+    object-fit: cover; /* 中央部分を表示し、はみ出る部分を切り取る */
+}
+
+.header-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    text-align: center;
+}
+
+.header-overlay h1 {
+    margin: 0;
+    font-size: 36px;
+}
+
+.header-overlay p {
+    margin: 10px 0 0;
+    font-size: 50px;
+}
+
+/* header-textのスタイル */
+.header-text {
+    text-align: center; /* テキストを中央揃え */
+    margin: 20px 0; /* 上下にマージンを追加 */
+}
+
+.header-text p {
+    font-size: 1.5em; /* テキストのサイズを調整 */
+    color: #333; /* テキストカラーを設定 */
+    margin: 0; /* マージンをリセット */
+}
+
+/* galleryのスタイル */
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    padding: 16px;
+}
+
+.gallery-row {
+    display: flex; /* 横並びにする */
+    justify-content: space-between; /* 画像間にスペースを追加 */
+    margin-bottom: 20px; /* 行間にマージンを追加 */
+}
+
+.gallery-item {
+    width: 30%; /* 各画像の横幅を設定（3つ並ぶようにする） */
+    text-align: center; /* 中央揃えにする */
+}
+
+.gallery-item img {
+    width: 100%; /* 画像の横幅を100%に設定 */
+    height: auto; /* 縦方向は自動調整 */
+    object-fit: cover; /* 画像がはみ出すことなく表示されるようにする */
+}
+
+.gallery-caption {
+    margin-top: 10px; /* 画像とテキストの間にスペースを追加 */
+}
+
+.gallery-caption p {
+    font-size: 1em; /* 説明文のサイズを調整 */
+    color: #555; /* テキストカラーを設定 */
+    margin: 0; /* マージンをリセット */
+}
+
+.gallery-caption button {
+    display: block; /* ボタンをブロック要素として表示 */
+    margin: 10px auto 0; /* 上にマージンを追加し、中央に配置 */
+    padding: 10px 20px; /* ボタンの内側のスペースを調整 */
+    border: none; /* ボーダーをなしにする */
+    background-color: #87CEFA; /* ボタンの背景色を設定 */
+    color: white; /* ボタンの文字色を白にする */
+    cursor: pointer; /* カーソルをポインタにする */
+    border-radius: 50px; /* 左右の角を丸くする */
+    font-size: 1em; /* ボタンの文字サイズを調整 */
+}
+
+.gallery-caption button:hover {
+    background-color: #b3d9ff; /* ホバー時に背景色を少し濃くする */
+}
+
+/* event-gridのスタイル */
+.event-grid {
+    display: flex; /* 横並びにする */
+    flex-wrap: wrap; /* 画面幅に合わせて折り返し */
+    gap: 20px; /* アイテム間のスペース */
+    padding: 20px; /* ギャラリー全体のパディング */
+}
+
+/* イベントアイテムのスタイル */
+.event-item {
+    width: 23%; /* 4つのアイテムが横並びになるように設定 */
+    text-align: center; /* アイテム内のテキストを中央揃え */
+}
+
+.event-item img {
+    width: 100%; /* 画像をコンテナにフィットさせる */
+    height: auto; /* 高さは自動調整 */
+    border-radius: 8px; /* 画像の角を丸くする */
+}
+
+.event-caption {
+    margin-top: 10px; /* 画像と説明文の間にスペースを追加 */
+}
+
+.event-caption p {
+    font-size: 1em; /* 説明文のフォントサイズ */
+    color: #555; /* 説明文の色 */
+    margin: 0; /* マージンをリセット */
+}
+
+.event-caption button {
+    display: inline-block; /* ボタンをインラインブロックで表示 */
+    margin-top: 10px; /* 説明文との間にスペースを追加 */
+    padding: 10px 20px; /* ボタンの内側のスペースを調整 */
+    border: none; /* ボーダーをなしにする */
+    background-color: #007bff; /* ボタンの背景色 */
+    color: white; /* ボタンの文字色 */
+    text-align: center; /* ボタン内のテキストを中央揃え */
+    border-radius: 20px; /* ボタンの角を丸くする */
+    cursor: pointer; /* カーソルをポインタにする */
+    transition: background-color 0.3s ease; /* ホバー時のアニメーション */
+}
+
+.event-caption button:hover {
+    background-color: #0056b3; /* ホバー時の背景色 */
+}
+
+/* amounts-info コンテナ */
+.amounts-container {
+    display: flex;
+    justify-content: space-around; /* 等間隔で並べる */
+    align-items: center; /* 縦方向の中央揃え */
+    padding: 20px; /* 必要に応じて余白を追加 */
+}
+
+/* 各 Amount アイテム */
+.amount-item {
+    font-size: 1.2em; /* フォントサイズを設定 */
+    position: center;
+}
+
+/* Check Out ボタン */
+.checkout-button {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1em;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.checkout-button:hover {
+    background-color: #0056b3; /* ホバー時の色 */
+}
+
+.nft-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 200px;
+    text-align: center;
+}
+
+.nft-image {
+    width: 100%;
+    height: auto;
+}
+
+.nft-info {
+    padding: 8px;
+}
+
+.nft-name {
+    font-size: 1.2em;
+    margin: 0;
+}
+
+.nft-id {
+    color: #555;
+}
+
+
+footer {
+    background-color: #003366; /* 濃い紺色 */
+    padding: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between; /* 左右に分ける */
+    align-items: center; /* 垂直方向にセンタリング */
+    color: white; /* 文字色を白に設定 */
+}
+
+.footer-content p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.social-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.social-icon {
+    font-size: 24px;
+    text-decoration: none;
+    color: white; /* SNSアイコンの色を白に設定 */
+}
+
+.social-icon:hover {
+    color: #007bff; /* ホバー時の色を青に変更 */
+}
+
+.facebook:hover {
+    color: #3b5998;
+}
+
+.instagram:hover {
+    color: #e4405f;
+}
+
+.twitter:hover {
+    color: #1da1f2;
+}
