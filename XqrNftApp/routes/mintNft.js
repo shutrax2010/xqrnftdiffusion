@@ -43,9 +43,9 @@ router.post('/preview', async function(req, res, next){
   console.log('\n#####start getting qrImg');
   //  const postUrl = "https://xqrnftdiffusion.onrender.com";
   /**開発用 */
-  const postUrl = "https://simple-positive-swine.ngrok-free.app";
+  // const postUrl = "https://simple-positive-swine.ngrok-free.app";
   /**本番 */
-    // const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
+    const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
 
     //接続チェック Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
     try{
