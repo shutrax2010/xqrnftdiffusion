@@ -43,7 +43,7 @@ router.post('/preview', async function(req, res, next){
   /**開発用 */
   const postUrl = "https://simple-positive-swine.ngrok-free.app";
   /**本番 */
-    // const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
+  //const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
 
     //接続チェック
     try{
@@ -142,9 +142,10 @@ router.post('/mint', async function(req,res,next) {
 
   //create NFT
   console.log("\n######start minting nft");
-  //const net = 'wss://s.altnet.rippletest.net:51233';
-  const net = req.session.uri;
+  const net = process.env.TEST_NET;
   console.log ("NET URL: ",net);
+  
+
   const jsonUri = ipfsPrefix + ipfsHash;
 
 

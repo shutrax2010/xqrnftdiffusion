@@ -101,7 +101,6 @@ a {
 }
 
 .title-box{
-  color: #030340;
   margin: auto;
   width: 20%;
   text-align: center;
@@ -109,9 +108,19 @@ a {
   top: 20px;
   left: 5%;
 }
+.title-box-link{
+  text-decoration: none;
+  color: #030340;
+}
 .title-box label{
   font-size: 32px;
+  cursor: pointer;
+  transition: all .2s ease-in-out;
 }
+.title-box label:hover{
+  opacity: 0.6;
+}
+
 .main-panel{
   display: block;
   margin: auto;
@@ -177,6 +186,9 @@ a {
   border: none;
   padding: 10px;
 }
+.input-royalty{
+  width: 30%;
+}
 
 .property{
   display: flex;
@@ -194,8 +206,10 @@ a {
   box-sizing: border-box;
   flex: 60px;
   margin-bottom: 15px;
-  margin-right: 5px;
+  /*
   margin-left: 5px;
+  */
+  margin-right: 5px;
 }
 
 .property-value{
@@ -213,10 +227,12 @@ a {
   background-color: #87CEFA;
   margin-bottom: 10px;
   margin-right: 5px;
-  margin-left: 5px;
-  /* height: 25px; */
+  
+  /* height: 25px;
+    margin-left: 5px; */
   padding: 10px;
   font-size: 18px;
+  transition: all .2s ease-in-out;
 }
 
 .property-button:hover{
@@ -250,6 +266,7 @@ a {
   /* height: 30px; */
   padding: 10px;
   font-size: 18px;
+  transition: all .2s ease-in-out;
 }
 
 .mint-button:hover{
@@ -339,6 +356,7 @@ a {
   border-radius: 15px;
   height: 30px;
   width: 100px;
+  transition: all .2s ease-in-out;
 }
 
 .popup-btn:hover{
