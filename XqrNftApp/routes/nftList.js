@@ -17,12 +17,13 @@ router.get('/',isAuthenticated, async function(req, res, next) {
   const walletAddress = req.session.account;
   const bithompUrl = process.env.BITHOMP_URL;
   const defaultTab = req.session.tab || 0;
+  const net = process.env.TEST_NET;
 
   if (!walletAddress) {
     return res.status(401).json({ message: 'User not authenticated' });
   }
 
-  const client = new xrpl.Client('wss://s.altnet.rippletest.net:51233');
+  const client = new xrpl.Client(net);
   try {
     await client.connect();
     const nftsResponse = await client.request({
