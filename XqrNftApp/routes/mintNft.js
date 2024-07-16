@@ -41,17 +41,25 @@ router.post('/preview', async function(req, res, next){
 
   //get QR image from api
   console.log('\n#####start getting qrImg');
-  //  const postUrl = "https://xqrnftdiffusion.onrender.com"
+  //  const postUrl = "https://xqrnftdiffusion.onrender.com";
+  /**開発用 */
+  // const postUrl = "https://simple-positive-swine.ngrok-free.app";
+  /**本番 */
     const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
 
-    // //接続チェック Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
-    // try{
-    //   const check = await axios.get(postUrl + 'check');
-    // }catch(error){
-    //   res.send({
-    //     outputMsg: 'Failed to connect to the AI API server.',
-    //   });
-    // }
+    //接続チェック Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    try{
+      console.log('\n接続チェック');
+      const check = await axios.get(postUrl + '/check');
+      if(check.status !== 200){
+        throw new Error('Failed to connect to the AI API server.');
+      }
+      console.log('\ngetなげた');
+    }catch(error){
+      res.send({
+        outputMsg: 'Failed to connect to the AI API server.',
+      });
+    }
   
     const postData = JSON.stringify({
       qrText: bodyData.qrText,
@@ -67,6 +75,9 @@ router.post('/preview', async function(req, res, next){
   
     try {
       const response = await axios.post(postUrl, postData, postOptions);
+      if(response.data == '' || response.status !== 200){
+        throw new Error('Failed to generate the image due to excession of the limit.');
+      }
       qrImgUrl = 'https://ipfs.io/ipfs/' + response.data.slice(7);
       console.log('Response from API: ', qrImgUrl);
       res.send(qrImgUrl);
@@ -77,8 +88,9 @@ router.post('/preview', async function(req, res, next){
       console.error(`Problem with request: ${error.message}`);
 
       //開発用にエラー時もサンプル画像を返す
-      // qrImgUrl ='https://ipfs.io/ipfs/' + sampleImageFile.slice(7);
-      // res.send(qrImgUrl);
+      qrImgUrl ='https://ipfs.io/ipfs/' + sampleImageFile.slice(7);
+      res.send(qrImgUrl);
+      outputMsg += error.message;
       res.send({
         outputMsg: outputMsg
       });
@@ -129,7 +141,7 @@ router.post('/mint', async function(req,res,next) {
     console.log("uploadJson" + ipfsPrefix + ipfsHash);
   } catch (error) {
     console.log(error);
-    outputMsg += "エラーが発生しました。";
+    outputMsg += "An unknown error occurred";
     res.send(outputMsg);
   }
 
@@ -147,7 +159,12 @@ router.post('/mint', async function(req,res,next) {
   const system_wallet = xrpl.Wallet.fromSeed(process.env.SYS_WALLET_SEED);
   const client = new xrpl.Client(net);
   outputMsg += '\nconnected to' + net;
-  await client.connect();
+  try {
+    await client.connect();
+  } catch (error) {
+    outputMsg += 'Failed to connect to XRP Ledger net.';
+    res.send(outputMsg);
+  }
 
 
   const transationJson = {
@@ -156,10 +173,10 @@ router.post('/mint', async function(req,res,next) {
     "URI": xrpl.convertStringToHex(jsonUri),
     "Flags": 8,
     "TransferFee": bodyData.royalty * 1000, // x * 1000
-    "NFTokenTaxon": 0 ,
+    "NFTokenTaxon": bodyData.eventNo,
     "OtherData": {
       // "EventTitle": bodyData.eventTitle,//ここに書くとbithompのメタデータに反映されるし、画像も表示される。
-      "name": bodyData.eventTitle + bodyData.eventNo,
+      "name": bodyData.eventTitle,
       "description": bodyData.description,
       "image": qrImgUrl
     }
