@@ -34,26 +34,52 @@ a {
 }
 
 
-#sign-button{
+/* Common styles for buttons */
+.button-common {
   display: inline-block;
   padding: 12px 24px;
   font-size: 16px;
   color: #000;
-  background-color: #fff; 
+  background-color: #fff;
   border: none;
   border-radius: 20px;
   cursor: pointer;
   text-align: center;
   transition: 0.3s ease all;
   position: absolute;
-  bottom: 20%;
   left: 50%;
   transform: translateX(-50%);
 }
 
-#sign-button:hover {
+/* Individual button positioning */
+#sign-button {
+  bottom: 20%;
+}
+
+.buy-ticket-button {
+  bottom: 10%;
+}
+
+/* Hover state for buttons */
+.button-common:hover {
   color: #fff;
-  background-color: #1b1b1b; /* Adjust hover state as needed */
+  background-color: #1b1b1b;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .button-common {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  #sign-button {
+    bottom: 25%;
+  }
+
+  .buy-ticket-button {
+    bottom: 15%;
+  }
 }
 
 /* Mint NFT Ticket */
