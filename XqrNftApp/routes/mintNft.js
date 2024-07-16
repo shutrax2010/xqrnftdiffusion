@@ -37,17 +37,15 @@ router.post('/preview', async function(req, res, next){
   const bodyData = req.body;
   req.session.formData = bodyData;
 
-  console.log(bodyData.genType);
-
   //get QR image from api
   console.log('\n#####start getting qrImg');
   //  const postUrl = "https://xqrnftdiffusion.onrender.com";
   /**開発用 */
-  // const postUrl = "https://simple-positive-swine.ngrok-free.app";
+  const postUrl = "https://simple-positive-swine.ngrok-free.app";
   /**本番 */
-    const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
+    // const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
 
-    //接続チェック Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    //接続チェック
     try{
       console.log('\n接続チェック');
       const check = await axios.get(postUrl + '/check');
@@ -56,9 +54,7 @@ router.post('/preview', async function(req, res, next){
       }
       console.log('\ngetなげた');
     }catch(error){
-      res.send({
-        outputMsg: 'Failed to connect to the AI API server.',
-      });
+      return res.send('Failed to connect to the AI API server.');
     }
   
     const postData = JSON.stringify({
@@ -88,12 +84,10 @@ router.post('/preview', async function(req, res, next){
       console.error(`Problem with request: ${error.message}`);
 
       //開発用にエラー時もサンプル画像を返す
-      qrImgUrl ='https://ipfs.io/ipfs/' + sampleImageFile.slice(7);
-      res.send(qrImgUrl);
+      // qrImgUrl ='https://ipfs.io/ipfs/' + sampleImageFile.slice(7);
+      // res.send(qrImgUrl);
       outputMsg += error.message;
-      res.send({
-        outputMsg: outputMsg
-      });
+      res.send(outputMsg);
     }
 });
 

@@ -24,7 +24,10 @@ $(document).ready(function() {
             data: $('#nftform').serialize()
         }).done(function(data, textStatus, jqXHR) {
             $('#outputMsg').val(data);
-            showPopup(data);
+            if(!data.includes('Fail')){
+                showPopup(data);
+            }
+            
             console.log('success');
         }).fail(function() {
             console.log('fail');
