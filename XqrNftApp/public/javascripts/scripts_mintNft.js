@@ -23,12 +23,19 @@ $(document).ready(function() {
             type: 'POST',
             data: $('#nftform').serialize()
         }).done(function(data, textStatus, jqXHR) {
-            $('#outputMsg').val(data);
-            if(!data.includes('Fail')){
-                showPopup(data);
+            console.log(data);
+            document.getElementById('errorMsgDiv').style.display = 'none';
+            if(data.errorMsg.length !== 0){
+                $('#errorMsg').text(data.errorMsg);
+                document.getElementById('errorMsgDiv').style.display = 'block';
+                return;
             }
             
-            console.log('success');
+            $('#outputMsg').val(data);
+            showPopup(data.qrImgUrl);
+
+            
+            
         }).fail(function() {
             console.log('fail');
         }).always(function() {

@@ -18,7 +18,10 @@ const ipfsPrefix = 'ipfs://';
     
 let user_walletAddress = "";
 let ipfsHash = "";
+/** preview表示用（HTTPSプロトコル） */
 let qrImgUrl = "";
+/** NFTに埋め込む用（IPFSプロトコル） */
+let qrImgForNft = "";
 
 /* GET users listing. */
 router.get('/', isAuthenticated, function(req, res, next) {
@@ -27,7 +30,7 @@ router.get('/', isAuthenticated, function(req, res, next) {
     user_walletAddress = req.session.account;
     res.render('mintNft',{
       walletAddress: user_walletAddress,
-      outputMsg: ''
+      outputMsg: '',
     });
   }
 });
@@ -54,7 +57,9 @@ router.post('/preview', async function(req, res, next){
       }
       console.log('\ngetなげた');
     }catch(error){
-      return res.send('Failed to connect to the AI API server.');
+      return res.send({
+        errorMsg: 'Failed to connect to the AI API server.'
+      });
     }
   
     const postData = JSON.stringify({
@@ -74,20 +79,20 @@ router.post('/preview', async function(req, res, next){
       if(response.data == '' || response.status !== 200){
         throw new Error('Failed to generate the image due to excession of the limit.');
       }
+      qrImgForNft = ipfsPrefix + response.data;
       qrImgUrl = 'https://ipfs.io/ipfs/' + response.data.slice(7);
       console.log('Response from API: ', qrImgUrl);
-      res.send(qrImgUrl);
+      res.send({qrImgUrl: qrImgUrl});
     } catch (error) {
-      if(error.message.includes('ETIMEDOUT')){
-        outputMsg += 'timeout'
-      }
       console.error(`Problem with request: ${error.message}`);
 
       //開発用にエラー時もサンプル画像を返す
       // qrImgUrl ='https://ipfs.io/ipfs/' + sampleImageFile.slice(7);
       // res.send(qrImgUrl);
-      outputMsg += error.message;
-      res.send(outputMsg);
+      
+      return res.send({
+        errorMsg: 'Failed to generate the image due to excession of the limit.'
+      });
     }
 });
 
@@ -112,7 +117,7 @@ router.post('/mint', async function(req,res,next) {
   const uploadJson = {
     "EventTitle": bodyData.eventTitle,
     "name": bodyData.eventTitle + bodyData.eventNo,
-    "image": qrImgUrl,
+    "image": qrImgForNft,
     "description": bodyData.description,
     "date": moment().format('x'),
     "edition": "1",
@@ -130,13 +135,17 @@ router.post('/mint', async function(req,res,next) {
 
   try {
     const pinResponse = await pinata.pinJSONToIPFS(uploadJson,options);
+    if(pinResponse.data == '' || pinResponse.status !== 200){
+      throw new Error('An unknown error occurred');
+    }
     // console.log(pinResponse);
     ipfsHash = pinResponse.IpfsHash;
     console.log("uploadJson" + ipfsPrefix + ipfsHash);
   } catch (error) {
     console.log(error);
-    outputMsg += "An unknown error occurred";
-    res.send(outputMsg);
+    return res.send({
+      errorMsg: 'An unknown error occurred'
+    });
   }
 
 
@@ -157,8 +166,7 @@ router.post('/mint', async function(req,res,next) {
   try {
     await client.connect();
   } catch (error) {
-    outputMsg += 'Failed to connect to XRP Ledger net.';
-    res.send(outputMsg);
+    res.send({errorMsg: error.message});
   }
 
 

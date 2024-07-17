@@ -24,6 +24,9 @@
             <div class="sub-panel">
                 <h3>TICKET SETTINGS</h3>
                 Address: <label><%= walletAddress %></label>
+                    <div class="errorMsgDiv" id="errorMsgDiv">
+                        <p id="errorMsg"></p>
+                    </div>
                 <form class="nftform" id="nftform">
                     
                     <div id="event">
@@ -85,7 +88,7 @@
                     <label>Message</label><br/>
                     <textarea disabled id="outputMsg" name="outputMsg" class="input-area outputMsg" rows="8"><%= outputMsg %></textarea><br/>
                     <div class="mintBtnDiv">
-                        <button type="submit" onClick="onClick(event)" id="mint-button" class="mint-button">Mint Ticket</button>
+                        <button type="submit" id="mint-button" class="mint-button">Mint Ticket</button>
                     </div>
 
                     <div class="popup-wrapper" id="popup-wrapper">
