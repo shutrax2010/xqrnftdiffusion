@@ -140,6 +140,15 @@ a {
   padding-bottom: 40px;
 }
 
+.errorMsgDiv {
+  color: red;
+  background-color: rgb(249, 183, 176);
+  display: none;
+  border-radius: 15px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
 #event{
   display: flex;
   margin-top: 36px;
