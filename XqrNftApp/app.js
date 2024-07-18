@@ -14,6 +14,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/mintNft');
 var nftListRouter = require('./routes/nftList');
 var menuRouter = require('./routes/menu');
+var creditTokenRouter = require('./routes/token');
 
 var app = express();
 
@@ -41,6 +42,7 @@ app.use('/', indexRouter);
 app.use('/mintnft', usersRouter);
 app.use('/nftList', nftListRouter);
 app.use('/menu', menuRouter);
+app.use('/token', creditTokenRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
