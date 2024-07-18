@@ -4,160 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="../assets/PhygitalifyQR icon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel='stylesheet' href='/stylesheets/styles_nftList.css' />
   <title>NFT List</title>
-  <style>
-    body {
-      font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
-      color: #030340;
-      background-color: #f1f1f1;
-      margin: 10px;
-    }
-    .nft-header{
-      font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
-      color: white;
-      background-color: #030340;
-      padding: 0px 30px;
-    }
-
-    ul {
-      list-style-type: none;
-      padding: 0px 40px;
-      display: flex;
-      flex-wrap: wrap;
-    }
-
-    li {
-      margin: 20px;
-    }
-
-    img {
-      max-width: 200px;
-      max-height: 200px;
-    }
-
-    /* Popup styles */
-    .popup, .qr-popup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #030340;
-      padding: 20px;
-      border: 1px solid #ccc;
-      z-index: 1000;
-      color:#f1f1f1;
-    }
-
-    .popup-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 999;
-    }
-
-    .popup-content {
-      position: relative;
-    }
-
-    .popup-open {
-      overflow: hidden;
-    }
-
-    button {
-      background-color: #34a343;
-      padding: 3px 12px;
-      border: none;
-      border-radius: 6%;
-      color: white;
-    }
-
-    .closeButton {
-      background-color: #db0d29;
-      position: absolute;
-      bottom: 20px;
-      right: 10px;
-    }
-
-    .acceptButton {
-      background-color: #345d9e;
-    }
-
-    .tabcontent {
-      display: none;
-    }
-    .tabs {
-      display: flex;
-      justify-content: flex-start;
-      margin-bottom: 10px;
-      position: relative;
-    }
-
-    .tablinks {
-      padding: 10px;
-      cursor: pointer;
-      position: relative;
-      text-align: center;
-    }
-
-    .tablinks.active {
-      background-color: #f1f1f1; 
-      color: #030340; 
-    }
-
-    .clickable {
-      transition: transform 0.2s ease-in-out;
-    }
-
-    .clickable:hover {
-      transform: scale(1.05);
-      cursor: pointer;
-    }
-
-    .filter{
-      display: flex;
-      flex-direction: column;
-    }
-
-    /*create offer popup*/
-    #create-offer-popup-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    #create-offer-popup {
-      background: #030340;
-      top: 45%;
-      padding: 20px;
-      width: 80%;
-      margin: 0 10%;
-      border-radius: 8px;
-      text-align: center;
-      position: relative;
-      color: #fff;
-    }
-
-    #loading-animation {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 24px;
-      color: #333;
-    }
-
-  </style>
 </head>
 <body>
   <div class = "nft-header">
@@ -176,19 +25,27 @@
     <!-- Input field for filtering -->
     <div class="filter">
       <label for="filterByTaxon">Event Group</label>
-      <input type="text" id="filterByTaxon" placeholder="Enter Event ...">
-      <button class="clickable" onclick="clearTaxonomyFilter()">Clear Filter</button>
-      <br><hr>
+      <div class="custom-select-wrapper">
+        <select id="filterByTaxon" onchange="filterNFTsByTaxon()">
+          <option value="">Select Event...</option>
+          <% 
+          const uniqueTaxons = [...new Set(nfts.map(nft => nft.NFTokenTaxon))];
+          uniqueTaxons.sort((a, b) => a - b);
+          uniqueTaxons.forEach(taxon => { %>
+            <option value="<%= taxon %>"><%= taxon %></option>
+          <% }); %>
+        </select>
+      </div>
     </div>
-    <br><br>
+    <br><hr>
 
-    <ul>
+    <ul id="nftContainer">
       <% if (nfts.length === 0 ) { %>
         <li>No NFTs to display</li>
       <% } else { %>
         <% nfts.forEach(nft => { %>
           <a class="clickable" href="<%= bithompUrl + nft.id %>" target="_blank">
-          <li>
+          <li class="nft-item" data-taxonomy="<%= nft.NFTokenTaxon %>">
             <% if (nft.imageUrl !== "") { %>
               <img class="clickable" src="<%= nft.imageUrl %>" alt="NFT Image">
             <% } else { %>
@@ -465,6 +322,19 @@
       document.getElementById('create-offer-popup-overlay').style.display = 'none';
     }
 
+    function filterNFTsByTaxon() {
+      const selectedTaxon = document.getElementById('filterByTaxon').value;
+      const nfts = document.querySelectorAll('.nft-item');
+
+      nfts.forEach(nft => {
+        const taxon = nft.getAttribute('data-taxonomy');
+        if (selectedTaxon === '' || taxon === selectedTaxon) {
+          nft.style.display = 'block';
+        } else {
+          nft.style.display = 'none';
+        }
+      });
+    }
   </script>
 </body>
 </html>

@@ -39,6 +39,7 @@ router.get('/',isAuthenticated, async function(req, res, next) {
       let imageUrl = ''; // Initialize imageUrl
       let name = '';
       let offers ='';
+      let  NFTokenTaxon =nft.NFTokenTaxon;
 
       const uri = nft.URI ? Buffer.from(nft.URI, 'hex').toString() : null; // Decode URI from hex
       console.log("uri : ",uri);
@@ -118,13 +119,15 @@ router.get('/',isAuthenticated, async function(req, res, next) {
         name,
         uri: nft.URI || 'N/A', // Fallback URI if nft.URI is falsy
         imageUrl,
-        offers
+        offers,
+        NFTokenTaxon
       };
     }));
-
+console.log("nfts",nfts);
     const Sysnfts = await Promise.all(sysNftsResponse.result.account_nfts.map(async nft => {
       let imageUrl = ''; // Initialize imageUrl
       let name = '';
+      let  NFTokenTaxon =nft.NFTokenTaxon;
       let offers = [];
       const uri = nft.URI ? Buffer.from(nft.URI, 'hex').toString() : null; // Decode URI from hex
       console.log("uri : ",uri);
@@ -139,8 +142,6 @@ router.get('/',isAuthenticated, async function(req, res, next) {
                 const url = response.data.image;
                 if (url.startsWith('ipfs://')) {
                   imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-                  
-            console.log("imageurl : ",imageUrl);
                 } else if (url.startsWith('https://') || url.startsWith('http://')) {
                   imageUrl = url;
                 }
@@ -209,7 +210,8 @@ router.get('/',isAuthenticated, async function(req, res, next) {
               name,
               uri: nft.URI || 'N/A', // Fallback URI if nft.URI is falsy
               imageUrl,
-              offers
+              offers,
+              NFTokenTaxon
             }
     }));
 
