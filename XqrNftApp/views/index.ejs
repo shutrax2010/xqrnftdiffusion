@@ -33,7 +33,7 @@
           if (SignInUrl) {
             
             console.log('Redirecting to Xumm sign-in:', SignInUrl);
-            window.open(SignInUrl,'_blank','width=700,height=600');
+            const signInWindow = window.open(SignInUrl, '_blank', 'width=700,height=600');
             const payloadUUID = payloadData.created.uuid;
 
             const intervalId = setInterval(async () => {
@@ -44,6 +44,11 @@
                   if (payloadData.status === 'completed' && payloadData.resolved) {
                     clearInterval(intervalId);
                     console.log('Sign-in completed!');
+
+                    if (signInWindow) {
+                      signInWindow.close();
+                    }
+
                     window.location.href = signedInUrl;
                   }
                 } catch (error) {
