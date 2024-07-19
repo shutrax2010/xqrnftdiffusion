@@ -14,10 +14,12 @@
     <button id="buy-ticket" class="buy-ticket-button button-common">Buy Ticket</button>
 
     <script>
-      const button = document.getElementById('sign-button');
+      const signButton = document.getElementById('sign-button');
+      const buyTicketButton = document.getElementById('buy-ticket');
       const signedInUrl = '/menu'
+      const buyTicketUrl = '/nftshophome'
 
-      button.addEventListener('click', async () => {
+      const handleClick = async (redirectUrl) => {
         try {
           // Send a GET request to the server with an indication for Xumm payload
           const response = await fetch('/?xummRequest=true');
@@ -49,7 +51,7 @@
                       signInWindow.close();
                     }
 
-                    window.location.href = signedInUrl;
+                    window.location.href = redirectUrl;
                   }
                 } catch (error) {
                   console.error('Error fetching payload status:', error);
@@ -63,7 +65,10 @@
         } catch (error) {
           console.error('Error:', error);
         }
-      });
+      };
+
+      signButton.addEventListener('click', () => handleClick(signedInUrl));
+      buyTicketButton.addEventListener('click', () => handleClick(buyTicketUrl))
     </script>
   </body>
 </html>

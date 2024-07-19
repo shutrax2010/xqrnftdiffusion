@@ -7,6 +7,7 @@ const { log, error } = require('./logger');
 const { isAuthenticated } = require('../authMiddleware');
 const { XummSdk } = require('xumm-sdk');
 const session = require('express-session');
+const payloadStatusStore = {};
 
 const Sdk = new XummSdk(process.env.XUMM_APIKEY, process.env.XUMM_APISECRET);
 
@@ -123,7 +124,7 @@ router.get('/',isAuthenticated, async function(req, res, next) {
         NFTokenTaxon
       };
     }));
-console.log("nfts",nfts);
+
     const Sysnfts = await Promise.all(sysNftsResponse.result.account_nfts.map(async nft => {
       let imageUrl = ''; // Initialize imageUrl
       let name = '';
@@ -142,8 +143,8 @@ console.log("nfts",nfts);
                 const url = response.data.image;
                 if (url.startsWith('ipfs://')) {
                   imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-                } else if (url.startsWith('https://') || url.startsWith('http://')) {
-                  imageUrl = url;
+                } else if (url.startsWith('https://ipfs.io/ipfs/')) {
+                  imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
                 }
               }
             } catch (error) {
@@ -160,11 +161,8 @@ console.log("nfts",nfts);
                 const url = response.data.image;
                 if (url.startsWith('ipfs://')) {
                   imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-                } else if (url.startsWith('https://') || url.startsWith('http://')) {
-                  imageUrl = url;
-                }
-                else{
-                  imageUrl = "https://" + url;
+                } else if (url.startsWith('https://ipfs.io/ipfs/')) {
+                  imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
                 }
               }
             } catch (error) {
@@ -180,11 +178,8 @@ console.log("nfts",nfts);
             const url = response.data.image || response.data.QRImage;
             if (url.startsWith('ipfs://')) {
               imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-            } else if (url.startsWith('https://') || url.startsWith('http://')) {
-              imageUrl = url;
-            }
-            else{
-              imageUrl = "https://" + url;
+            } else if (url.startsWith('https://ipfs.io/ipfs/')) {
+              imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
             }
           }
         } catch (error) {
@@ -232,41 +227,50 @@ console.log("nfts",nfts);
 router.post('/accept-offer', async function (req, res) {
   const { offerId } = req.body;
 
-  // Validate offerId
   if (!offerId) {
     return res.status(400).json({ message: 'Offer ID is required' });
   }
 
   const walletAddress = req.session.account;
 
-  // Ensure user is authenticated
   if (!walletAddress) {
     return res.status(401).json({ message: 'User not authenticated' });
   }
 
   try {
-    // Create a payload for the Xumm app
     const payload = {
       TransactionType: 'NFTokenAcceptOffer',
       Account: walletAddress,
-      NFTokenSellOffer: offerId // Assuming NFTokenSellOffer is correct for your use case
+      NFTokenSellOffer: offerId
     };
 
-    const payloadResponse = await Sdk.payload.createAndSubscribe(payload, async (event) => {
-      // This callback is called when the payload resolves (signed or rejected)
+    const { created, resolved } = await Sdk.payload.createAndSubscribe(payload, (event) => {
       if (event.data.signed === true) {
-        res.json({ message: 'Offer accepted successfully', result: event.data });
+        payloadStatusStore[created.uuid] = { signed: true, resolved: true };
       } else {
-        res.status(400).json({ message: 'Offer acceptance declined' });
+        payloadStatusStore[created.uuid] = { signed: false, resolved: true };
       }
     });
 
-    // Send the QR code URL back to the client to be scanned by the Xumm app
-    res.json({ payloadUrl: payloadResponse.created.refs.qr_png });
+    payloadStatusStore[created.uuid] = { signed: false, resolved: false };
+
+    res.json({ payloadUrl: created.refs.qr_png, uuid: created.uuid });
 
   } catch (error) {
+    console.error('Error accepting offer:', error);
     res.status(500).json({ message: 'Error accepting offer', error });
   }
+});
+
+router.get('/payload-status/:uuid', (req, res) => {
+  const { uuid } = req.params;
+  const status = payloadStatusStore[uuid];
+
+  if (!status) {
+    return res.status(404).json({ message: 'Payload not found' });
+  }
+
+  res.json(status);
 });
 
 router.post('/create-offer', async function (req, res) {

@@ -12,7 +12,7 @@
   <div class = "nft-header">
     <div class="logoWithHeader">
       <a href = "/menu"><img src="../assets/PhygitalifyQR icon.png" alt="PhygitalifyQR Icon" class="logo clickable"></a>
-      <h1 class = "clickable"><a href="/menu">NFT Tickets</a></h1>
+      <h1 class = "site-name"><a href="/menu">PhygitalifyQR</a></h1>
     </div>
 
     <div class="tabs-container">
@@ -261,6 +261,29 @@
             document.getElementById('qr-popup-overlay').style.display = 'block';
             document.getElementById('qr-popup').style.display = 'block';
             closePopup(); // Close the offers popup
+
+            // Poll the server for the payload status
+            const intervalId = setInterval(async () => {
+              try {
+                const response = await fetch(`/nftList/payload-status/${result.uuid}`);
+                const payloadData = await response.json();
+
+                if (payloadData.signed) {
+                  clearInterval(intervalId);
+                  console.log('Offer acceptance completed!');
+                  // Optionally, you can refresh the page or update the UI here
+                  document.getElementById('qr-popup-overlay').style.display = 'none';
+                  document.getElementById('qr-popup').style.display = 'none';
+                  // Reload or update the UI as needed
+                } else if (payloadData.status === 'rejected') {
+                  clearInterval(intervalId);
+                  console.log('Offer acceptance declined');
+                  alert('Offer acceptance declined');
+                }
+              } catch (error) {
+                console.error('Error fetching payload status:', error);
+              }
+            }, 5000); // Check status every 5 seconds
           } else {
             alert('Offer accepted successfully');
             closePopup();
@@ -306,6 +329,7 @@
               document.getElementById('qr-popup').style.display = 'block';
             } else {
               alert('Offer created successfully');
+              closeQrPopup();
             }
           } else {
             const errorText = await response.text();

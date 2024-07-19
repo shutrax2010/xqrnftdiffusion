@@ -17,10 +17,6 @@ body {
     color: inherit;
 }
 
-.tabs-container {
-    padding: 0px 30px;
-}
-
 .logo {
     max-width: 60px;
     margin-right: 10px;
@@ -29,6 +25,7 @@ body {
 .logoWithHeader {
     display: flex;
     align-items: center;
+    padding: 10px 0px;
 }
 
 ul {
@@ -136,12 +133,12 @@ button {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    margin: 0px 15px;
+    padding: 10px 30px;
 }
 
 .custom-select-wrapper {
     position: relative;
-    width: 225px;
+    width: 75%;
 }
 
 .custom-select-wrapper select {
@@ -220,4 +217,12 @@ button {
     transform: translate(-50%, -50%);
     font-size: 24px;
     color: #333;
+}
+
+.site-name{
+    font: 23px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.site-name:hover {
+    opacity: 0.6;
 }
