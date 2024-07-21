@@ -2,8 +2,39 @@
 <html lang="en">
     <head>
         <title>Get Credit Tokens</title>
+        <link rel="icon" type="image/x-icon" href="../assets/PhygitalifyQR icon.png">
+        <link rel='stylesheet' href='stylesheets/style.css' />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+        <script src="/javascripts/scripts_token.js"></script>
     </head>
     <body>
+        <div class="header">
+            <div>
+                <img src="" alt="logo"><label>PhygitalifyQR</label>
+            </div>
+            <div>
+                You: <label><%= walletAddress %></label>
+            </div>
+        </div>
         <h1>Get Credit Tokens</h1>
+        <div class="PQRFaucetArea">
+            <div>
+                <img src="" alt="icon">
+                <h3>PQR Token Faucet</h3>
+                <p>Dripping 10 PQR per day.</p>
+            </div>
+            <div class="resultMsg" id="resultMsg">
+                <label>You got 10 PQR tokens!</label>
+            </div>
+            <div>
+                <button id="setTrustlineBtn">Set Trustline</button><br/>
+                <button id="claimTokensBtn">Claim tokens</button>
+                <p>You'll receive up to 10 PQR daily but the total number of boosts available will never exceed 10. For instance, if a you have 7 boosts, you'll only receive 3 more boosts. If you run out of PQR, you have the option to get additional PQR tokens from XRP.</p>
+            </div>
+        </div>
+        <div class="exchangeArea">
+            <h3>Exchange PQR for XRP</h3>
+            Coming Soon
+        </div>
     </body>
 </html>
