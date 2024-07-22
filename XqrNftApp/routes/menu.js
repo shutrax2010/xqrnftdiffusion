@@ -6,7 +6,7 @@ const { isAuthenticated } = require('../authMiddleware');
 router.get('/',isAuthenticated, async function(req, res, next) {
   const menuItems = [
     { label: 'Get Credit Tokens', action: 'navigate("/token")' },
-    { label: 'Create NFT Tickets', action: 'navigate("/mintNft")' },
+    { label: 'Create NFT Tickets', action: 'navigate("/createEvent")' },
     { label: 'View Tickets', action: 'navigate("/nftList")' },
     { label: 'Find Events', action: 'navigate("")' },
     { label: 'About PhygitalifyQR', action: 'navigate("")' },
