@@ -32,12 +32,27 @@ router.post('/setTrustline', async function(req, res, next) {
     
     await checkAccountCurrencies(client, user_walletAddress);
 
-    const signUrl = await setTrustline(system_wallet, user_walletAddress);
-    console.log('signUrl:', signUrl);
-    res.json({
-        url: signUrl
-    });
+    const payload = await setTrustline(system_wallet, user_walletAddress);
+
+    res.json(payload);
 });
+
+router.get('/payload/:payload_uuid', async function(req,res, next) {
+    const payloadUuid = req.params.payload_uuid;
+
+    try{
+        const payloadData = await xumm.payload.get(payloadUuid);
+        const status = payloadData.meta.signed ? 'completed' : 'in_progress';
+        const resolved = payloadData.meta.resolved ? true : false;
+        
+        res.json({
+            status,
+            resolved
+        });
+    }catch(error){
+        console.error('Error fetching payload data:', error);
+    }
+})
 
 /**
  * 引数のアドレスのアカウント情報を確認する
@@ -79,12 +94,8 @@ async function setTrustline(sysWallet,userAddress) {
         }
 
         const createdPayload = await xumm.payload.create(trustSetPayload);
-        if(createdPayload.next && createdPayload.next.always){
-            const signUrl = createdPayload.next.always;
-            return signUrl;
-        }else{
-            throw new Error('Payload creation failed.');
-        }
+
+        return createdPayload;
         
     } catch (error) {
         console.error('SetTrustline Error', error);
