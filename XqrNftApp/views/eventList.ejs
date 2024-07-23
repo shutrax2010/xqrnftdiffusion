@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Create Event</title>
+    <link rel="icon" type="image/x-icon" href="../assets/PhygitalifyQR icon.png">
+</head>
+<style>
+    .nft-header {
+        font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
+        color: white;
+        background-color: #030340;
+        padding: 0px 40px;
+    }
+
+    .nft-header h1 a,
+    .container .eventContainer .event a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    a {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    a:hover {
+        transform: scale(1.05);
+        cursor: pointer;
+    }
+
+    .logo {
+        max-width: 60px;
+        margin-right: 10px;
+    }
+
+    .logoWithHeader {
+        display: flex;
+        align-items: center;
+        padding: 10px 0px;
+    }
+
+    .site-name {
+        font: 23px "Lucida Grande", Helvetica, Arial, sans-serif;
+    }
+
+    .site-name:hover {
+        opacity: 0.6;
+    }
+
+    /* Container styling */
+    .container {
+        padding: 40px;
+        margin: 40px;
+    }
+
+    /* Flex container for events */
+    .eventContainer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    /* Styling for individual events */
+    .event {
+        flex: 0 0 calc(25% - 10px);
+        box-sizing: border-box;
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .eventList,
+    .see_more {
+        padding: 2px 15px;
+        border-radius: 20px;
+        background-color: #030340;
+        color: #fff;
+        text-decoration: none;
+        font-size: 13px;
+    }
+
+    .see_more {
+        background-color: #87cefa;
+        /* Light blue background color for the button */
+        color: #030340;
+        display: inline-block;
+        margin-top: auto;/
+    }
+
+    .event img {
+        width: 256px;
+        height: 143px;
+    }
+</style>
+
+<body>
+    <div class="nft-header">
+        <div class="logoWithHeader">
+            <a href="/menu"><img src="../assets/PhygitalifyQR icon.png" alt="PhygitalifyQR Icon"
+                    class="logo clickable"></a>
+            <h1 class="site-name"><a href="/menu">PhygitalifyQR</a></h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <a href="/mintNft" class="eventList">Create new event</a>
+        <br>
+        <hr style="border: 1px solid #030340; margin-top: 30px;">
+
+        <p>Your Events</p>
+        <div class="eventContainer">
+            <% menuItems.forEach(item=> { %>
+                <div class="event">
+                    <img src="<%= item.image %>">
+                    <p>
+                        <%- item.label.replace(/\n/g, '<br>' ) %>
+                    </p>
+                    <a class="see_more" href="<%= item.action%>">
+                        See more
+                    </a>
+                </div>
+                <br>
+                <% }) %>
+        </div>
+    </div>
+</body>
+
+</html>
