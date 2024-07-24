@@ -1,4 +1,4 @@
-html{
+html {
   width: 100%;
   height: 100%;
 }
@@ -17,7 +17,7 @@ a {
   color: #00B7FF;
 }
 
-#slogan{
+#slogan {
   text-transform: uppercase;
   color: rgb(245 251 248);
   font-family: Tilt Neon;
@@ -84,23 +84,43 @@ a {
 
 /* Mint NFT Ticket */
 #mintnft-body {
-  font:18px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
   display: flex;
   margin: 0;
   padding: 0;
   width: 100%;
-  /* height: 100%; */
+  height: 100%;
   min-height: max-content;
+
 }
 
-.left-panel{
+#mintnft-body.step1 {
+  height: 100%;
+}
+
+#mintnft-body.step2 {
+  height: auto;
+}
+
+.left-panel {
   width: 30%;
-  background-color: white;
+  background-color: #030340;
   padding: 20px;
   box-sizing: border-box;
 }
 
-.title-box{
+.left-panel.step1 {
+  background-color: #030340;
+  color: #fff;
+}
+
+/* Step 2 styles */
+.left-panel.step2 {
+  background-color: #fff;
+  color: #030340;
+}
+
+.title-box {
   margin: auto;
   width: 20%;
   text-align: center;
@@ -108,24 +128,35 @@ a {
   top: 20px;
   left: 5%;
 }
-.title-box-link{
+
+.title-box-link {
   text-decoration: none;
   color: #030340;
 }
-.title-box label{
+
+.title-box-link.step2 {
+  color: #030340;
+}
+
+.title-box-link.step1 {
+  color: #fff;
+}
+
+.title-box label {
   font-size: 32px;
   cursor: pointer;
   transition: all .2s ease-in-out;
 }
-.title-box label:hover{
+
+.title-box label:hover {
   opacity: 0.6;
 }
 
-.main-panel{
+.main-panel {
   display: block;
   margin: auto;
-  color: white;
-  background-color: #030340;
+  color: #030340;
+  background-color: #fff;
   width: 70%;
   height: 100%;
   min-height: max-content;
@@ -133,7 +164,18 @@ a {
   padding-left: 3%;
 }
 
-.sub-panel{
+.main-panel.step1 {
+  background-color: #fff;
+  color: #030340;
+}
+
+/* Step 2 styles */
+.main-panel.step2 {
+  background-color: #030340;
+  color: #fff;
+}
+
+.sub-panel {
   padding-top: 20px;
   padding-left: 40px;
   padding-right: 40px;
@@ -149,61 +191,79 @@ a {
   margin-top: 10px;
 }
 
-#event{
+#event {
   display: flex;
   margin-top: 36px;
   gap: 20px;
 }
 
-#event-title{
+input {
+  border: 0.5px solid #030340;
+}
+
+#event-title {
   flex-grow: 2;
   padding-right: 5px;
 }
 
-#event-title input{
+#event-title input {
   width: 100%;
   /* height: 25px; */
   box-sizing: border-box;
   border-radius: 15px;
-  border: none;
   padding: 10px;
 }
 
-#event-no{
+#event-no {
   flex: 50px;
 }
 
-#event-no input{
+#event-no input {
   width: 100%;
   /* height: 25px; */
   box-sizing: border-box;
   border-radius: 15px;
-  border: none;
   padding: 10px;
 }
 
-.form-item{
+#event-image-input {
+  flex-grow: 2;
+  padding-right: 5px;
+}
+
+#event-image-input input {
+  width: 100%;
+  /* height: 25px; */
+  box-sizing: border-box;
+  border-radius: 15px;
+  padding: 10px;
+}
+
+.form-item {
   margin-top: 15px;
 }
-.nftform input, .nftform textarea {
+
+.nftform input,
+.nftform textarea {
   font-size: 18px;
 }
-.input-area{
+
+.input-area {
   width: 100%;
   /* height: 25px; */
   border-radius: 15px;
-  border: none;
   padding: 10px;
 }
-.input-royalty{
+
+.input-royalty {
   width: 30%;
 }
 
-.property{
+.property {
   display: flex;
 }
 
-.property-title{
+.property-title {
   box-sizing: border-box;
   flex: 60px;
   margin-top: 15px;
@@ -211,7 +271,7 @@ a {
   margin-left: 5px;
 }
 
-.property-name{
+.property-name {
   box-sizing: border-box;
   flex: 60px;
   margin-bottom: 15px;
@@ -221,7 +281,7 @@ a {
   margin-right: 5px;
 }
 
-.property-value{
+.property-value {
   box-sizing: border-box;
   flex: 60px;
   margin-bottom: 15px;
@@ -229,14 +289,14 @@ a {
   margin-left: 5px;
 }
 
-.property-button{
+.property-button {
   box-sizing: border-box;
   flex: 30px;
   border-radius: 15px;
   background-color: #87CEFA;
   margin-bottom: 10px;
   margin-right: 5px;
-  
+
   /* height: 25px;
     margin-left: 5px; */
   padding: 10px;
@@ -244,31 +304,31 @@ a {
   transition: all .2s ease-in-out;
 }
 
-.property-button:hover{
+.property-button:hover {
   color: #030340;
   background-color: white;
 }
 
-.addBtn{
+.addBtn {
   width: 33%;
 }
 
-.nonvisible{
+.nonvisible {
   visibility: hidden;
 }
 
-.outputMsg{
+.outputMsg {
   background-color: lightsteelblue;
   padding: 10px;
 }
 
-.mintBtnDiv{
+.mintBtnDiv {
   display: flex;
   justify-content: flex-end;
   margin-top: 15px;
 }
 
-.mint-button{
+.mint-button {
   border-radius: 15px;
   background-color: white;
   width: 33%;
@@ -278,7 +338,7 @@ a {
   transition: all .2s ease-in-out;
 }
 
-.mint-button:hover{
+.mint-button:hover {
   color: #030340;
   background-color: #87CEFA;
 }
@@ -294,7 +354,7 @@ a {
   z-index: 999;
 }
 
-.spinner{
+.spinner {
   display: none;
   width: 50px;
   height: 50px;
@@ -310,11 +370,16 @@ a {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-.popup-wrapper{
+.popup-wrapper {
   background-color: rgba(0, 0, 0, 0.5);
   position: fixed;
   top: 0;
@@ -324,7 +389,7 @@ a {
   display: none;
 }
 
-.popup{
+.popup {
   text-align: center;
   background-color: white;
   color: #030340;
@@ -335,15 +400,15 @@ a {
   top: 20%;
 }
 
-.popup-text{
+.popup-text {
   padding-top: 50px;
 }
 
-.popup img{
+.popup img {
   width: 300px;
 }
 
-.popup-bar-upper{
+.popup-bar-upper {
   background-color: #030340;
   color: white;
   height: 50px;
@@ -352,7 +417,7 @@ a {
   top: 0;
 }
 
-.popup-bar-lower{
+.popup-bar-lower {
   background-color: #030340;
   height: 50px;
   width: 100%;
@@ -360,7 +425,7 @@ a {
   bottom: 0;
 }
 
-.popup-btn{
+.popup-btn {
   background-color: #87CEFA;
   border-radius: 15px;
   height: 30px;
@@ -368,6 +433,40 @@ a {
   transition: all .2s ease-in-out;
 }
 
-.popup-btn:hover{
+.popup-btn:hover {
   background-color: white;
+}
+
+.logoWithHeader {
+  display: flex;
+  align-items: center;
+  padding: 10px 0px;
+}
+
+.site-name {
+  font: 23px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.site-name:hover {
+  opacity: 0.6;
+}
+
+.clickable {
+  transition: transform 0.2s ease-in-out;
+}
+
+.clickable:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.logo {
+  max-width: 60px;
+  margin-right: 10px;
+}
+
+#next-button {
+  position: relative;
+  left: 100%;
+  transform: translateX(-100%);
 }

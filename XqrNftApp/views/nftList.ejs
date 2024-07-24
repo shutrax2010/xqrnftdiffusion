@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="../assets/PhygitalifyQR icon.png">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel='stylesheet' href='/stylesheets/styles_nftList.css' />
   <title>NFT List</title>
 </head>
+
 <body>
-  <div class = "nft-header">
+  <div class="nft-header">
     <div class="logoWithHeader">
-      <a href = "/menu"><img src="../assets/PhygitalifyQR icon.png" alt="PhygitalifyQR Icon" class="logo clickable"></a>
-      <h1 class = "site-name"><a href="/menu">PhygitalifyQR</a></h1>
+      <a href="/menu"><img src="../assets/PhygitalifyQR icon.png" alt="PhygitalifyQR Icon" class="logo clickable"></a>
+      <h1 class="site-name"><a href="/menu">PhygitalifyQR</a></h1>
     </div>
 
     <div class="tabs-container">
       <!-- Tabs -->
       <div class="tabs">
-          <div class="tablinks clickable" data-tab="NFTs">NFTs</div>
-          <div class="tablinks clickable" data-tab="Offers">Offers</div>
+        <div class="tablinks clickable" data-tab="NFTs">NFTs</div>
+        <div class="tablinks clickable" data-tab="Offers">Offers</div>
       </div>
     </div>
   </div>
@@ -32,117 +36,123 @@
       <div class="custom-select-wrapper">
         <select id="filterByTaxon" onchange="filterNFTsByTaxon()">
           <option value="">Select Event...</option>
-          <% 
-          const uniqueTaxons = [...new Set(nfts.map(nft => nft.NFTokenTaxon))];
-          uniqueTaxons.sort((a, b) => a - b);
-          uniqueTaxons.forEach(taxon => { %>
-            <option value="<%= taxon %>"><%= taxon %></option>
-          <% }); %>
+          <% const uniqueTaxons=[...new Set(nfts.map(nft=> nft.NFTokenTaxon))];
+            uniqueTaxons.sort((a, b) => a - b);
+            // Iterate through each unique taxon
+            uniqueTaxons.forEach(taxon => {
+            // Find the first nft with this taxon
+            const nft = nfts.find(nft => nft.NFTokenTaxon === taxon);
+            if (nft) { %>
+            <option value="<%= nft.NFTokenTaxon %>">
+              <%= nft.name %> - No.<%= nft.NFTokenTaxon %>
+            </option>
+            <% } }); %>
         </select>
       </div>
     </div>
-    <br><hr>
+    <br>
+    <hr>
 
     <ul id="nftContainer">
-      <% if (nfts.length === 0 ) { %>
+      <% if (nfts.length===0 ) { %>
         <li>No NFTs to display</li>
-      <% } else { %>
-        <% nfts.forEach(nft => { %>
-          <a class="clickable" href="<%= bithompUrl + nft.id %>" target="_blank">
-          <li class="nft-item" data-taxonomy="<%= nft.NFTokenTaxon %>">
-            <% if (nft.imageUrl !== "") { %>
-              <img class="clickable" src="<%= nft.imageUrl %>" alt="NFT Image">
-            <% } else { %>
-              <img class="clickable" src="../assets/no-image.svg" style="width: 200px; height: 200px;" alt="NFT Image">
-            <% } %>
-          </a>
+        <% } else { %>
+          <% nfts.forEach(nft=> { %>
+            <a class="clickable" href="<%= bithompUrl + nft.id %>" target="_blank">
+              <li class="nft-item" data-taxonomy="<%= nft.NFTokenTaxon %>">
+                <% if (nft.imageUrl !=="" ) { %>
+                  <img class="clickable" src="<%= nft.imageUrl %>" alt="NFT Image">
+                  <% } else { %>
+                    <img class="clickable" src="../assets/no-image.svg" style="width: 200px; height: 200px;"
+                      alt="NFT Image">
+                    <% } %>
+            </a>
             <br>
             <strong>Name:</strong>
-            <% if (nft.name.length > 15) { %>
-              <% 
-                let maxLength = 15; 
-                let words = nft.name.split(' ');
+            <% if (nft.name.length> 15) { %>
+              <% let maxLength=15; let words=nft.name.split(' ');
                 let currentLine = '';
                 let formattedName = '';
 
                 words.forEach(word => {
                   if ((currentLine + word).length > maxLength) {
-                    formattedName += currentLine.trim() + '<br>';
-                    currentLine = word + ' ';
-                  } else {
-                    currentLine += word + ' ';
-                  }
+                    formattedName += currentLine.trim() + ' <br>';
+                currentLine = word + ' ';
+                } else {
+                currentLine += word + ' ';
+                }
                 });
                 formattedName += currentLine.trim();
-              %>
-              <%- formattedName %><br>
-            <% } else { %>
-              <%= nft.name %><br>
-            <% } %>
-            <% if (nft.offers.length > 0) { %>
-              <p><%= nft.offers[0].amount/ 1000000 %> XRP</p>
-            <% } else { %>
-              <button class="sell-offer clickable" onclick="createOffer('<%= nft.id %>')">Create Offer</button>
-            <% } %>
-          </li>
-        <% }); %>
-        <% } %>
-      </ul>
+                %>
+                <%- formattedName %><br>
+                  <% } else { %>
+                    <%= nft.name %><br>
+                      <% } %>
+                        <% if (nft.offers.length> 0) { %>
+                          <p>
+                            <%= nft.offers[0].amount/ 1000000 %> XRP
+                          </p>
+                          <% } else { %>
+                            <button class="sell-offer clickable" onclick="createOffer('<%= nft.id %>')">Create
+                              Offer</button>
+                            <% } %>
+                              </li>
+                              <% }); %>
+                                <% } %>
+    </ul>
   </div>
 
   <!-- Offers Tab Content -->
   <div id="Offers" class="tabcontent">
     <ul>
-      <% 
-      let hasOffers = false;
-      Sysnfts.forEach(nft => { 
-        if (nft.offers.length > 0) { 
-          hasOffers = true; 
+      <% let hasOffers=false; Sysnfts.forEach(nft=> {
+        if (nft.offers.length > 0) {
+        hasOffers = true;
         }
-      }); 
-    %>
+        });
+        %>
 
-    <% if (!hasOffers) { %>
-        <li>No offers to display</li>
-    <% } else { %>
-      <% Sysnfts.forEach(nft => { %>
-        <%if (nft.offers.length > 0) {%>
-        <a class="clickable" href="<%= bithompUrl + nft.id %>" target="_blank">
-        <li>
-          <% if (nft.imageUrl !== "") { %>
-            <img class="clickable" src="<%= nft.imageUrl %>" alt="NFT Image">
+        <% if (!hasOffers) { %>
+          <li>No offers to display</li>
           <% } else { %>
-            <img class="clickable" src="../assets/no-image.svg" style="width: 200px; height: 200px;" alt="NFT Image">
-          <% } %>
-        </a>
-          <br>
-          <strong>Name:</strong>
-          <% if (nft.name.length > 15) { %>
-            <% 
-              let maxLength = 15; 
-              let words = nft.name.split(' ');
+            <% Sysnfts.forEach(nft=> { %>
+              <%if (nft.offers.length> 0) {%>
+                <a class="clickable" href="<%= bithompUrl + nft.id %>" target="_blank">
+                  <li>
+                    <% if (nft.imageUrl !=="" ) { %>
+                      <img class="clickable" src="<%= nft.imageUrl %>" alt="NFT Image">
+                      <% } else { %>
+                        <img class="clickable" src="../assets/no-image.svg" style="width: 200px; height: 200px;"
+                          alt="NFT Image">
+                        <% } %>
+                </a>
+                <br>
+                <strong>Name:</strong>
+                <% if (nft.name.length> 15) { %>
+                  <% let maxLength=15; let words=nft.name.split(' ');
               let currentLine = '';
               let formattedName = '';
 
               words.forEach(word => {
                 if ((currentLine + word).length > maxLength) {
-                  formattedName += currentLine.trim() + '<br>';
-                  currentLine = word + ' ';
-                } else {
-                  currentLine += word + ' ';
-                }
-              });
-              formattedName += currentLine.trim();
-            %>
-            <%- formattedName %><br>
-          <% } else { %>
-            <%= nft.name %><br>
-          <% } %>
-            <button class="view-offer clickable" onclick="showOffers(<%= JSON.stringify(nft.offers) %>)">View Offers</button>
-        </li>
-        <% } %>
-      <% }); %>
-      <% } %>
+                  formattedName += currentLine.trim() + ' <br>';
+                    currentLine = word + ' ';
+                    } else {
+                    currentLine += word + ' ';
+                    }
+                    });
+                    formattedName += currentLine.trim();
+                    %>
+                    <%- formattedName %><br>
+                      <% } else { %>
+                        <%= nft.name %><br>
+                          <% } %>
+                            <button class="view-offer clickable"
+                              onclick="showOffers(<%= JSON.stringify(nft.offers) %>)">View Offers</button>
+                            </li>
+                            <% } %>
+                              <% }); %>
+                                <% } %>
     </ul>
   </div>
 
@@ -185,13 +195,13 @@
     }
 
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       const tabLinks = document.querySelectorAll('.tablinks');
       const tabContents = document.querySelectorAll('.tabcontent');
       const defaultTab = <%= defaultTab %>;
 
       tabLinks.forEach(link => {
-        link.addEventListener('click', function() {
+        link.addEventListener('click', function () {
           tabLinks.forEach(item => item.classList.remove('active'));
           tabContents.forEach(content => content.style.display = 'none');
 
@@ -365,4 +375,5 @@
     }
   </script>
 </body>
+
 </html>
