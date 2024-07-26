@@ -25,7 +25,7 @@ $(document).ready(function () {
         }).done(function (data, textStatus, jqXHR) {
             console.log(data);
             document.getElementById('errorMsgDiv').style.display = 'none';
-            if (data.errorMsg.length !== 0) {
+            if (data && data.errorMsg && data.errorMsg.length !== 0) {
                 $('#errorMsg').text(data.errorMsg);
                 document.getElementById('errorMsgDiv').style.display = 'block';
                 return;
