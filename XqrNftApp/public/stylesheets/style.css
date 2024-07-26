@@ -469,4 +469,5 @@ input {
   position: relative;
   left: 100%;
   transform: translateX(-100%);
+  margin-top: 10px;
 }

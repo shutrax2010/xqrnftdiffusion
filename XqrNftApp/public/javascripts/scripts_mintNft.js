@@ -98,4 +98,27 @@ $(document).ready(function () {
         $('.title-box-link').removeClass('step2').addClass('step1');
         $('body#mintnft-body').removeClass('step2').addClass('step1');
     });
+
+
+    // Function to check if all required fields are filled
+    function checkRequiredFields() {
+        let allFilled = true;
+        $('#step1-content [required]').each(function () {
+            if ($(this).val() === '') {
+                allFilled = false;
+                return false; // Exit loop
+            }
+        });
+
+        // Enable or disable the next button based on allFilled
+        $('#next-button').prop('disabled', !allFilled);
+    }
+
+    // Check fields initially
+    checkRequiredFields();
+
+    // Attach keyup and change event handlers to required fields
+    $('#step1-content [required]').on('keyup change', function () {
+        checkRequiredFields();
+    });
 });

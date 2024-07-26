@@ -19,37 +19,6 @@ var eventListRouter = require('./routes/eventList');
 
 var app = express();
 
-//nftshop
-app.use(express.static(path.join(__dirname, '../NftShop')));
-
-// Redirect from /mockNftShopHome.html to /nftshophome
-app.get('/mockNftShopHome.html', (req, res) => {
-  res.redirect('/nftshophome');
-});
-app.get('/mockNftShop.html', (req, res) => {
-  res.redirect('/nftshop');
-});
-app.get('/mockNftView.html', (req, res) => {
-  res.redirect('/nftview');
-});
-
-app.get('/nftshophome', (req, res) => {
-  res.sendFile(path.join(__dirname, '../NftShop/view/mockNftShopHome.html'));
-});
-app.get('/nftshop', (req, res) => {
-  res.sendFile(path.join(__dirname, '../NftShop/view/mockNftShop.html'));
-});
-app.get('/nftview', (req, res) => {
-  res.sendFile(path.join(__dirname, '../NftShop/view/mockNftView.html'));
-});
-app.get('/common/header.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../NftShop/view/common/header.html'));
-});
-app.get('/common/footer.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../NftShop/view/common/footer.html'));
-});
-//nftshop
-
 //for authenticate
 app.use(session({
   secret: secretKey,
