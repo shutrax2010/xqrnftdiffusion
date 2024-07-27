@@ -21,6 +21,11 @@ header {
     object-fit: cover;
 }
 
+.PhygitalifhQR {
+    font-size: 24px;
+    color: #030340;
+}
+
 .search-wrapper {
     position: relative;
     display: flex;
@@ -188,13 +193,13 @@ header {
 /* イベントアイテムのスタイル */
 .event-item {
     width: 23%; /* 4つのアイテムが横並びになるように設定 */
+    max-width: 1084px;
     text-align: center; /* アイテム内のテキストを中央揃え */
 }
 
 .event-item img {
-    width: 100%; /* 画像をコンテナにフィットさせる */
-    height: auto; /* 高さは自動調整 */
-    border-radius: 8px; /* 画像の角を丸くする */
+    width: 256px; /* 画像をコンテナにフィットさせる */
+    height: 143px; /* 高さは自動調整 */    
 }
 
 .event-caption {
@@ -202,8 +207,8 @@ header {
 }
 
 .event-caption p {
-    font-size: 1em; /* 説明文のフォントサイズ */
-    color: #555; /* 説明文の色 */
+    font-size: 18px; /* 説明文のフォントサイズ */
+    color: #030340; /* 説明文の色 */
     margin: 0; /* マージンをリセット */
 }
 
@@ -255,14 +260,6 @@ header {
 
 .checkout-button:hover {
     background-color: #0056b3; /* ホバー時の色 */
-}
-
-.nft-item {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    width: 200px;
-    text-align: center;
 }
 
 .nft-image {
@@ -327,4 +324,54 @@ footer {
 
 .twitter:hover {
     color: #1da1f2;
+}
+
+.nft-item {
+    flex: 0 1 calc(33.33% - 20px); /* 3列にするために幅を計算 */
+    text-align: center;
+    margin-bottom: 20px;
+ }
+
+.check-out-button {
+    display: inline-block;
+    background-color: #4BC0D9; /* 水色の背景 */
+    color: #000000; /* 黒文字 */
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+.check-out-button:hover {
+    background-color: #35A3B3; /* ホバー時の色 */
+}
+
+.header-banner {
+    background-color: #1A5276; /* 濃い青背景 */
+    color: #FFFFFF; /* 白文字 */
+    padding: 10px 0;
+    text-align: center;
+}
+
+.nft-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* アイテム間の間隔 */
+}
+
+.nft-image {
+    max-width: 100%;
+    height: auto;
+}
+
+.check-out-button {
+    display: inline-block;
+    background-color: #4BC0D9; /* 水色の背景 */
+    color: #000000; /* 黒文字 */
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+.check-out-button:hover {
+    background-color: #35A3B3; /* ホバー時の色 */
 }

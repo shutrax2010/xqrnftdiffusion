@@ -16,6 +16,9 @@ var nftListRouter = require('./routes/nftList');
 var menuRouter = require('./routes/menu');
 var creditTokenRouter = require('./routes/token');
 var eventListRouter = require('./routes/eventList');
+var nftShopHomeRouter = require('./routes/nftShopHome');
+var nftShopRouter = require('./routes/nftShop');
+var nftViewRouter = require('./routes/nftView');
 
 var app = express();
 
@@ -45,6 +48,9 @@ app.use('/nftList', nftListRouter);
 app.use('/menu', menuRouter);
 app.use('/token', creditTokenRouter);
 app.use('/eventList', eventListRouter);
+app.use('/nftShopHome', nftShopHomeRouter);
+app.use('/nftShop', nftShopRouter);
+app.use('/nftView', nftViewRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
