@@ -52,6 +52,19 @@ router.get('/payload/:payload_uuid', async function(req,res, next) {
     }catch(error){
         console.error('Error fetching payload data:', error);
     }
+});
+
+//'Claim tokens'押下
+router.post('/claim', async function(req, res, next) {
+    const net = process.env.TEST_NET;
+    const client = new xrpl.Client(net);
+    const system_wallet = xrpl.Wallet.fromSeed(process.env.SYS_WALLET_SEED);
+
+    const response = await paymentToken(client, system_wallet,user_walletAddress);
+    const result = response.result.meta.TransactionResult === 'tesSUCCESS' ? 'success' : 'failed';
+    res.json({
+        result,
+    });
 })
 
 /**
@@ -99,6 +112,36 @@ async function setTrustline(sysWallet,userAddress) {
         
     } catch (error) {
         console.error('SetTrustline Error', error);
+    }
+}
+
+/**
+ * ユーザにPQRを10配布する
+ * @param {Client} client xrpのnetwork
+ * @param {Wallet} sysWallet システムのウォレット
+ * @param {String} userAddress ユーザのウォレットアドレス
+ * @returns トランザクションの結果
+ */
+async function paymentToken(client, sysWallet, userAddress){
+    await client.connect();
+    try{
+        const response = await client.submitAndWait({
+            TransactionType: 'Payment',
+            Account: sysWallet.classicAddress,
+            Destination: userAddress,
+            Amount: {
+                issuer: sysWallet.classicAddress,
+                currency: 'PQR',
+                value: '10',
+            },
+            
+        },
+        { wallet: sysWallet });
+
+        return response;
+    } catch (error){
+        console.error('Payment Error:',error);
+        return error;
     }
 }
 

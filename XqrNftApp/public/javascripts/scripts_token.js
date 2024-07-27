@@ -4,6 +4,7 @@ $(document).ready(function() {
     //trustline
     $(document).on('click','#setTrustlineBtn', function(event){
         event.preventDefault();
+        document.getElementById('resultMsg').style.display = 'none';
 
         $.ajax({
             url: '/token/setTrustline',
@@ -41,6 +42,29 @@ $(document).ready(function() {
             },
             error: function(error) {
                 console.error('Error: ',error);
+            }
+        })
+    });
+
+    $(document).on('click','#claimTokensBtn', function(event){
+        event.preventDefault();
+        document.getElementById('resultMsg').style.display = 'none';
+
+        $.ajax({
+            url: '/token/claim',
+            type: 'POST',
+            success: function(data){
+                console.log(data);
+                if(data.result === 'success'){
+                    $('#resultMsg label').text('You got 10 PQR tokens!');
+                    $('#resultMsg').show();
+                }else{
+                    $('#resultMsg label').text('Sorry, Error occured...');
+                    $('#resultMsg').show();
+                }
+            },
+            error: function(error){
+                console.error('Error: ', error);
             }
         })
     });
