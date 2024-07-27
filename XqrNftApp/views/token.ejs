@@ -8,33 +8,40 @@
         <script src="/javascripts/scripts_token.js"></script>
     </head>
     <body>
-        <div class="header">
-            <div>
-                <img src="" alt="logo"><label>PhygitalifyQR</label>
+        <div class="logoWithHeader tokenHeader">
+            <div class="tokenSiteTitle">
+                <img src="../assets/PhygitalifyQR icon.png" alt="logo" class="logo">
+                <div><label class="site-name" style="vertical-align: middle; height: 100%;">PhygitalifyQR</label></div>
             </div>
-            <div>
+            <div class="userAddress">
                 You: <label><%= walletAddress %></label>
             </div>
         </div>
-        <h1>Get Credit Tokens</h1>
-        <div class="PQRFaucetArea">
-            <div>
-                <img src="" alt="icon">
-                <h3>PQR Token Faucet</h3>
-                <p>Dripping 10 PQR per day.</p>
+        <h1 style="text-align: center;">Get Credit Tokens</h1>
+        <div class="tokenContent">
+            <div class="PQRFaucetArea">
+                <div class="faucetHeader">
+                    <img src="../assets/pqr-icon.png" alt="icon" class="logo">
+                    <label class="faucetTitle">PQR Token Faucet</label>
+                    <p>Dripping 10 PQR per day.</p>
+                </div>
+                <div class="resultMsg" id="resultMsg">
+                    <label></label>
+                </div>
+                <div>
+                    <button id="setTrustlineBtn" class="tokenBtn trustLineBtn">Set Trustline</button><br/>
+                    <button id="claimTokensBtn" class="tokenBtn claimBtn">Claim tokens</button>
+                    <p>You'll receive up to 10 PQR daily but the total number of boosts available will never exceed 10. For instance, if a you have 7 boosts, you'll only receive 3 more boosts. If you run out of PQR, you have the option to get additional PQR tokens from XRP.</p>
+                </div>
             </div>
-            <div class="resultMsg" id="resultMsg">
-                <label></label>
+            <div class="exchangeArea">
+                <h3>Exchange PQR for XRP</h3>
+                <img src="../assets/pqr-icon.png" alt="icon" class="logo">
+                <img src="../assets/arrows.png" alt="icon" class="logo">
+                <img src="../assets/xrp-icon.png" alt="icon" class="logo">
+
+                <p>Coming Soon</p>
             </div>
-            <div>
-                <button id="setTrustlineBtn">Set Trustline</button><br/>
-                <button id="claimTokensBtn">Claim tokens</button>
-                <p>You'll receive up to 10 PQR daily but the total number of boosts available will never exceed 10. For instance, if a you have 7 boosts, you'll only receive 3 more boosts. If you run out of PQR, you have the option to get additional PQR tokens from XRP.</p>
-            </div>
-        </div>
-        <div class="exchangeArea">
-            <h3>Exchange PQR for XRP</h3>
-            Coming Soon
         </div>
     </body>
 </html>

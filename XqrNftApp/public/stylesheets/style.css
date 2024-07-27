@@ -471,3 +471,70 @@ input {
   transform: translateX(-100%);
   margin-top: 10px;
 }
+
+/* token */
+.tokenHeader {
+  background-color: #030340;
+  color: white;
+  text-align: center;
+  justify-content: space-between;
+}
+
+.tokenSiteTitle {
+  display: flex;
+}
+
+.userAddress{
+  margin-right: 10px;
+}
+
+.tokenContent{
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.PQRFaucetArea, .exchangeArea {
+  padding: 20px;
+  width: 45%;
+}
+
+.faucetHeader {
+  text-align: center;
+  
+}
+
+.faucetTitle{
+  font-size: 25px;
+}
+
+.resultMsg {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.tokenBtn {
+  width: 100%;
+  height: 30px;
+  border-radius: 20px;
+  border: none;
+  margin: 5px
+}
+
+.trustLineBtn {
+  color: white;
+  background-color: black;
+}
+
+.trustLineBtn:hover {
+  background-color: rgb(43, 43, 178);
+}
+
+.claimBtn{
+  color: black;
+  background-color: #00B7FF;
+}
+
+.claimBtn:hover {
+  background-color: #87CEFA;
+}
