@@ -43,9 +43,12 @@ async function getNFTs(walletAddress) {
                 if (response && response.data) {
                     name = response.data.name || 'Unnamed NFT';
                     const url = response.data.image || response.data.QRImage;
-                    if (url && (url.startsWith('ipfs://') || url.startsWith('https://ipfs.io/ipfs/'))) {
+                    if (url && (url.startsWith('ipfs://'))) {
                         imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-                    } else {
+                    } else if (url && url.startsWith('https://ipfs.io/ipfs/')) {
+                        imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(21) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+                    }
+                     else {
                         imageUrl = ''; // 画像URLが無効な場合は空にする
                     }
                 }
