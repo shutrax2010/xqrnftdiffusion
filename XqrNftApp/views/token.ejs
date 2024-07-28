@@ -30,7 +30,7 @@
                     <label></label>
                 </div>
                 <div>
-                    <button id="setTrustlineBtn" class="tokenBtn trustLineBtn">Set Trustline</button><br/>
+                    <button id="setTrustlineBtn" class="tokenBtn trustLineBtn"  <% if (trustline) { %> disabled <% } %> >Set Trustline</button><br/>
                     <button id="claimTokensBtn" class="tokenBtn claimBtn">Claim tokens</button>
                     <p>You'll receive up to 10 PQR daily but the total number of boosts available will never exceed 10. For instance, if a you have 7 boosts, you'll only receive 3 more boosts. If you run out of PQR, you have the option to get additional PQR tokens from XRP.</p>
                 </div>
