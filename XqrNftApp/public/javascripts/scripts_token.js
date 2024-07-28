@@ -10,6 +10,11 @@ $(document).ready(function() {
             url: '/token/setTrustline',
             type: 'POST',
             success: function(payloadData) {
+                if(payloadData.hasTrustline) {
+                    $('#resultMsg label').text('The trustline is already set.');
+                    $('#resultMsg').show();
+                    return;
+                }
                 const signUrl = payloadData.next.always;
                 const payloadUuid = payloadData.uuid;
 
@@ -55,6 +60,11 @@ $(document).ready(function() {
             type: 'POST',
             success: function(data){
                 console.log(data);
+                if(data.errorMsg) {
+                    $('#resultMsg label').text(data.errorMsg);
+                    $('#resultMsg').show();
+                    return;
+                }
                 if(data.result === 'success'){
                     $('#resultMsg label').text('You got 10 PQR tokens!');
                     $('#resultMsg').show();
