@@ -45,9 +45,10 @@ router.post('/preview', async function (req, res, next) {
   //  const postUrl = "https://xqrnftdiffusion.onrender.com";
   /**開発用 */
   //const postUrl = "https://simple-positive-swine.ngrok-free.app";
-  const postUrl = "https://glowing-drake-finer.ngrok-free.app";
+  // const postUrl = "https://glowing-drake-finer.ngrok-free.app";
+
   /**本番 */
-  //const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
+  const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
 
   //接続チェック
   try {
