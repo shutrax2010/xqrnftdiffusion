@@ -478,6 +478,12 @@ input {
   color: white;
   text-align: center;
   justify-content: space-between;
+  padding: 10px;
+}
+
+.tokenHeader .site-name {
+  vertical-align: middle;
+  line-height: 60px;
 }
 
 .tokenSiteTitle {
@@ -501,7 +507,14 @@ input {
 
 .faucetHeader {
   text-align: center;
-  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faucetHeader .faucetTitle {
+  vertical-align: middle;
+  line-height: 50pxs;
 }
 
 .faucetTitle{
