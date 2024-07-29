@@ -81,7 +81,7 @@ router.post('/preview', async function (req, res, next) {
     if (response.data == '' || response.status !== 200) {
       throw new Error('Failed to generate the image due to excession of the limit.');
     }
-    qrImgForNft = ipfsPrefix + response.data;
+    qrImgForNft = response.data;
     qrImgUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + response.data.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
     console.log('Response from API: ', qrImgUrl);
     res.send({ qrImgUrl: qrImgUrl });
@@ -137,7 +137,8 @@ router.post('/mint', async function (req, res, next) {
 
   try {
     const pinResponse = await pinata.pinJSONToIPFS(uploadJson, options);
-    if (pinResponse.data == '' || pinResponse.status !== 200) {
+    console.log("pinResponse : ", pinResponse);
+    if (pinResponse.IpfsHash == '' && pinResponse.PinSize == '') {
       throw new Error('An unknown error occurred');
     }
     // console.log(pinResponse);
