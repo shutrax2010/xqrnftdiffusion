@@ -137,7 +137,6 @@ router.post('/mint', async function (req, res, next) {
 
   try {
     const pinResponse = await pinata.pinJSONToIPFS(uploadJson, options);
-    console.log("pinResponse : ", pinResponse);
     if (pinResponse.IpfsHash == '' && pinResponse.PinSize == '') {
       throw new Error('An unknown error occurred');
     }

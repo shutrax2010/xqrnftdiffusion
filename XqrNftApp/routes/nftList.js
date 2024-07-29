@@ -13,7 +13,7 @@ const Sdk = new XummSdk(process.env.XUMM_APIKEY, process.env.XUMM_APISECRET);
 
 // Fetch NFTs owned by an account
 //router.get('/', async function (req, res, next) {
-router.get('/',isAuthenticated, async function(req, res, next) {
+router.get('/', isAuthenticated, async function (req, res, next) {
   //const walletAddress = process.env.SYS_WALLET_ADDRESS;
   const walletAddress = req.session.account;
   const bithompUrl = process.env.BITHOMP_URL;
@@ -39,49 +39,50 @@ router.get('/',isAuthenticated, async function(req, res, next) {
     const nfts = await Promise.all(nftsResponse.result.account_nfts.map(async nft => {
       let imageUrl = ''; // Initialize imageUrl
       let name = '';
-      let offers ='';
-      let  NFTokenTaxon =nft.NFTokenTaxon;
+      let offers = '';
+      let NFTokenTaxon = nft.NFTokenTaxon;
 
       const uri = nft.URI ? Buffer.from(nft.URI, 'hex').toString() : null; // Decode URI from hex
-      console.log("uri : ",uri);
+      console.log("uri : ", uri);
 
       if (uri != null && uri !== "") {
-          if (uri.startsWith('ipfs://')) {
-            const ipfsjson = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + uri.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-            try {
-              const response = await axios.get(ipfsjson);
-              if (response.data) {
-                name = response.data.name || 'Unnamed NFT';
-                const url = response.data.image;
-                if (url.startsWith('ipfs://')) {
-                  imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-                } else if (url.startsWith('https://ipfs.io/ipfs/')) {
-                  imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-                }
+        if (uri.startsWith('ipfs://')) {
+          const ipfsjson = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + uri.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+          try {
+            const response = await axios.get(ipfsjson);
+            if (response.data) {
+              name = response.data.name || 'Unnamed NFT';
+              const url = response.data.image;
+              if (url.startsWith('ipfs://')) {
+                let cleanedUrl = url.replace(/^(ipfs:\/\/)+/, '')
+                imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + cleanedUrl + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+              } else if (url.startsWith('https://ipfs.io/ipfs/')) {
+                imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
               }
-            } catch (error) {
-              name = uri;
             }
-
-          }else if(uri.startsWith('ipfs.io/')){
-            const ipfsjson = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-
-            try {
-              const response = await axios.get(ipfsjson);
-              if (response.data) {
-                name = response.data.name || 'Unnamed NFT';
-                const url = response.data.image;
-                if (url.startsWith('ipfs://')) {
-                  imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-                } else if (url.startsWith('https://ipfs.io/ipfs/')) {
-                  imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-                }
-              }
-            } catch (error) {
-              name = uri;
-            }
+          } catch (error) {
+            name = uri;
           }
-      }else if(uri.startsWith('https://')){
+
+        } else if (uri.startsWith('ipfs.io/')) {
+          const ipfsjson = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+
+          try {
+            const response = await axios.get(ipfsjson);
+            if (response.data) {
+              name = response.data.name || 'Unnamed NFT';
+              const url = response.data.image;
+              if (url.startsWith('ipfs://')) {
+                imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+              } else if (url.startsWith('https://ipfs.io/ipfs/')) {
+                imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+              }
+            }
+          } catch (error) {
+            name = uri;
+          }
+        }
+      } else if (uri.startsWith('https://')) {
         const ipfsjson = uri;
         try {
           const response = await axios.get(ipfsjson);
@@ -89,9 +90,11 @@ router.get('/',isAuthenticated, async function(req, res, next) {
             name = response.data.name || 'Unnamed NFT';
             const url = response.data.image || response.data.QRImage;
             if (url.startsWith('ipfs://')) {
-              imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+              let cleanedUrl = url.replace(/^(ipfs:\/\/)+/, '')
+              console.log("cleanedUrl :", cleanedUrl);
+              imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + cleanedUrl + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
             } else if (url.startsWith('https://ipfs.io/ipfs/')) {
-              imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+              imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
             }
           }
         } catch (error) {
@@ -108,8 +111,8 @@ router.get('/',isAuthenticated, async function(req, res, next) {
         });
         if (offersResponse.result.offers) {
           offers = offersResponse.result.offers.filter(offer => offer.owner === walletAddress);
-        }else{
-          offers ='';
+        } else {
+          offers = '';
         }
       } catch (offerError) {
         //console.error(`Error fetching offers for NFT ${nft.NFTokenID}:`, offerError);
@@ -128,48 +131,48 @@ router.get('/',isAuthenticated, async function(req, res, next) {
     const Sysnfts = await Promise.all(sysNftsResponse.result.account_nfts.map(async nft => {
       let imageUrl = ''; // Initialize imageUrl
       let name = '';
-      let  NFTokenTaxon =nft.NFTokenTaxon;
+      let NFTokenTaxon = nft.NFTokenTaxon;
       let offers = [];
       const uri = nft.URI ? Buffer.from(nft.URI, 'hex').toString() : null; // Decode URI from hex
-      console.log("uri : ",uri);
+      console.log("uri : ", uri);
 
       if (uri != null && uri !== "") {
-          if (uri.startsWith('ipfs://')) {
-            const ipfsjson = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + uri.slice(7)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-            try {
-              const response = await axios.get(ipfsjson);
-              if (response.data) {
-                name = response.data.name || 'Unnamed NFT';
-                const url = response.data.image;
-                if (url.startsWith('ipfs://')) {
-                  imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-                } else if (url.startsWith('https://ipfs.io/ipfs/')) {
-                  imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-                }
+        if (uri.startsWith('ipfs://')) {
+          const ipfsjson = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + uri.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+          try {
+            const response = await axios.get(ipfsjson);
+            if (response.data) {
+              name = response.data.name || 'Unnamed NFT';
+              const url = response.data.image;
+              if (url.startsWith('ipfs://')) {
+                imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+              } else if (url.startsWith('https://ipfs.io/ipfs/')) {
+                imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
               }
-            } catch (error) {
-              name = uri;
             }
-
-          }else if(uri.startsWith('ipfs.io/')){
-            const ipfsjson = "https://" + uri;
-
-            try {
-              const response = await axios.get(ipfsjson);
-              if (response.data) {
-                name = response.data.name || 'Unnamed NFT';
-                const url = response.data.image;
-                if (url.startsWith('ipfs://')) {
-                  imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-                } else if (url.startsWith('https://ipfs.io/ipfs/')) {
-                  imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
-                }
-              }
-            } catch (error) {
-              name = uri;
-            }
+          } catch (error) {
+            name = uri;
           }
-      }else if(uri.startsWith('https://')){
+
+        } else if (uri.startsWith('ipfs.io/')) {
+          const ipfsjson = "https://" + uri;
+
+          try {
+            const response = await axios.get(ipfsjson);
+            if (response.data) {
+              name = response.data.name || 'Unnamed NFT';
+              const url = response.data.image;
+              if (url.startsWith('ipfs://')) {
+                imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+              } else if (url.startsWith('https://ipfs.io/ipfs/')) {
+                imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+              }
+            }
+          } catch (error) {
+            name = uri;
+          }
+        }
+      } else if (uri.startsWith('https://')) {
         const ipfsjson = uri;
         try {
           const response = await axios.get(ipfsjson);
@@ -177,9 +180,9 @@ router.get('/',isAuthenticated, async function(req, res, next) {
             name = response.data.name || 'Unnamed NFT';
             const url = response.data.image || response.data.QRImage;
             if (url.startsWith('ipfs://')) {
-              imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+              imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + url.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
             } else if (url.startsWith('https://ipfs.io/ipfs/')) {
-              imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16)+ "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+              imageUrl = "https://amethyst-raw-termite-956.mypinata.cloud/" + url.slice(16) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
             }
           }
         } catch (error) {
@@ -188,33 +191,33 @@ router.get('/',isAuthenticated, async function(req, res, next) {
       } else {
         name = "Unnamed NFT";
       }
-            // Fetch sell offers for the NFT
-            try {
-              const offersResponse = await client.request({
-                method: 'nft_sell_offers',
-                nft_id: nft.NFTokenID
-              });
-              if (offersResponse.result.offers) {
-                offers = offersResponse.result.offers.filter(offer => offer.destination === walletAddress);
-              }
-            } catch (offerError) {
-              //console.error(`Error fetching offers for NFT ${nft.NFTokenID}:`, offerError);
-            }
-            return{
-              id: nft.NFTokenID,
-              name,
-              uri: nft.URI || 'N/A', // Fallback URI if nft.URI is falsy
-              imageUrl,
-              offers,
-              NFTokenTaxon
-            }
+      // Fetch sell offers for the NFT
+      try {
+        const offersResponse = await client.request({
+          method: 'nft_sell_offers',
+          nft_id: nft.NFTokenID
+        });
+        if (offersResponse.result.offers) {
+          offers = offersResponse.result.offers.filter(offer => offer.destination === walletAddress);
+        }
+      } catch (offerError) {
+        //console.error(`Error fetching offers for NFT ${nft.NFTokenID}:`, offerError);
+      }
+      return {
+        id: nft.NFTokenID,
+        name,
+        uri: nft.URI || 'N/A', // Fallback URI if nft.URI is falsy
+        imageUrl,
+        offers,
+        NFTokenTaxon
+      }
     }));
 
     // Sort nfts array by name
     nfts.sort((a, b) => a.name.localeCompare(b.name));
 
     client.disconnect();
-    res.render('nftList', { nfts, walletAddress,bithompUrl,Sysnfts,defaultTab });
+    res.render('nftList', { nfts, walletAddress, bithompUrl, Sysnfts, defaultTab });
 
   } catch (error) {
     console.error('Error fetching NFTs:', error);
