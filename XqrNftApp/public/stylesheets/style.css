@@ -408,6 +408,16 @@ input {
   width: 300px;
 }
 
+img.qrImages {
+  width: 150px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.selected {
+  border: 5px solid #030340;
+}
+
 .popup-bar-upper {
   background-color: #030340;
   color: white;
@@ -490,17 +500,18 @@ input {
   display: flex;
 }
 
-.userAddress{
+.userAddress {
   margin-right: 10px;
 }
 
-.tokenContent{
+.tokenContent {
   display: flex;
   justify-content: space-between;
   padding: 20px;
 }
 
-.PQRFaucetArea, .exchangeArea {
+.PQRFaucetArea,
+.exchangeArea {
   padding: 20px;
   width: 45%;
 }
@@ -517,7 +528,7 @@ input {
   line-height: 50pxs;
 }
 
-.faucetTitle{
+.faucetTitle {
   font-size: 25px;
 }
 
@@ -543,7 +554,7 @@ input {
   background-color: rgb(43, 43, 178);
 }
 
-.claimBtn{
+.claimBtn {
   color: black;
   background-color: #00B7FF;
 }

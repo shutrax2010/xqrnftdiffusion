@@ -78,13 +78,25 @@ router.post('/preview', async function (req, res, next) {
 
   try {
     const response = await axios.post(postUrl, postData, postOptions);
+    console.log("Response data:", response.data);
     if (response.data == '' || response.status !== 200) {
       throw new Error('Failed to generate the image due to excession of the limit.');
     }
-    qrImgForNft = response.data;
-    qrImgUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + response.data.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+    //qrImgUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + response.data.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+
+    if (bodyData.genType == 1) {
+      qrImgForNft = response.data[0];
+      qrImgUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + qrImgForNft.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY;
+      res.send({ qrImgUrl: qrImgUrl });
+    } else {
+      qrImgForNft = response.data[0];
+      qrImgUrl = response.data.map(item => "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/" + item.slice(7) + "?pinataGatewayToken=" + process.env.PINATA_GATEWAY_KEY);
+      res.send({ qrImgUrls: qrImgUrl });
+    }
+
+    console.log('response: ', response);
     console.log('Response from API: ', qrImgUrl);
-    res.send({ qrImgUrl: qrImgUrl });
+    //res.send({ qrImgUrl: qrImgUrl });
   } catch (error) {
     console.error(`Problem with request: ${error.message}`);
 

@@ -32,7 +32,14 @@ $(document).ready(function () {
             }
 
             $('#outputMsg').val(data);
-            showPopup(data.qrImgUrl);
+            if (data.qrImgUrl) {
+                // Single URL case
+                showPopup(data.qrImgUrl);
+            } else if (data.qrImgUrls) {
+                // Multiple URLs case
+                showPopup(data.qrImgUrls);
+            }
+            //showPopup(data.qrImgUrl);
 
 
 
@@ -44,9 +51,55 @@ $(document).ready(function () {
         });
     });
 
-    function showPopup(qrUrl) {
+    /* function showPopup(qrUrl) {
         $('#qrImage').attr('src', qrUrl);
         document.getElementById('popup-wrapper').style.display = 'block';
+    } */
+    let qrImgForNft;
+    function showPopup(qrUrls) {
+        const qrImagesContainer = document.getElementById('qrImagesContainer');
+        qrImagesContainer.innerHTML = ''; // Clear previous images
+
+        if (Array.isArray(qrUrls)) {
+            console.log("array");
+            // Handle multiple URLs
+            qrUrls.forEach(qrUrl => {
+                const img = document.createElement('img');
+                img.src = qrUrl;
+                img.className = 'qrImages';
+                img.alt = 'Nft image';
+                img.style.cursor = 'pointer';
+                img.addEventListener('click', function () {
+                    selectImage(qrUrl, img);
+                });
+                qrImagesContainer.appendChild(img);
+            });
+        } else {
+            // Handle single URL
+            console.log("single");
+            const img = document.createElement('img');
+            img.src = qrUrls;
+            img.className = 'qrImage';
+            img.alt = 'Nft image';
+            qrImagesContainer.appendChild(img);
+            qrImgForNft = qrUrls;
+        }
+
+        document.getElementById('popup-wrapper').style.display = 'block';
+    }
+
+    function selectImage(qrUrl, imgElement) {
+        // Clear previous selection
+        const images = document.querySelectorAll('.qrImages');
+        images.forEach(img => {
+            img.classList.remove('selected');
+        });
+
+        // Highlight the selected image
+        imgElement.classList.add('selected');
+
+        // Set the selected image URL
+        qrImgForNft = qrUrl;
     }
 
     $(document).on('click', '.popup-okBtn', function (event) {
