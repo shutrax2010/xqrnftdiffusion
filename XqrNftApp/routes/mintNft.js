@@ -45,10 +45,10 @@ router.post('/preview', async function (req, res, next) {
   //  const postUrl = "https://xqrnftdiffusion.onrender.com";
   /**開発用 */
   //const postUrl = "https://simple-positive-swine.ngrok-free.app";
-  // const postUrl = "https://glowing-drake-finer.ngrok-free.app";
+  const postUrl = "https://glowing-drake-finer.ngrok-free.app";
 
   /**本番 */
-  const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
+  //const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
 
   //接続チェック
   try {
@@ -116,6 +116,7 @@ router.post('/mint', async function (req, res, next) {
   let outputMsg = '';
   const bodyData = req.body;
   const sys_walletAddress = process.env.SYS_WALLET_ADDRESS;
+  let escrowId = null;
   // console.log(bodyData);
 
 
@@ -207,6 +208,27 @@ router.post('/mint', async function (req, res, next) {
   outputMsg += '\nNFTを作成しました。以下のURLでもNFTを確認できます。';
   outputMsg += '\n' + bitcompPrefix + nftoken_id;
 
+  // Create Escrow Entry
+  if (bodyData.genType == 0) {
+    const escrowId = `${bodyData.eventNo}-${Date.now()}`; // Unique ID for escrow
+    // Validate addresses and amount
+    if (!sys_walletAddress || !user_walletAddress) {
+      return res.status(400).send({ errorMsg: 'Invalid wallet addresses' });
+    }
+    escrows[escrowId] = {
+      nftoken_id,
+      seller: sys_walletAddress,
+      buyer: user_walletAddress,
+      amount: {
+        "currency": "PQR",
+        "value": "2",
+        "issuer": sys_walletAddress
+      },
+      status: 'pending'
+    };
+    outputMsg += `\nEscrow created with ID: ${escrowId}`;
+  }
+
   //NFTokenCreateOfferの作成(売却オファー)
   const NFTokenCreateOfferJson = {
     "TransactionType": "NFTokenCreateOffer",
@@ -223,8 +245,35 @@ router.post('/mint', async function (req, res, next) {
   client.disconnect();
   req.session.tab = 1;
 
-
   res.send(outputMsg);
+
+  console.log("res : ", res);
+});
+
+// Route to handle escrow fulfillment
+router.post('/fulfill-escrow', async function (req, res) {
+  const { escrowId, action } = req.body;
+
+  if (!escrows[escrowId]) {
+    return res.status(404).json({ message: 'Escrow not found' });
+  }
+
+  // Logic to fulfill or dispute escrow
+  const escrow = escrows[escrowId];
+  if (action === 'release') {
+    // Logic to release NFT to the buyer
+    // Update escrow status and finalize transaction
+    escrow.status = 'completed';
+    // Add further logic here to handle the release of the NFT
+  } else if (action === 'dispute') {
+    // Logic to handle disputes
+    escrow.status = 'disputed';
+    // Add further logic here to handle dispute resolution
+  } else {
+    return res.status(400).json({ message: 'Invalid action' });
+  }
+
+  res.send({ message: `Escrow ${action}d successfully`, escrow });
 });
 
 
