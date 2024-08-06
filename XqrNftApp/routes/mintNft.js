@@ -5,6 +5,8 @@ const xrpl = require('xrpl');
 const pinataSDK = require('@pinata/sdk');
 const moment = require('moment');
 const axios = require('axios');
+const { log, error } = require('./logger');
+const checks = require('./checksManager');
 
 const { isAuthenticated } = require('../authMiddleware');
 const { url } = require('inspector');
@@ -45,7 +47,9 @@ router.post('/preview', async function (req, res, next) {
   //  const postUrl = "https://xqrnftdiffusion.onrender.com";
   /**開発用 */
   //const postUrl = "https://simple-positive-swine.ngrok-free.app";
-  const postUrl = "https://glowing-drake-finer.ngrok-free.app";
+  //const postUrl = "https://glowing-drake-finer.ngrok-free.app";
+
+  const postUrl = "https://sponge-still-lark.ngrok-free.app";
 
   /**本番 */
   //const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
@@ -116,7 +120,6 @@ router.post('/mint', async function (req, res, next) {
   let outputMsg = '';
   const bodyData = req.body;
   const sys_walletAddress = process.env.SYS_WALLET_ADDRESS;
-  let escrowId = null;
   // console.log(bodyData);
 
 
@@ -208,25 +211,22 @@ router.post('/mint', async function (req, res, next) {
   outputMsg += '\nNFTを作成しました。以下のURLでもNFTを確認できます。';
   outputMsg += '\n' + bitcompPrefix + nftoken_id;
 
-  // Create Escrow Entry
-  if (bodyData.genType == 0) {
+  // Create checks Entry
+  if (bodyData.genType != 1) {
     const escrowId = `${bodyData.eventNo}-${Date.now()}`; // Unique ID for escrow
     // Validate addresses and amount
     if (!sys_walletAddress || !user_walletAddress) {
       return res.status(400).send({ errorMsg: 'Invalid wallet addresses' });
     }
-    escrows[escrowId] = {
-      nftoken_id,
-      seller: sys_walletAddress,
-      buyer: user_walletAddress,
-      amount: {
-        "currency": "PQR",
-        "value": "2",
-        "issuer": sys_walletAddress
-      },
-      status: 'pending'
-    };
-    outputMsg += `\nEscrow created with ID: ${escrowId}`;
+
+    checks.createCheck(
+      sys_walletAddress,
+      '2000000',
+      'PQR',
+      sys_walletAddress
+    );
+
+
   }
 
   //NFTokenCreateOfferの作成(売却オファー)
