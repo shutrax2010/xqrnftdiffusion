@@ -1,18 +1,22 @@
 const { XummSdk } = require('xumm-sdk');
+const xrpl = require('xrpl');
+const { log, error } = require('./logger');
 
 const xummApiKey = process.env.XUMM_APIKEY;
 const xummSecret = process.env.XUMM_APISECRET;
 const xumm = new XummSdk(xummApiKey, xummSecret);
+const net = process.env.TEST_NET;
 
+//client create check ,so need to login using xumm
 async function createCheck(destinationAddress, amount, currency, issuerAddress) {
     // Prepare the CheckCreate transaction
     const tx = {
         TransactionType: 'CheckCreate',
         Destination: destinationAddress,
-        Amount: {
-            value: amount,
-            currency: currency,
-            issuer: issuerAddress
+        SendMax: {
+            "currency": currency,
+            "value": amount,
+            "issuer": issuerAddress
         },
         Expiration: Math.floor(Date.now() / 1000) + 86400, // 24 hours from now
         Fee: '12'
@@ -21,49 +25,65 @@ async function createCheck(destinationAddress, amount, currency, issuerAddress) 
     // Create a payload for Xumm
     const payload = {
         txjson: tx,
-        tx_type: 'Payment'
+        tx_type: 'CheckCreate'
     };
 
     // Create a new transaction using Xumm
     try {
-        const response = await xumm.payload.create(payload);
+        const response = await xumm.payload.createAndSubscribe(payload);
 
-        // Redirect user to Xumm for signing
-        console.log('Please sign this transaction using Xumm:', response);
-        window.location.href = response.next.always;
+        log("create check : ", response);
+
+        const uuid = response.created.uuid; // UUID from response
+        const signInUrl = response.created.next.always; // Sign-in URL
+        // Return both UUID and sign-in URL
+        return {
+            uuid: uuid,
+            url: signInUrl
+        };
     } catch (error) {
         console.error('Error creating transaction:', error);
     }
 }
 
-async function cashCheck(checkID, recipientSecret) {
-    const client = new xrpl.Client('wss://s1.ripple.com');
+//server accept payment 
+async function cashCheck(txid, recipientSecret) {
+    console.log("checkID : ", txid)
+    const client = new xrpl.Client(net);
     await client.connect();
 
     const recipientWallet = xrpl.Wallet.fromSecret(recipientSecret);
+    const recipientWalletAddress = recipientWallet.classicAddress
+
+    const response = await client.request({
+        command: 'tx',
+        transaction: txid
+    });
+    console.log("txid res: ", response);
+
 
     // Prepare the Check Cash transaction
     const tx = {
         TransactionType: 'CheckCash',
         CheckID: checkID,
-        Amount: '1000000', // Amount in drops
-        Fee: '12',
-        Account: recipientWallet.classicAddress,
-        Sequence: await client.getAccountInfo(recipientWallet.classicAddress).then(info => info.account_data.Sequence),
-        LastLedgerSequence: (await client.getLedger()).ledger_index + 10
+        Amount: {
+            "currency": 'PQR',
+            "value": '2',
+            "issuer": recipientWalletAddress
+        },
+        Account: recipientWalletAddress,
     };
 
     // Autofill, sign, and submit the transaction
     const preparedTx = await client.autofill(tx);
-    const { signedTransaction } = client.sign(preparedTx, recipientSecret);
-    const result = await client.submit(signedTransaction);
+    const result = await client.submitAndWait(preparedTx, { wallet: recipientWallet })
 
     console.log('Check cashed:', result);
     await client.disconnect();
 }
 
 async function cancelCheck(checkID, senderAddress) {
-    const client = new xrpl.Client('wss://s1.ripple.com');
+    const client = net;
     await client.connect();
 
     // Prepare the Check Cancel transaction

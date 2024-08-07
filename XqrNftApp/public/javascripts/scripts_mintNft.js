@@ -13,43 +13,102 @@ $(document).ready(function () {
         $(this).parent('.property').remove();
     });
 
-    $('#nftform').submit(function (event) {
+    $('#nftform').submit(async function (event) {
         event.preventDefault();
         document.getElementById('spinner').style.display = 'block';
         document.getElementById('overlay').style.display = 'block';
+        try {
+            // Step 1: Create Check
+            const checkResponse = await $.ajax({
+                url: '/mintnft/checktype',
+                type: 'POST',
+                data: $('#nftform').serialize()
+            });
 
-        $.ajax({
-            url: '/mintnft/preview',
-            type: 'POST',
-            data: $('#nftform').serialize()
-        }).done(function (data, textStatus, jqXHR) {
-            console.log(data);
+            if (checkResponse.redirectUrl) {
+                // Redirect to Xumm for signing if redirectUrl is present
+                console.log('Redirecting to Xumm sign-in:', checkResponse.redirectUrl);
+                const signInWindow = window.open(checkResponse.redirectUrl.url, '_blank', 'width=700,height=600');
+                const payloadUUID = checkResponse.redirectUrl.uuid;
+
+                // Check the status of the sign-in every 5 seconds
+                const intervalId = setInterval(async () => {
+                    try {
+                        const response = await fetch(`/payload/${payloadUUID}`);
+                        const payloadData = await response.json();
+
+                        if (payloadData.status === 'completed' && payloadData.resolved) {
+                            clearInterval(intervalId);
+                            console.log('Sign-in completed!');
+                            if (signInWindow) {
+                                signInWindow.close();
+                            }
+                            // Proceed to mint the NFT after successful sign-in
+                            await mintNFT(payloadData.txid);
+                            document.getElementById('spinner').style.display = 'none';
+                            document.getElementById('overlay').style.display = 'none';
+                        }
+                    } catch (error) {
+                        console.error('Error fetching payload status:', error);
+                    }
+                }, 5000); // Check status every 5 seconds
+            } else {
+                // No redirectUrl provided, proceed to mint the NFT directly
+                await mintNFT();
+                document.getElementById('spinner').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error creating check:', error);
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+    });
+
+    async function mintNFT(checkId = null) {
+        try {
+            let dataToSend;
+
+            if (checkId) {
+                // If payloadUUID is provided, include it in the data
+                dataToSend = $.extend($('#nftform').serializeArray(), { checkID: checkId });
+            } else {
+                // If payloadUUID is not provided, just serialize the form data
+                dataToSend = $('#nftform').serialize();
+            }
+            const mintResponse = await $.ajax({
+                url: '/mintnft/preview',
+                type: 'POST',
+                data: dataToSend
+            });
+
+            console.log(mintResponse);
             document.getElementById('errorMsgDiv').style.display = 'none';
-            if (data && data.errorMsg && data.errorMsg.length !== 0) {
-                $('#errorMsg').text(data.errorMsg);
+            if (mintResponse.errorMsg) {
+                $('#errorMsg').text(mintResponse.errorMsg);
                 document.getElementById('errorMsgDiv').style.display = 'block';
                 return;
             }
 
-            $('#outputMsg').val(data);
-            if (data.qrImgUrl) {
+            $('#outputMsg').val(mintResponse.outputMsg || 'NFT minted successfully!');
+
+            if (mintResponse.qrImgUrl) {
                 // Single URL case
-                showPopup(data.qrImgUrl);
-            } else if (data.qrImgUrls) {
+                showPopup(mintResponse.qrImgUrl);
+                document.getElementById('spinner').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
+            } else if (mintResponse.qrImgUrls) {
                 // Multiple URLs case
-                showPopup(data.qrImgUrls);
+                showPopup(mintResponse.qrImgUrls);
+                document.getElementById('spinner').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
             }
-            //showPopup(data.qrImgUrl);
-
-
-
-        }).fail(function () {
-            console.log('fail');
-        }).always(function () {
+        } catch (error) {
+            console.error('Error minting NFT:', error);
             document.getElementById('spinner').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
-        });
-    });
+        }
+    }
 
     /* function showPopup(qrUrl) {
         $('#qrImage').attr('src', qrUrl);

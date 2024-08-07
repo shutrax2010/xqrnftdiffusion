@@ -41,6 +41,7 @@ router.post('/preview', async function (req, res, next) {
   let outputMsg = '';
   const bodyData = req.body;
   req.session.formData = bodyData;
+  let signin = '';
 
   //get QR image from api
   console.log('\n#####start getting qrImg');
@@ -49,10 +50,10 @@ router.post('/preview', async function (req, res, next) {
   //const postUrl = "https://simple-positive-swine.ngrok-free.app";
   //const postUrl = "https://glowing-drake-finer.ngrok-free.app";
 
-  const postUrl = "https://sponge-still-lark.ngrok-free.app";
+  //const postUrl = "https://sponge-still-lark.ngrok-free.app";
 
   /**本番 */
-  //const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
+  const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
 
   //接続チェック
   try {
@@ -114,13 +115,38 @@ router.post('/preview', async function (req, res, next) {
   }
 });
 
+router.post('/checktype', async function (req, res, next) {
+  const sys_walletAddress = process.env.SYS_WALLET_ADDRESS;
+  const bodyData = req.body;
+
+  // Check creation logic first
+  if (bodyData.genType != 1) {
+    try {
+      const redirectUrl = await checks.createCheck(sys_walletAddress, '2', 'PQR', sys_walletAddress);
+      console.log("redirectUrl ", redirectUrl);
+
+      // Check creation successful, respond with redirect URL
+      return res.send({
+        redirectUrl: redirectUrl,
+        message: 'Check created. Please sign the transaction using Xumm.'
+      });
+
+    } catch (error) {
+      console.log('Error creating check:', error);
+      return res.send({ errorMsg: 'Error creating check' });
+    }
+  } else {
+    return res.send({});
+  }
+});
+
 router.post('/mint', async function (req, res, next) {
 
 
   let outputMsg = '';
   const bodyData = req.body;
   const sys_walletAddress = process.env.SYS_WALLET_ADDRESS;
-  // console.log(bodyData);
+  console.log("bodyData : ", bodyData);
 
 
 
@@ -211,23 +237,6 @@ router.post('/mint', async function (req, res, next) {
   outputMsg += '\nNFTを作成しました。以下のURLでもNFTを確認できます。';
   outputMsg += '\n' + bitcompPrefix + nftoken_id;
 
-  // Create checks Entry
-  if (bodyData.genType != 1) {
-    const escrowId = `${bodyData.eventNo}-${Date.now()}`; // Unique ID for escrow
-    // Validate addresses and amount
-    if (!sys_walletAddress || !user_walletAddress) {
-      return res.status(400).send({ errorMsg: 'Invalid wallet addresses' });
-    }
-
-    checks.createCheck(
-      sys_walletAddress,
-      '2000000',
-      'PQR',
-      sys_walletAddress
-    );
-
-
-  }
 
   //NFTokenCreateOfferの作成(売却オファー)
   const NFTokenCreateOfferJson = {
@@ -242,6 +251,9 @@ router.post('/mint', async function (req, res, next) {
   const sellOfferTx = await client.submitAndWait(NFTokenCreateOfferJson, { wallet: system_wallet });
   console.log("\n売却オファー\n" + sellOfferTx);
 
+  const txid = req.session.txid;
+  checks.cashCheck(txid, process.env.SYS_WALLET_SEED);
+
   client.disconnect();
   req.session.tab = 1;
 
@@ -250,31 +262,6 @@ router.post('/mint', async function (req, res, next) {
   console.log("res : ", res);
 });
 
-// Route to handle escrow fulfillment
-router.post('/fulfill-escrow', async function (req, res) {
-  const { escrowId, action } = req.body;
-
-  if (!escrows[escrowId]) {
-    return res.status(404).json({ message: 'Escrow not found' });
-  }
-
-  // Logic to fulfill or dispute escrow
-  const escrow = escrows[escrowId];
-  if (action === 'release') {
-    // Logic to release NFT to the buyer
-    // Update escrow status and finalize transaction
-    escrow.status = 'completed';
-    // Add further logic here to handle the release of the NFT
-  } else if (action === 'dispute') {
-    // Logic to handle disputes
-    escrow.status = 'disputed';
-    // Add further logic here to handle dispute resolution
-  } else {
-    return res.status(400).json({ message: 'Invalid action' });
-  }
-
-  res.send({ message: `Escrow ${action}d successfully`, escrow });
-});
 
 
 module.exports = router;
