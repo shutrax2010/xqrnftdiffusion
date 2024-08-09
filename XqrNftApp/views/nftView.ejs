@@ -32,10 +32,11 @@
 
 <div id="ipfs-image" class="nft-list">
   <% if (nfts && nfts.length > 0) { %>
-    <% nfts.forEach(nft => { %>
+    <% nfts.forEach((nft, index) => { %>
       <% if (nft.imageUrl) { %>
         <div class="nft-item">
-          <img src="<%= nft.imageUrl %>" alt="<%= nft.name %>" class="nft-image">
+          <!-- 画像をクリックしたときにモーダルを開くためのクラス modal-opener を追加 -->
+          <img src="<%= nft.imageUrl %>" alt="<%= nft.name %>" class="nft-image modal-opener" data-index="<%= index %>">
           <% if (nft.name !== undefined) { %>
             <p><%= nft.name %></p>
           <% } else { %>
@@ -48,6 +49,27 @@
     <p>No images found.</p>
   <% } %>
 </div>
+
+<!-- モーダルのコンテンツをここに追加 -->
+<div id="modal-container" class="modal-container">
+  <div id="modal-content" class="modal-content">
+    <div id="modal-header-banner" class="modal-header-banner"> NFT Tickets</div>
+      <span id="modal-close" class="modal-close"></span>    
+      <a id="modal-image-link" class="modal-image-link" href="" target="_blank">
+        <img id="modal-image" class="modal-image" src="" alt="">
+      </a>
+      <p id="modal-caption" class="modal-caption"></p>
+  </div>
+</div>
+
+<!-- クライアントサイドの JavaScript ファイル -->
+<script src="/javascripts/nftViewClient.js"></script>
+
+<!-- サーバーサイドからクライアントサイドにデータを渡す -->
+<script>
+  // EJS で変数を埋め込む
+  const nfts = <%- JSON.stringify(nfts) %>;
+</script>
 
 <footer>
   <div class="footer-content">

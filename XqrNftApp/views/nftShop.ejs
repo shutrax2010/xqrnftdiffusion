@@ -7,28 +7,51 @@
   <link rel="stylesheet" href="/stylesheets/NftShop.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <title>NFT Shop</title>
+  <style>
+    /* モーダルのスタイル */
+    .modal {
+      display: none; 
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgb(0,0,0);
+      background-color: rgba(0,0,0,0.4);
+      padding-top: 60px;
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
 <header>
-  <div class="header-content">
-    <a href="/nftShopHome">
-      <img src="../assets/PhygitalifyQR icon.png" alt="アイコン" class="top-icon"/>
-    </a>
-    <div class="PhygitalifhQR">PhygitalifhQR</div>
-    <div class="search-wrapper">
-      <input type="text" class="search-bar" placeholder="Search event(Dummy function)">
-      <a class="search-button" aria-label="検索">🔍</a>
-    </div>
-    <div class="account-name">John Doe</div> <!--仮のもの-->
-    <a href="/nftView" class="button">My tickets</a>
-  </div>
+  <!-- Header Content -->
 </header>
 
 <div class="header-image">
   <img src="../assets/viewer-app6.png" alt="Header Image">
-  <div class="header-overlay">
-  </div>
+  <div class="header-overlay"></div>
 </div>
 
 <div class="header-text">
@@ -46,7 +69,7 @@
           <% } else { %>
             <p>NFTokenTaxon: Not available</p>
           <% } %>
-          <a href="#" class="button">Check out</a>
+          <button class="button" onclick="openModal('<%= nft.id %>')">Check out</button>
         </div>
       <% } %>
     <% }); %>
@@ -55,22 +78,72 @@
   <% } %>
 </div>
 
-<footer>
-  <div class="footer-content">
-    <p>&copy; 2024 Event Tickets Center. All rights reserved.</p>
-    <div class="social-icons">
-      <a href="https://facebook.com" target="_blank" class="social-icon facebook" aria-label="Facebook">
-        <i class="fab fa-facebook-f"></i>
-      </a>
-      <a href="https://instagram.com" target="_blank" class="social-icon instagram" aria-label="Instagram">
-        <i class="fab fa-instagram"></i>
-      </a>
-      <a href="https://twitter.com" target="_blank" class="social-icon twitter" aria-label="Twitter">
-        <i class="fab fa-twitter"></i>
-      </a>
-    </div>
+<!-- モーダルのHTML -->
+<div id="confirmModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <p>購入を確認しますか？</p>
+    <button id="confirmPurchase" onclick="confirmPurchase()">OK</button>
+    <button onclick="closeModal()">キャンセル</button>
   </div>
+</div>
+
+<footer>
+  <!-- Footer Content -->
 </footer>
+
+<script>
+  // モーダルを開く関数
+  function openModal(nftId) {
+    document.getElementById('confirmModal').style.display = 'block';
+    // グローバル変数に選択したNFT IDを保存
+    window.currentNftId = nftId;
+  }
+
+  // モーダルを閉じる関数
+  function closeModal() {
+    document.getElementById('confirmModal').style.display = 'none';
+  }
+
+  // 購入確認ボタンのクリック処理
+  async function confirmPurchase() {
+    const nftId = window.currentNftId;
+
+    try {
+      const response = await fetch('/nftShop/purchase', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ nftId }),
+});
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert('購入が成功しました！');
+        // ページのリロードやその他の処理が必要な場合はここに記述
+      } else {
+        alert('購入に失敗しました。');
+      }
+    } catch (error) {
+      console.error('購入中にエラーが発生しました:', error);
+      alert('購入中にエラーが発生しました。');
+    }
+
+    closeModal(); // モーダルを閉じる
+  }
+
+  document.querySelectorAll('.button').forEach(button => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      const nftId = button.getAttribute('data-nft-id');
+      openModal(nftId); // モーダルを開く
+    });
+  });
+</script>
+
+
 
 </body>
 </html>

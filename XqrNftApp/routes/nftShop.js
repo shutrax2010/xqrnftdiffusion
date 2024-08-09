@@ -5,6 +5,56 @@ const axios = require('axios'); // 必要に応じてaxiosをインポートす�
 
 // ダミーアカウントのアドレス
 const dummyAccountAddress = process.env.DUMMY_USER_ACCOUNT;
+const dummyPrivateKey = process.env.DUMMY_USER_PRIVATE_KEY; // ダミーアカウントのプライベートキーも追加する
+
+// 購入処理
+async function purchaseNFT(nftId) {
+    const net = process.env.TEST_NET; // XRPLのネットワークを指定
+    const client = new xrpl.Client(net);
+    try {
+        await client.connect();
+
+        const wallet = xrpl.Wallet.fromSecret(dummyPrivateKey);
+
+        // NFTの購入オファーを作成
+        const transaction = {
+            TransactionType: 'NFTokenMint',
+            Account: wallet.classicAddress,
+            NFTokenID: nftId,
+            // その他必要なパラメータ
+        };
+
+        const preparedTx = await client.autofill(transaction);
+        const signedTx = wallet.sign(preparedTx);
+        const txResponse = await client.submitAndWait(signedTx.tx_blob);
+
+        client.disconnect();
+        return txResponse.result.meta.TransactionResult === 'tesSUCCESS'; // 成功かどうかを返す
+    } catch (error) {
+        console.error('NFTの購入中にエラーが発生しました:', error);
+        return false;
+    }
+}
+
+// 購入リクエストのハンドラー
+router.post('/purchase', async (req, res, next) => {
+    try {
+        const nftId = req.body.nftId; // リクエストボディからNFT IDを取得
+
+        // NFTを購入
+        const success = await purchaseNFT(nftId);
+
+        if (success) {
+            res.json({ success: true });
+        } else {
+            res.json({ success: false });
+        }
+    } catch (error) {
+        console.error('購入処理中にエラーが発生しました:', error);
+        res.status(500).json({ success: false });
+    }
+});
+
 
 async function getNFTs(walletAddress) {
     const net = process.env.TEST_NET; // XRPLのネットワークを指定
@@ -73,7 +123,7 @@ async function getNFTs(walletAddress) {
                     offers = offersResponse.result.offers.filter(offer => offer.owner === walletAddress);
                 }
             } catch (offerError) {
-                // console.error(`NFT ${nft.NFTokenID} のセールオファーの取得中にエラーが発生しました:`, offerError);
+                // console.error(NFT ${nft.NFTokenID} のセールオファーの取得中にエラーが発生しました:, offerError);
                 console.warn(`NFT ${nft.NFTokenID} のセールオファーの取得中にエラーが発生しました。スキップします。`);
                 return null; // セールオファーの取得でエラーが発生した場合も、nullを返してスキップ
             }
