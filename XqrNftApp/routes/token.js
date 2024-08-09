@@ -20,6 +20,7 @@ router.get('/', isAuthenticated, async function(req, res, next) {
     if (req.session.authenticated) {
         user_walletAddress = req.session.account;
         const hasTrustline = await hasTrustlineForPqr(client, user_walletAddress);
+        console.log('hasTrustLine', hasTrustline);
         req.session.trustline = hasTrustline;
         
         res.render('token',{
@@ -39,6 +40,7 @@ router.post('/setTrustline', async function(req, res, next) {
     
     
     const hasTrustline = await hasTrustlineForPqr(client, user_walletAddress);
+    console.log(hasTrustline);
     if(hasTrustline) {
         console.log(hasTrustline);
         return res.json({
@@ -147,12 +149,15 @@ async function setTrustline(sysWallet,userAddress) {
  */
 async function hasTrustlineForPqr(client, userAddress) {
     await client.connect();
-    const response = await checkAccountCurrencies(client, userAddress);
+    const response = await client.request({
+        command: 'account_lines',
+        account: userAddress
+    });
     console.log(response);
-    const receiveCurrencies = response.result.receive_currencies;
+    const trustlines = response.result.lines;
 
-    for(const c of receiveCurrencies) {
-        if(c === 'PQR'){
+    for(const line of trustlines) {
+        if(line.currency === 'PQR' && line.account === process.env.SYS_WALLET_ADDRESS){
             return true;
         }
     }
