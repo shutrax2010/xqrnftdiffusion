@@ -8,7 +8,7 @@ const dummyAccountAddress = process.env.DUMMY_USER_ACCOUNT;
 const dummyPrivateKey = process.env.DUMMY_USER_PRIVATE_KEY; // ダミーアカウントのプライベートキーも追加する
 
 // 購入処理
-async function purchaseNFT(nftId) {
+async function purchaseNFT(nftId, offerId) {
     const net = process.env.TEST_NET; // XRPLのネットワークを指定
     const client = new xrpl.Client(net);
     try {
@@ -16,12 +16,12 @@ async function purchaseNFT(nftId) {
 
         const wallet = xrpl.Wallet.fromSecret(dummyPrivateKey);
 
-        // NFTの購入オファーを作成
+        // NFT購入のオファーを受け入れるトランザクションを作成
         const transaction = {
-            TransactionType: 'NFTokenMint',
+            TransactionType: 'NFTokenAcceptOffer',
             Account: wallet.classicAddress,
             NFTokenID: nftId,
-            // その他必要なパラメータ
+            OfferSequence: offerId, // オファーIDを指定
         };
 
         const preparedTx = await client.autofill(transaction);
@@ -36,13 +36,34 @@ async function purchaseNFT(nftId) {
     }
 }
 
+async function getOffersForNFT(nftId) {
+    const net = process.env.TEST_NET; // XRPLのネットワークを指定
+    const client = new xrpl.Client(net);
+    try {
+        await client.connect();
+
+        const response = await client.request({
+            method: 'nft_sell_offers',
+            nft_id: nftId
+        });
+
+        client.disconnect();
+        return response.result.offers || [];
+    } catch (error) {
+        console.error('NFTオファーの取得中にエラーが発生しました:', error);
+        return [];
+    }
+}
+
+
+
 // 購入リクエストのハンドラー
 router.post('/purchase', async (req, res, next) => {
     try {
-        const nftId = req.body.nftId; // リクエストボディからNFT IDを取得
+        const { nftId, offerId } = req.body; // リクエストボディからNFT IDとオファーIDを取得
 
-        // NFTを購入
-        const success = await purchaseNFT(nftId);
+        // NFTの購入オファーを受け入れる
+        const success = await purchaseNFT(nftId, offerId);
 
         if (success) {
             res.json({ success: true });

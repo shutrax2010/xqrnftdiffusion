@@ -69,7 +69,9 @@
           <% } else { %>
             <p>NFTokenTaxon: Not available</p>
           <% } %>
-          <button class="button" onclick="openModal('<%= nft.id %>')">Check out</button>
+          <% if (nft.offers && nft.offers.length > 0) { %>
+            <button class="button" data-nft-id="<%= nft.id %>" data-offer-id="<%= nft.offers[0].OfferSequence %>" onclick="openModal('<%= nft.id %>', '<%= nft.offers[0].OfferSequence %>')">Check out</button>
+          <% } %>
         </div>
       <% } %>
     <% }); %>
@@ -78,45 +80,30 @@
   <% } %>
 </div>
 
-<!-- モーダルのHTML -->
-<div id="confirmModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <p>購入を確認しますか？</p>
-    <button id="confirmPurchase" onclick="confirmPurchase()">OK</button>
-    <button onclick="closeModal()">キャンセル</button>
-  </div>
-</div>
-
-<footer>
-  <!-- Footer Content -->
-</footer>
-
 <script>
-  // モーダルを開く関数
-  function openModal(nftId) {
+  function openModal(nftId, offerId) {
     document.getElementById('confirmModal').style.display = 'block';
-    // グローバル変数に選択したNFT IDを保存
+    // グローバル変数に選択したNFT IDとオファーIDを保存
     window.currentNftId = nftId;
+    window.currentOfferId = offerId;
   }
 
-  // モーダルを閉じる関数
   function closeModal() {
     document.getElementById('confirmModal').style.display = 'none';
   }
 
-  // 購入確認ボタンのクリック処理
   async function confirmPurchase() {
     const nftId = window.currentNftId;
+    const offerId = window.currentOfferId;
 
     try {
       const response = await fetch('/nftShop/purchase', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({ nftId }),
-});
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ nftId, offerId }),
+      });
 
       const result = await response.json();
 
@@ -133,15 +120,24 @@
 
     closeModal(); // モーダルを閉じる
   }
-
-  document.querySelectorAll('.button').forEach(button => {
-    button.addEventListener('click', (event) => {
-      event.preventDefault();
-      const nftId = button.getAttribute('data-nft-id');
-      openModal(nftId); // モーダルを開く
-    });
-  });
 </script>
+
+
+<!-- モーダルのHTML -->
+<div id="confirmModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <p>購入を確認しますか？</p>
+    <button id="confirmPurchase" onclick="confirmPurchase()">OK</button>
+    <button onclick="closeModal()">キャンセル</button>
+  </div>
+</div>
+
+<footer>
+  <!-- Footer Content -->
+</footer>
+
+
 
 
 
