@@ -5,6 +5,77 @@ const axios = require('axios'); // 必要に応じてaxiosをインポートす�
 
 // ダミーアカウントのアドレス
 const dummyAccountAddress = process.env.DUMMY_USER_ACCOUNT;
+const dummyPrivateKey = process.env.DUMMY_USER_PRIVATE_KEY; // ダミーアカウントのプライベートキーも追加する
+
+// 購入処理
+async function purchaseNFT(nftId, offerId) {
+    const net = process.env.TEST_NET; // XRPLのネットワークを指定
+    const client = new xrpl.Client(net);
+    try {
+        await client.connect();
+
+        const wallet = xrpl.Wallet.fromSecret(dummyPrivateKey);
+
+        // NFT購入のオファーを受け入れるトランザクションを作成
+        const transaction = {
+            TransactionType: 'NFTokenAcceptOffer',
+            Account: wallet.classicAddress,
+            NFTokenID: nftId,
+            OfferSequence: offerId, // オファーIDを指定
+        };
+
+        const preparedTx = await client.autofill(transaction);
+        const signedTx = wallet.sign(preparedTx);
+        const txResponse = await client.submitAndWait(signedTx.tx_blob);
+
+        client.disconnect();
+        return txResponse.result.meta.TransactionResult === 'tesSUCCESS'; // 成功かどうかを返す
+    } catch (error) {
+        console.error('NFTの購入中にエラーが発生しました:', error);
+        return false;
+    }
+}
+
+async function getOffersForNFT(nftId) {
+    const net = process.env.TEST_NET; // XRPLのネットワークを指定
+    const client = new xrpl.Client(net);
+    try {
+        await client.connect();
+
+        const response = await client.request({
+            method: 'nft_sell_offers',
+            nft_id: nftId
+        });
+
+        client.disconnect();
+        return response.result.offers || [];
+    } catch (error) {
+        console.error('NFTオファーの取得中にエラーが発生しました:', error);
+        return [];
+    }
+}
+
+
+
+// 購入リクエストのハンドラー
+router.post('/purchase', async (req, res, next) => {
+    try {
+        const { nftId, offerId } = req.body; // リクエストボディからNFT IDとオファーIDを取得
+
+        // NFTの購入オファーを受け入れる
+        const success = await purchaseNFT(nftId, offerId);
+
+        if (success) {
+            res.json({ success: true });
+        } else {
+            res.json({ success: false });
+        }
+    } catch (error) {
+        console.error('購入処理中にエラーが発生しました:', error);
+        res.status(500).json({ success: false });
+    }
+});
+
 
 async function getNFTs(walletAddress) {
     const net = process.env.TEST_NET; // XRPLのネットワークを指定
@@ -73,7 +144,7 @@ async function getNFTs(walletAddress) {
                     offers = offersResponse.result.offers.filter(offer => offer.owner === walletAddress);
                 }
             } catch (offerError) {
-                // console.error(`NFT ${nft.NFTokenID} のセールオファーの取得中にエラーが発生しました:`, offerError);
+                // console.error(NFT ${nft.NFTokenID} のセールオファーの取得中にエラーが発生しました:, offerError);
                 console.warn(`NFT ${nft.NFTokenID} のセールオファーの取得中にエラーが発生しました。スキップします。`);
                 return null; // セールオファーの取得でエラーが発生した場合も、nullを返してスキップ
             }
