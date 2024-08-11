@@ -221,8 +221,8 @@ async function isClaimedPQRToday(client, userAddress) {//英語的にメソッ�
             && tx.meta.delivered_amount.currency === 'PQR') {
             // console.log('forの中', tx);
             const txTime = tx.tx.date + 946684800; // Rippleの時間は2000年1月1日からの秒数なので、UNIX時間に変換
-            console.log('txTime:',txTime);
-            console.log('start,end: ' + startTime + ', ' + endTime);
+            // console.log('txTime:',txTime);
+            // console.log('start,end: ' + startTime + ', ' + endTime);
             if(txTime >= startTime && txTime <= endTime) {
                 console.log('true');
                 await client.disconnect();
