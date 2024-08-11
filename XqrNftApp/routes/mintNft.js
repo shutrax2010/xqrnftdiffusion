@@ -50,10 +50,10 @@ router.post('/preview', async function (req, res, next) {
   //const postUrl = "https://simple-positive-swine.ngrok-free.app";
   //const postUrl = "https://glowing-drake-finer.ngrok-free.app";
 
-  //const postUrl = "https://sponge-still-lark.ngrok-free.app";
+  const postUrl = "https://sponge-still-lark.ngrok-free.app";
 
   /**本番 */
-  const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
+  //const postUrl = "https://wallaby-more-pony.ngrok-free.app/";
 
   //接続チェック
   try {
@@ -123,7 +123,7 @@ router.post('/checktype', async function (req, res, next) {
   if (bodyData.genType != 1) {
     try {
       const redirectUrl = await checks.createCheck(sys_walletAddress, '2', 'PQR', sys_walletAddress);
-      console.log("redirectUrl ", redirectUrl);
+      log("redirectUrl :", redirectUrl);
 
       // Check creation successful, respond with redirect URL
       return res.send({

@@ -48,7 +48,6 @@ async function createCheck(destinationAddress, amount, currency, issuerAddress) 
 
 //server accept payment 
 async function cashCheck(txid, recipientSecret) {
-    console.log("checkID : ", txid)
     const client = new xrpl.Client(net);
     await client.connect();
 
@@ -59,8 +58,17 @@ async function cashCheck(txid, recipientSecret) {
         command: 'tx',
         transaction: txid
     });
-    console.log("txid res: ", response);
 
+    // Extract the CheckID
+    let checkID = null;
+    const affectedNodes = response.result.meta.AffectedNodes;
+
+    for (let node of affectedNodes) {
+        if (node.CreatedNode && node.CreatedNode.LedgerEntryType === 'Check') {
+            checkID = node.CreatedNode.LedgerIndex;
+            break;
+        }
+    }
 
     // Prepare the Check Cash transaction
     const tx = {
@@ -79,27 +87,26 @@ async function cashCheck(txid, recipientSecret) {
     const result = await client.submitAndWait(preparedTx, { wallet: recipientWallet })
 
     console.log('Check cashed:', result);
+    if(result.meta.TransactionResult != 'tesSUCCESS'){
+        cancelCheck(checkID);
+    }
     await client.disconnect();
 }
 
-async function cancelCheck(checkID, senderAddress) {
+async function cancelCheck(checkID) {
     const client = net;
     await client.connect();
 
     // Prepare the Check Cancel transaction
     const tx = {
         TransactionType: 'CheckCancel',
-        CheckID: checkID,
-        Fee: '12',
-        Account: senderAddress,
-        Sequence: await client.getAccountInfo(senderAddress).then(info => info.account_data.Sequence),
-        LastLedgerSequence: (await client.getLedger()).ledger_index + 10
+        CheckID: checkID
     };
 
     // Autofill, sign, and submit the transaction
-    const preparedTx = await client.autofill(tx);
+    /* const preparedTx = await client.autofill(tx);
     const { signedTransaction } = client.sign(preparedTx, senderSecret);
-    const result = await client.submit(signedTransaction);
+    const result = await client.submit(signedTransaction); */
 
     console.log('Check canceled:', result);
     await client.disconnect();
