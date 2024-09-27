@@ -40,7 +40,7 @@ $(document).ready(function() {
                         } catch (error) {
                             console.error('Error fetching payload status:', error);
                         }
-                    }, 5000);
+                    }, 3000);
                 } else {
                     console.error('Xumm payload missing "next.always" property');
                 }

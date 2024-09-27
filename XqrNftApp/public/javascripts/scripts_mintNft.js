@@ -51,7 +51,7 @@ $(document).ready(function () {
                     } catch (error) {
                         console.error('Error fetching payload status:', error);
                     }
-                }, 5000); // Check status every 5 seconds
+                }, 3000); // Check status every 3 seconds
             } else {
                 // No redirectUrl provided, proceed to mint the NFT directly
                 await mintNFT();
@@ -165,11 +165,31 @@ $(document).ready(function () {
         event.preventDefault();
         document.getElementById('spinner').style.display = 'block';
         document.getElementById('overlay').style.display = 'block';
+        // Serialize the form data
+        const serializedData = $('#nftform').serializeArray();
+
+        // Create a plain object to hold the data
+        const dataObject = {};
+
+        // Populate the dataObject with serialized form data
+        serializedData.forEach(function (field) {
+            dataObject[field.name] = field.value;
+        });
+
+        // Add the qrImgForNft value if it's set
+        if (qrImgForNft) {
+            dataObject.qrImgForNft = qrImgForNft;
+        } else {
+            console.error('No QR image selected.');
+            alert('Please select a QR image before proceeding.');
+            return; // Exit if no image is selected
+        }
+        console.log("form Data : ", dataObject);
 
         $.ajax({
             url: '/mintnft/mint',
             type: 'POST',
-            data: $('#nftform').serialize()
+            data: dataObject
         }).done(function (data, textStatus, jqXHR) {
             $('#outputMsg').val(data);
             console.log('success');

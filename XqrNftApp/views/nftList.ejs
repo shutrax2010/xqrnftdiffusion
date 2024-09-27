@@ -13,6 +13,7 @@
 </head>
 
 <body>
+  <div id="notification" class="notification"></div>
   <div class="nft-header">
     <div class="logoWithHeader">
       <a href="/menu"><img src="../assets/PhygitalifyQR icon.png" alt="PhygitalifyQR Icon" class="logo clickable"></a>
@@ -281,22 +282,21 @@
                 if (payloadData.signed) {
                   clearInterval(intervalId);
                   console.log('Offer acceptance completed!');
+                  showNotification('Offer acceptance completed!');
                   // Optionally, you can refresh the page or update the UI here
                   document.getElementById('qr-popup-overlay').style.display = 'none';
                   document.getElementById('qr-popup').style.display = 'none';
+                  location.reload();
                   // Reload or update the UI as needed
                 } else if (payloadData.status === 'rejected') {
                   clearInterval(intervalId);
                   console.log('Offer acceptance declined');
-                  alert('Offer acceptance declined');
+                  showNotification('Offer acceptance declined');
                 }
               } catch (error) {
                 console.error('Error fetching payload status:', error);
               }
-            }, 5000); // Check status every 5 seconds
-          } else {
-            alert('Offer accepted successfully');
-            closePopup();
+            }, 3000); // Check status every 3 seconds
           }
         } else {
           const errorText = await response.text();
@@ -337,9 +337,7 @@
               `;
               document.getElementById('qr-popup-overlay').style.display = 'block';
               document.getElementById('qr-popup').style.display = 'block';
-            } else {
-              alert('Offer created successfully');
-              closeQrPopup();
+              pollPayloadStatus(result.uuid);
             }
           } else {
             const errorText = await response.text();
@@ -355,6 +353,52 @@
         }
       }
     }
+
+    async function pollPayloadStatus(uuid) {
+      const interval = setInterval(async () => {
+        try {
+          const response = await fetch(`/nftList/payload-status/${uuid}`);
+          if (response.ok) {
+            const status = await response.json();
+
+            if (status.signed) {
+              clearInterval(interval);
+              showNotification('Offer created successfully!');
+              // Update the UI or handle further actions
+              closeQrPopup();
+              location.reload();
+            } else if (status.resolved) {
+              clearInterval(interval);
+              showNotification('Offer declined.');
+              // Handle offer decline UI changes if necessary
+              closeQrPopup();
+            }
+          }
+        } catch (error) {
+          console.error('Error checking payload status:', error);
+          clearInterval(interval);
+        }
+      }, 3000); // Poll every 3 seconds
+    }
+
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      notification.innerText = message;  // Set the message
+      notification.style.display = 'block';  // Show the notification
+      notification.style.opacity = 1;  // Ensure it's visible
+
+      // Hide the notification after 3 seconds
+      setTimeout(() => {
+        notification.style.opacity = 0;  // Start fade out
+
+        // After fading out, hide it completely
+        setTimeout(() => {
+          notification.style.display = 'none';
+        }, 500); // Match this duration with the transition duration
+      }, 3000);  // Adjust the time as needed (in milliseconds)
+    }
+
+
 
     function closeCreateOfferPopup() {
       document.getElementById('create-offer-popup-overlay').style.display = 'none';

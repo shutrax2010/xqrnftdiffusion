@@ -82,15 +82,21 @@ async function cashCheck(txid, recipientSecret) {
         Account: recipientWalletAddress,
     };
 
-    // Autofill, sign, and submit the transaction
-    const preparedTx = await client.autofill(tx);
-    const result = await client.submitAndWait(preparedTx, { wallet: recipientWallet })
+    try {
+        // Autofill, sign, and submit the transaction
+        const preparedTx = await client.autofill(tx);
+        const result = await client.submitAndWait(preparedTx, { wallet: recipientWallet })
 
-    console.log('Check cashed:', result);
-    if(result.meta.TransactionResult != 'tesSUCCESS'){
-        cancelCheck(checkID);
+        console.log('Check cashed:', result);
+        if (result.result.meta.TransactionResult != 'tesSUCCESS') {
+            console.error(`Transaction failed: ${result.result.meta.TransactionResult}`);
+            cancelCheck(checkID);
+        }
+    } catch (error) {
+        console.error('Error during transaction:', error);
+    } finally {
+        await client.disconnect();
     }
-    await client.disconnect();
 }
 
 async function cancelCheck(checkID) {

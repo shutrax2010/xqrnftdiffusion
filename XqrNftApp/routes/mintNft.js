@@ -146,10 +146,16 @@ router.post('/mint', async function (req, res, next) {
   let outputMsg = '';
   const bodyData = req.body;
   const sys_walletAddress = process.env.SYS_WALLET_ADDRESS;
+  let qrImgForNft = bodyData.qrImgForNft;
   console.log("bodyData : ", bodyData);
+  const baseUrl = "https://amethyst-raw-termite-956.mypinata.cloud/ipfs/";
+  const pinataGatewayToken = process.env.PINATA_GATEWAY_KEY;
+  const tokenParam = `?pinataGatewayToken=${pinataGatewayToken}`;
 
-
-
+  // Check if qrImgForNft matches the expected pattern
+  if (qrImgForNft.startsWith(baseUrl) && qrImgForNft.endsWith(tokenParam)) {
+    qrImgForNft = "ipfs://" + qrImgForNft.slice(baseUrl.length, -tokenParam.length); // Remove base URL and token
+  }
 
   //可変プロパティの取得
   let properties = {};
@@ -252,14 +258,20 @@ router.post('/mint', async function (req, res, next) {
   console.log("\n売却オファー\n" + sellOfferTx);
 
   const txid = req.session.txid;
-  checks.cashCheck(txid, process.env.SYS_WALLET_SEED);
+  if (!txid || !process.env.SYS_WALLET_SEED) {
+    return res.status(400).send('Missing transaction ID or wallet seed.');
+  }
 
-  client.disconnect();
-  req.session.tab = 1;
-
-  res.send(outputMsg);
-
-  console.log("res : ", res);
+  try {
+    await checks.cashCheck(txid, process.env.SYS_WALLET_SEED);
+    req.session.tab = 1; // Set session variable
+    await client.disconnect(); // Disconnect before sending response
+    return res.status(200).send('Check cashed successfully.');
+  } catch (error) {
+    console.error('Error cashing check:', error);
+    await client.disconnect(); // Disconnect before sending response
+    return res.status(500).send('Failed to cash check.');
+  }
 });
 
 

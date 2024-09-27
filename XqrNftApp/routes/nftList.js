@@ -266,6 +266,7 @@ router.post('/accept-offer', async function (req, res) {
 });
 
 router.get('/payload-status/:uuid', (req, res) => {
+  console.log("Checking status for UUID:", req.params.uuid);
   const { uuid } = req.params;
   const status = payloadStatusStore[uuid];
 
@@ -293,19 +294,24 @@ router.post('/create-offer', async function (req, res) {
       Flags: xrpl.NFTokenCreateOfferFlags.tfSellNFToken
     };
 
-    const payloadResponse = await Sdk.payload.createAndSubscribe(payload, async (event) => {
+    const { created } = await Sdk.payload.createAndSubscribe(payload, async (event) => {
       // This callback is called when the payload resolves (signed or rejected)
-      if (event.data.signed === true) {
-        res.json({ message: 'Offer accepted successfully', result: event.data });
-      } else {
-        res.status(400).json({ message: 'Offer acceptance declined' });
+      if (event.data.signed !== undefined) {
+        // Update payload status based on the event data
+        payloadStatusStore[created.uuid] = {
+          signed: event.data.signed,
+          resolved: true
+        };
       }
     });
+    payloadStatusStore[created.uuid] = { signed: false, resolved: false };
 
+    req.session.tab = 0;
     // Send the QR code URL back to the client to be scanned by the Xumm app
-    res.json({ payloadUrl: payloadResponse.created.refs.qr_png });
+    res.json({ payloadUrl: created.refs.qr_png, uuid: created.uuid });
 
   } catch (error) {
+    console.error('Error creating offer:', error);
     res.status(500).json({ message: 'Error accepting offer', error });
   }
 });

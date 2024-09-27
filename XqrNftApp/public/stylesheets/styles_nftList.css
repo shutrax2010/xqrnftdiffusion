@@ -219,10 +219,25 @@ button {
     color: #333;
 }
 
-.site-name{
+.site-name {
     font: 23px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 .site-name:hover {
     opacity: 0.6;
+}
+
+.notification {
+    /* Hidden by default */
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 50%;
+    transform: translateX(-50%);
+    background-color: #1cd39c;
+    color: #f8f8f8;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 1000;
+    transition: opacity 0.5s ease;
 }
